@@ -1,0 +1,22 @@
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-app-compat.js');
+importScripts('https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging-compat.js');
+
+firebase.initializeApp({
+  apiKey: "AIzaSyD6cPednhXxhBawUJq4N1rR8c-XGkai5VI",
+  authDomain: "english-coaching-2eeee.firebaseapp.com",
+  projectId: "english-coaching-2eeee",
+  storageBucket: "english-coaching-2eeee.firebasestorage.app",
+  messagingSenderId: "975799266905",
+  appId: "1:975799266905:web:9dfb13cfb4918e24694b48"
+});
+
+const messaging = firebase.messaging();
+
+messaging.onBackgroundMessage(function(payload) {
+  const title = payload.notification?.title || 'English Coach';
+  const body = payload.notification?.body || '';
+  self.registration.showNotification(title, {
+    body: body,
+    icon: '/icon-192.png'
+  });
+});
