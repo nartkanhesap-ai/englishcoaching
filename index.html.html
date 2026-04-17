@@ -141,7 +141,7 @@ button:active{transform:scale(.98)}
 <!-- LOGIN -->
 <div id="s-login" class="screen active">
   <div class="login-wrap">
-    <div class="login-logo"><h1>English Coach</h1><p>Kişisel İngilizce Koçluk Platformu</p></div>
+    <div class="login-logo"><h1>English Coach</h1><p>Kişisel İngilizce Koçluk Platformu</p><p style="font-family:'Georgia',serif;font-size:13px;color:rgba(255,255,255,0.75);margin-top:6px;font-style:italic;letter-spacing:0.5px">by Nartkan Teacher</p></div>
     <div id="l-err" class="alert ae" style="display:none"></div>
     <div class="lbl">E-posta</div><input type="email" id="l-email" placeholder="ornek@email.com" style="margin-bottom:10px">
     <div class="lbl">Şifre</div><input type="password" id="l-pass" placeholder="••••••" style="margin-bottom:14px" onkeydown="if(event.key==='Enter')doLogin()">
@@ -164,6 +164,9 @@ button:active{transform:scale(.98)}
     <div class="lbl">İlgi alanları</div><input type="text" id="r-int" placeholder="Örn: müzik, teknoloji, seyahat" style="margin-bottom:14px">
     <button class="bp" style="width:100%;margin-bottom:8px" onclick="doReg()" id="r-btn">Üyeliği Oluştur ve Seviye Tespit Sınavına Başla</button>
     <button style="width:100%" onclick="showLogin()">Geri dön</button>
+    <div style="margin-top:12px;background:#fdf0ee;border:1.5px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:12px;color:#c0392b;line-height:1.6">
+      ⚠️ <strong>Tarayıcı Uyarısı:</strong> Sitenin düzgün çalışabilmesi için lütfen <strong>Google Chrome</strong> veya <strong>Microsoft Edge</strong> tarayıcısını kullanın.
+    </div>
   </div>
 </div>
 
@@ -180,20 +183,21 @@ button:active{transform:scale(.98)}
 <div id="s-placement" class="screen">
   <div style="max-width:600px;margin:0 auto;padding:1rem">
 
-    <!-- Floating AI bubble -->
-    <div id="placement-bubble" style="position:fixed;bottom:20px;right:20px;z-index:9999;cursor:pointer" onclick="togglePlacementChat()">
-      <div style="background:var(--navy);border-radius:50%;width:56px;height:56px;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 16px rgba(0,0,0,.25);position:relative">
-        <span style="font-size:24px">🤖</span>
-        <div id="placement-bubble-badge" style="position:absolute;top:-2px;right:-2px;background:var(--red);border-radius:50%;width:12px;height:12px;display:none"></div>
+    <!-- Floating Counselor bubble (placement test) -->
+    <div id="placement-bubble" style="position:fixed;bottom:24px;right:80px;z-index:9999;cursor:pointer;display:none" onclick="togglePlacementChat()">
+      <div style="position:relative;padding-top:40px">
+        <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--navy);color:#fff;padding:4px 10px;border-radius:8px;font-size:11px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.2)">Sana rehberlik edebilirim!</div>
+        <div style="position:absolute;top:24px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:5px solid transparent;border-right:5px solid transparent;border-top:5px solid var(--navy)"></div>
+        <div style="width:54px;height:54px;border-radius:50%;background:linear-gradient(135deg,#0c447c,#4a9eda);display:flex;align-items:center;justify-content:center;font-size:26px;box-shadow:0 4px 16px rgba(12,68,124,.4)">🎓</div>
+        <div id="placement-bubble-badge" style="position:absolute;top:38px;right:-2px;background:var(--red);border-radius:50%;width:12px;height:12px;display:none"></div>
       </div>
-      <div style="background:var(--navy);color:#fff;font-size:11px;border-radius:8px;padding:4px 8px;margin-top:4px;text-align:center;max-width:80px;line-height:1.3">eğer bir sorun olursa buradayım</div>
     </div>
 
     <!-- Floating AI chat panel -->
-    <div id="placement-chat-panel" style="display:none;position:fixed;bottom:100px;right:20px;z-index:9998;width:300px;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.18);overflow:hidden">
-      <div style="background:var(--navy);padding:10px 14px;display:flex;align-items:center;gap:8px">
-        <span style="font-size:18px">🤖</span>
-        <div style="flex:1;color:#fff;font-size:13px;font-weight:600">The English Coach</div>
+    <div id="placement-chat-panel" style="display:none;position:fixed;bottom:90px;right:10px;z-index:9998;width:300px;background:#fff;border-radius:16px;box-shadow:0 8px 32px rgba(0,0,0,.18);overflow:hidden">
+      <div style="background:linear-gradient(135deg,#0c447c,#4a9eda);padding:10px 14px;display:flex;align-items:center;gap:8px">
+        <span style="font-size:20px">🎓</span>
+        <div style="flex:1;color:#fff;font-size:13px;font-weight:600">Counselor</div>
         <button onclick="togglePlacementChat()" style="background:transparent;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:16px">✕</button>
       </div>
       <div id="placement-chat-msgs" style="height:220px;overflow-y:auto;padding:10px;display:flex;flex-direction:column;gap:8px"></div>
@@ -207,7 +211,8 @@ button:active{transform:scale(.98)}
     <div style="text-align:center;margin-bottom:1.5rem">
       <div style="font-size:40px;margin-bottom:8px">📝</div>
       <div style="font-size:20px;font-weight:700;color:var(--navy)" id="placement-title">Seviye Tespit Sınavı</div>
-      <div style="font-size:13px;color:#889;margin-top:4px" id="placement-subtitle">İngilizce seviyeni belirleyelim</div>
+      <div style="font-size:13px;color:#889;margin-top:4px" id="placement-subtitle">Senin İngilizce seviyeni belirliyorum</div>
+      <div id="placement-timer" style="display:none;font-size:22px;font-weight:700;color:var(--navy);margin-top:6px;letter-spacing:1px">45:00</div>
     </div>
 
     <div id="placement-content"></div>
@@ -373,12 +378,12 @@ button:active{transform:scale(.98)}
 
 <!-- Student Report Modal -->
 <div id="student-report-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,20,40,.8);z-index:9990;overflow-y:auto;padding:1rem">
-  <div style="max-width:560px;margin:2rem auto;background:#fff;border-radius:16px;overflow:hidden">
+  <div style="max-width:560px;margin:2rem auto;background:#fff;border-radius:16px;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
     <div style="background:var(--navy);padding:1rem 1.25rem;display:flex;align-items:center;gap:8px">
       <div style="flex:1;color:#fff;font-weight:700;font-size:15px" id="report-modal-title">Öğrenci Raporu</div>
       <button onclick="closeStudentReport()" style="background:transparent;border:none;color:rgba(255,255,255,.7);cursor:pointer;font-size:20px;line-height:1">✕</button>
     </div>
-    <div style="padding:1.25rem">
+    <div style="padding:1.25rem;overflow-y:auto;flex:1;-webkit-overflow-scrolling:touch">
       <div style="display:flex;gap:8px;margin-bottom:1rem;flex-wrap:wrap">
         <div>
           <div class="lbl" style="font-size:11px">Başlangıç</div>
@@ -406,7 +411,7 @@ button:active{transform:scale(.98)}
         <div class="tbt" id="st-n">Merhaba!</div>
         <span id="badge-icon" style="font-size:22px;cursor:pointer" onclick="showBadgeInfo()" title="Rozetim">🌱</span>
       </div>
-      <div class="tbs" id="st-l"></div>
+      <div class="tbs" id="st-l"></div><div style="font-size:9px;color:rgba(255,255,255,.45);margin-top:1px;font-style:italic">© Tüm hakları saklıdır · Created by Nartkan Teacher</div>
     </div>
     <button onclick="doLogout()">Çıkış</button>
   </div>
@@ -454,15 +459,45 @@ button:active{transform:scale(.98)}
       <div style="font-size:12px;color:var(--muted-navy);margin-top:2px">Günlük seri</div>
       <div id="streak-week-dots" style="display:flex;justify-content:center;gap:6px;margin-top:10px"></div>
     </div>
-
-    <div class="fr">
-      <button class="fb active" onclick="setFilt('week',this)">Bu hafta</button>
-      <button class="fb" onclick="setFilt('month',this)">Bu ay</button>
-      <button class="fb" onclick="setFilt('year',this)">Bu yıl</button>
+    <!-- Weekly activity list -->
+    <div class="card" style="margin-bottom:12px">
+      <div style="font-weight:700;color:var(--navy);margin-bottom:10px;font-size:13px">📅 Bu Hafta Yaptıkların</div>
+      <div id="weekly-activity-list"></div>
     </div>
-    <div class="card">
-      <div style="font-weight:700;margin-bottom:12px;color:var(--navy)">Beceri gelişimi</div>
-      <div id="skill-bars"></div>
+
+    <!-- Analytics Dashboard -->
+    <div id="analytics-dashboard">
+      <!-- Error trend chart -->
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-weight:700;color:var(--navy);font-size:13px;margin-bottom:10px">📊 Analytics</div>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
+          <div style="background:var(--accent-light);border-radius:10px;padding:10px;text-align:center">
+            <div style="font-size:22px;font-weight:800;color:var(--navy)" id="dash-total-pts">0</div>
+            <div style="font-size:11px;color:#889;margin-top:2px">Toplam Puan</div>
+          </div>
+          <div style="background:#e8f5ee;border-radius:10px;padding:10px;text-align:center">
+            <div style="font-size:22px;font-weight:800;color:var(--green)" id="dash-total-mins">0</div>
+            <div style="font-size:11px;color:#889;margin-top:2px">AI Sohbet (dk)</div>
+          </div>
+          <div style="background:#fef3e2;border-radius:10px;padding:10px;text-align:center">
+            <div style="font-size:22px;font-weight:800;color:var(--amber)" id="dash-total-words">0</div>
+            <div style="font-size:11px;color:#889;margin-top:2px">Öğrenilen Kelime</div>
+          </div>
+          <div style="background:#EEEDFE;border-radius:10px;padding:10px;text-align:center">
+            <div style="font-size:22px;font-weight:800;color:#3C3489" id="dash-streak">0</div>
+            <div style="font-size:11px;color:#889;margin-top:2px">Günlük Seri</div>
+          </div>
+        </div>
+        <!-- Weekly pts bar chart -->
+        <div style="font-size:12px;font-weight:600;color:var(--navy);margin-bottom:6px">Bu Hafta Puan Trendi</div>
+        <div id="dash-pts-chart" style="display:flex;align-items:flex-end;gap:4px;height:60px;margin-bottom:4px"></div>
+        <div id="dash-pts-labels" style="display:flex;gap:4px;font-size:9px;color:#889"></div>
+      </div>
+      <!-- Skill breakdown -->
+      <div class="card" style="margin-bottom:12px">
+        <div style="font-weight:700;color:var(--navy);font-size:13px;margin-bottom:10px">🎯 Aktivite Dağılımı (Bu Ay)</div>
+        <div id="dash-activity-breakdown"></div>
+      </div>
     </div>
 
   </div>
@@ -923,22 +958,57 @@ button:active{transform:scale(.98)}
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,browserSessionPersistence,setPersistence}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,setDoc,getDoc,collection,addDoc,getDocs,query,where,orderBy,limit,updateDoc,deleteDoc,onSnapshot,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import{getStorage,ref,uploadBytes,getDownloadURL}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
+import{getMessaging,getToken,onMessage}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
 
 const PROXY = "https://english-coach-proxy.nartkanhesap.workers.dev";
 const cfg={apiKey:"AIzaSyD6cPednhXxhBawUJq4N1rR8c-XGkai5VI",authDomain:"english-coaching-2eeee.firebaseapp.com",projectId:"english-coaching-2eeee",storageBucket:"english-coaching-2eeee.firebasestorage.app",messagingSenderId:"975799266905",appId:"1:975799266905:web:9dfb13cfb4918e24694b48"};
 const TEACHER_EMAIL="ogretmen@englishcoach.com";
 const fapp=initializeApp(cfg);
 const auth=getAuth(fapp);
+setPersistence(auth,browserSessionPersistence).catch(()=>{});
+
+// Firebase Cloud Messaging setup
+let messaging = null;
+try {
+  messaging = getMessaging(fapp);
+  onMessage(messaging, function(payload) {
+    // Show in-app notification when app is in foreground
+    const title = payload.notification?.title || 'English Coach';
+    const body = payload.notification?.body || '';
+    const notifDiv = document.createElement('div');
+    notifDiv.style.cssText = 'position:fixed;top:16px;left:50%;transform:translateX(-50%);background:var(--navy);color:#fff;padding:10px 16px;border-radius:10px;font-size:13px;z-index:99999;box-shadow:0 4px 16px rgba(0,0,0,.3);max-width:320px;text-align:center;animation:slideDown .3s ease';
+    notifDiv.innerHTML = '<strong>' + title + '</strong><br><span style="font-size:12px;opacity:.85">' + body + '</span>';
+    document.body.appendChild(notifDiv);
+    setTimeout(function(){ notifDiv.remove(); }, 5000);
+  });
+} catch(e) { console.log('FCM not supported:', e); }
+
+async function requestNotificationPermission() {
+  if(!messaging) return;
+  try {
+    const permission = await Notification.requestPermission();
+    if(permission === 'granted') {
+      // VAPID key - replace with your FCM web push certificate key from Firebase Console
+      const VAPID_KEY = 'BOUOMQ6hvrgbjcyt4c1ksJXSCLB_HJ2cwb2VegNy5mhKC9qCKRdZS2YQVPYFlTm2REPb1G3m6k8waB5-KJ4O53A';
+      const token = await getToken(messaging, {vapidKey: VAPID_KEY}).catch(()=>null);
+      if(token && cu && cu.uid) {
+        // Save FCM token to studentDirectory
+        updateDoc(doc(db,'studentDirectory',cu.uid), {fcmToken: token, fcmUpdated: serverTimestamp()}).catch(()=>{});
+        console.log('FCM token saved');
+      }
+    }
+  } catch(e) { console.log('FCM permission error:', e); }
+}
 const db=getFirestore(fapp);
 const storage=getStorage(fapp);
 
 let cu=null,cp=null,lastG=null,lastL=null,chatH=[],persona=null,pendW=null,filt='week',obA={},obStep=0,teacherStudents=[];
 
 const obQs=[
-  {k:'style',q:'Seninle nasıl konuşmamı istersin?',o:['Formal ve profesyonel','Samimi ve arkadaşça','Eğlenceli ve enerjik','Sakin ve sabırlı']},
+  {k:'style',q:'Danışmanlık hizmetlerimde ve AI sohbetlerinde seninle nasıl konuşmamı istersin?',o:['Formal ve profesyonel','Samimi ve arkadaşça','Eğlenceli ve enerjik','Sakin ve sabırlı']},
   {k:'goal',q:'İngilizce öğrenme amacın nedir?',o:['İş ve kariyer','Seyahat','Genel gelişim','Sınav hazırlığı']},
   {k:'weakness',q:'Kendini en zayıf hissettiğin alan hangisi?',o:['Konuşma (speaking)','Gramer (grammar)','Kelime bilgisi (vocabulary)','Dinleme (listening)']},
   {k:'time',q:'Günde kaç dakika İngilizce çalışabilirsin?',o:['15 dakika','30 dakika','1 saat','1 saatten fazla']}
@@ -1010,7 +1080,12 @@ window.doReg=async()=>{
   const b=document.getElementById('r-btn');b.innerHTML='<span class="spin"></span>Kaydediliyor...';b.disabled=true;
   try{
     const c=await createUserWithEmailAndPassword(auth,e,p);
-    await setDoc(doc(db,'users',c.user.uid),{name:n+' '+sn,email:e,role:'student',level:'B1',interests:document.getElementById('r-int').value||'',onboarded:false,placementDone:false,createdAt:serverTimestamp()});
+    const regInterests = document.getElementById('r-int').value||'';
+    await setDoc(doc(db,'users',c.user.uid),{name:n+' '+sn,email:e,role:'student',level:'B1',interests:regInterests,onboarded:false,placementDone:false,createdAt:serverTimestamp()});
+    // Write to studentDirectory for teacher panel access
+    await setDoc(doc(db,'studentDirectory',c.user.uid),{name:n+' '+sn,email:e,level:'B1',interests:regInterests,voiceScore:0,totalAIMinutes:0,placementDone:false,createdAt:serverTimestamp(),lastLogin:serverTimestamp(),uid:c.user.uid}).catch(function(){});
+    // Show info modal before starting
+    document.getElementById('placement-info-modal').style.display='flex';
   }catch(ex){err.textContent=ex.code==='auth/email-already-in-use'?'Bu e-posta zaten kayıtlı.':'Hata: '+ex.message;err.style.display='block';}
   b.innerHTML='Üyeliği Oluştur ve Seviye Tespit Sınavına Başla';b.disabled=false;
 };
@@ -1046,12 +1121,170 @@ async function loadTeacher(){
 
 
 async function fillSels(){
+  // Load teacher's own assigned students
   const snap=await getDocs(collection(db,'teachers',cu.uid,'students'));
   teacherStudents=snap.docs.map(d=>({id:d.id,...d.data()}));
   const opts=snap.empty?'<option value="">Önce öğrenci ekleyin</option>':snap.docs.map(d=>`<option value="${d.id}">${d.data().name} (${d.data().level})</option>`).join('');
   ['c-s','lp-s','hw-s'].forEach(id=>{const el=document.getElementById(id);if(el)el.innerHTML=opts;});
-  renderStudList(snap.docs);
+  // Also load ALL registered users for the student panel
+  await loadAllStudents();
 }
+
+async function loadAllStudents() {
+  const el = document.getElementById('stud-list');
+  if(!el) return;
+  el.innerHTML = '<div class="muted"><span class="spin spd"></span> Öğrenciler yükleniyor...</div>';
+  try {
+    const merged = {};
+
+    // Source 1: studentDirectory (most up to date)
+    const dirSnap = await getDocs(collection(db,'studentDirectory')).catch(()=>({docs:[]}));
+    dirSnap.docs.forEach(function(d){ merged[d.id] = {id:d.id, src:'dir', _d:d.data()}; });
+
+    // Source 2: teacher's manually-added students subcollection
+    const teachSnap = await getDocs(collection(db,'teachers',cu.uid,'students')).catch(()=>({docs:[]}));
+    teachSnap.docs.forEach(function(d){
+      if(!merged[d.id]) {
+        const sd = d.data();
+        merged[d.id] = {id:d.id, src:'teacher', _d:{
+          name:sd.name||'?', email:sd.email||'', level:sd.level||'B1',
+          interests:sd.interests||'', voiceScore:0, totalAIMinutes:0,
+          createdAt:sd.createdAt||null, uid:d.id
+        }};
+        // Sync this student to studentDirectory so they appear in future loads
+        setDoc(doc(db,'studentDirectory',d.id), merged[d.id]._d).catch(function(){});
+      }
+    });
+
+    const allStudents = Object.values(merged).sort(function(a,b){
+      return (b._d.createdAt?.seconds||0) - (a._d.createdAt?.seconds||0);
+    });
+
+    if(!allStudents.length) {
+      el.innerHTML = '<div class="muted" style="padding:1rem;text-align:center">Henüz kayıtlı öğrenci yok.</div>';
+      return;
+    }
+    renderAllStudents(allStudents.map(function(s){ return {id:s.id, data:function(){ return s._d; }}; }));
+  } catch(ex) {
+    el.innerHTML = '<div class="alert ae">Hata: ' + ex.message + '</div>';
+  }
+}
+function renderAllStudents(docs) {
+  const el = document.getElementById('stud-list');
+  if(!el) return;
+  el.innerHTML = '';
+  if(!docs.length) { el.innerHTML = '<div class="muted">Henüz kayıtlı öğrenci yok.</div>'; return; }
+  const avColors = [
+    {bg:'#E6F1FB',fg:'#0C447C'},{bg:'#E1F5EE',fg:'#085041'},
+    {bg:'#EEEDFE',fg:'#3C3489'},{bg:'#FAECE7',fg:'#712B13'}
+  ];
+  const countDiv = document.createElement('div');
+  countDiv.style.cssText = 'font-size:12px;color:#889;margin-bottom:8px;padding:0 4px';
+  countDiv.textContent = docs.length + ' kayıtlı öğrenci';
+  el.appendChild(countDiv);
+  docs.forEach(function(d, i) {
+    const s = d.data();
+    const ini = (s.name||'?').split(' ').map(function(w){return w[0]||'';}).join('').substring(0,2).toUpperCase();
+    const lvl = s.level || 'B1';
+    const dis = !!s.disabled;
+    const col = avColors[i%4];
+    const fmtDate = function(ts) {
+      if(!ts) return '-';
+      try { const d=new Date(ts.seconds?ts.seconds*1000:ts); return d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); }
+      catch(e){ return '-'; }
+    };
+    const created = fmtDate(s.createdAt);
+    const lastLogin = fmtDate(s.lastLogin);
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.style.cssText = 'margin-bottom:8px;' + (dis?'opacity:.65':'');
+    const flex = document.createElement('div'); flex.className = 'flex';
+    // Avatar
+    const av = document.createElement('div'); av.className = 'av'; av.style.flexShrink='0';
+    av.style.background = col.bg; av.style.color = col.fg; av.textContent = ini;
+    // Info
+    const info = document.createElement('div'); info.className = 'f1'; info.style.cssText='margin-left:10px;min-width:0';
+    const nameLine = document.createElement('div'); nameLine.style.cssText='font-weight:700;color:var(--navy);font-size:14px';
+    nameLine.textContent = s.name||'?';
+    if(dis){ const badge=document.createElement('span');badge.className='badge brr';badge.textContent='Donduruldu';nameLine.appendChild(badge); }
+    const lvlLine = document.createElement('div'); lvlLine.style.cssText='font-size:12px;color:#889;margin-top:2px';
+    const lvlBadge=document.createElement('span'); lvlBadge.className='badge '+(lvl[0]==='A'?'ba1':lvl[0]==='B'?'bb1':'bc1'); lvlBadge.textContent=lvl;
+    lvlLine.appendChild(lvlBadge); lvlLine.appendChild(document.createTextNode(' '+(s.email||'')));
+    const dateLine = document.createElement('div'); dateLine.style.cssText='font-size:11px;color:#aab;margin-top:2px';
+    dateLine.textContent='Kayıt: '+created+(s.interests?' · '+s.interests:'');
+    const statsLine = document.createElement('div'); statsLine.style.cssText='font-size:11px;color:#aab;margin-top:1px';
+    statsLine.textContent='Puan: '+(s.voiceScore||0)+' · AI Sohbet: '+(s.totalAIMinutes||0)+' dk · Son giriş: '+lastLogin;
+    info.appendChild(nameLine); info.appendChild(lvlLine); info.appendChild(dateLine); info.appendChild(statsLine);
+    // Actions
+    const actions = document.createElement('div');
+    actions.style.cssText='display:flex;flex-direction:column;gap:5px;align-items:flex-end;flex-shrink:0;margin-left:8px';
+    // Freeze/Activate button
+    const togBtn = document.createElement('button'); togBtn.className=(dis?'bg':'ba')+' bsm';
+    togBtn.textContent = dis?'Aktif et':'Dondur';
+    const uid = d.id;
+    togBtn.onclick = function(){ toggleStudentDisabled(uid, !dis); };
+    // Level selector
+    const lvlSel = document.createElement('select');
+    lvlSel.style.cssText='font-size:11px;padding:3px 5px;border-radius:6px;border:1px solid var(--border-c)';
+    ['A1','A2','B1','B2','C1','C2'].forEach(function(l){
+      const opt=document.createElement('option'); opt.value=l; opt.textContent=l;
+      if(l===lvl) opt.selected=true; lvlSel.appendChild(opt);
+    });
+    lvlSel.onchange = function(){ changeStudentLevel(uid, this.value); };
+    // Delete button
+    const delBtn = document.createElement('button'); delBtn.className='bd bsm';
+    delBtn.textContent='Sil'; delBtn.onclick=function(){ deleteStudent(uid); };
+    // Report button
+    const repBtn = document.createElement('button'); repBtn.className='bp bsm';
+    repBtn.textContent='📊 Rapor';
+    repBtn.style.cssText='white-space:nowrap;font-size:11px;padding:4px 8px';
+    repBtn.onclick = function(){ showAllStudentReport(uid, s.name||'Öğrenci'); };
+    // Badge override selector
+    const badgeSel = document.createElement('select');
+    badgeSel.style.cssText='font-size:11px;padding:3px 5px;border-radius:6px;border:1px solid var(--border-c)';
+    const defaultBadgeOpt = document.createElement('option');
+    defaultBadgeOpt.value=''; defaultBadgeOpt.textContent='🏅 Rozet';
+    badgeSel.appendChild(defaultBadgeOpt);
+    [['🌱','Beginner'],['🔍','Explorer'],['⚡','Practitioner'],['🎯','Fluent'],['🚀','Advanced'],['🏆','Expert'],['👑','Master']].forEach(function(b){
+      const opt=document.createElement('option'); opt.value=b[1]; opt.textContent=b[0]+' '+b[1];
+      if((s.badgeOverride||'')=== b[1]) opt.selected=true;
+      badgeSel.appendChild(opt);
+    });
+    badgeSel.onchange = function(){ if(this.value) overrideStudentBadge(uid, this.value); };
+    actions.appendChild(repBtn); actions.appendChild(togBtn); actions.appendChild(lvlSel); actions.appendChild(badgeSel); actions.appendChild(delBtn);
+    flex.appendChild(av); flex.appendChild(info); flex.appendChild(actions);
+    card.appendChild(flex); el.appendChild(card);
+  });
+}
+
+window.toggleStudentDisabled = async function(uid, disable) {
+  try {
+    await updateDoc(doc(db,'studentDirectory',uid), {disabled: disable, disabledAt: disable ? serverTimestamp() : null});
+    // Also attempt users doc update for immediate effect on student
+    updateDoc(doc(db,'users',uid), {disabled: disable}).catch(function(){});
+    await loadAllStudents();
+  } catch(ex) { alert('Hata (dondur/aktif): ' + ex.message); }
+};
+
+window.changeStudentLevel = async function(uid, level) {
+  try {
+    // Write to studentDirectory (teacher has permission here)
+    await updateDoc(doc(db,'studentDirectory',uid), {level: level, levelOverride: level, levelUpdatedAt: serverTimestamp()});
+    // Reload list to show update
+    await loadAllStudents();
+    console.log('Level updated to', level, 'for', uid);
+  } catch(ex) { alert('Hata (seviye): ' + ex.message); }
+};
+
+window.deleteStudent = async function(uid) {
+  if(!confirm('Bu öğrenciyi silmek istediğinizden emin misiniz? Bu işlem öğrencinin tüm verilerini siler.')) return;
+  try {
+    await deleteDoc(doc(db,'studentDirectory',uid));
+    // Also delete from users collection (will fail if already gone, that's ok)
+    deleteDoc(doc(db,'users',uid)).catch(function(){});
+    await loadAllStudents();
+  } catch(ex) { alert('Hata (sil): ' + ex.message); }
+};
 
 
 window.toggleAS=()=>{const f=document.getElementById('as-form');f.style.display=f.style.display==='none'?'block':'none';};
@@ -1248,20 +1481,61 @@ async function loadAISt(){
 
 // STUDENT PANEL
 async function loadStudent(){
+  // Check if account is disabled or level was updated by teacher
+  try {
+    const dirSnap = await getDoc(doc(db,'studentDirectory',cu.uid));
+    if(dirSnap.exists()) {
+      const dirData = dirSnap.data();
+      // Check frozen account
+      if(dirData.disabled === true) {
+        await signOut(auth);
+        show('s-login');
+        const err = document.getElementById('l-err');
+        if(err) { err.textContent = 'Hesabınız dondurulmuştur. Öğretmeninizle iletişime geçin.'; err.style.display = 'block'; }
+        return;
+      }
+      // Sync level override from teacher
+      if(dirData.levelOverride && dirData.levelOverride !== cp.level) {
+        cp.level = dirData.levelOverride;
+        updateDoc(doc(db,'users',cu.uid), {level: cp.level}).catch(function(){});
+      }
+      // Read badge override
+      if(dirData.badgeOverride) {
+        cp._badgeOverride = dirData.badgeOverride;
+      } else {
+        cp._badgeOverride = null;
+      }
+    }
+  } catch(e) {}
   show('s-student');
   persona=cp.aiPersona||null;
   document.getElementById('st-n').textContent='Merhaba, '+cp.name.split(' ')[0]+'!';
   document.getElementById('st-l').textContent='Seviye: '+(cp.level||'B1');
   document.getElementById('p-int').value=cp.interests||'';
-  renderSkills();renderProf();
+  renderProf();
   loadStCont();loadStHW();loadStNotes();
   checkPendW();
   loadWC();
   loadVoiceScore();
-  loadAIMinutes().then(()=>{updateBadgeDisplay();renderStreakVisual();});
+  loadAIMinutes().then(()=>{
+    updateBadgeDisplay();renderStreakVisual();
+    // Sync student profile to studentDirectory for teacher panel
+    if(cu && cu.uid){
+      // Use setDoc with merge:true to preserve badgeOverride and other teacher fields
+      setDoc(doc(db,'studentDirectory',cu.uid),{
+        name:cp.name, email:cp.email, level:cp.level||'B1',
+        interests:cp.interests||'', voiceScore:voiceScore||0,
+        totalAIMinutes:Math.floor(chatTotalSecs/60)||0,
+        placementDone:cp.placementDone||false,
+        createdAt:cp.createdAt||null, uid:cu.uid,
+        lastLogin:serverTimestamp()
+      }, {merge:true}).catch(()=>{});
+    }
+  });
   sTab('news');
   chatInitialized=false;
   showCounselorBubble();
+  setTimeout(requestNotificationPermission, 3000);
 }
 
 async function checkPendW(){
@@ -1370,15 +1644,15 @@ window.toggleMute=()=>{
 // ---- STREAK ----
 function loadStreak(){
   const today=new Date().toLocaleDateString('tr-TR');
-  let streak=parseInt(localStorage.getItem('ec_streak')||'0');
-  const last=localStorage.getItem('ec_streak_date');
+  let streak=parseInt(localStorage.getItem(('ec_st_'+(cu&&cu.uid||'x')))||'0');
+  const last=localStorage.getItem(('ec_std_'+(cu&&cu.uid||'x')));
   const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
   const yStr=yesterday.toLocaleDateString('tr-TR');
   if(last!==today){
     if(last===yStr)streak++;
     else streak=1;
-    localStorage.setItem('ec_streak',streak);
-    localStorage.setItem('ec_streak_date',today);
+    localStorage.setItem(('ec_st_'+(cu&&cu.uid||'x')),streak);
+    localStorage.setItem(('ec_std_'+(cu&&cu.uid||'x')),today);
   }
   const el=document.getElementById('streak-count');
   if(el)el.textContent=(last&&last!==today&&last!==yStr)?'0':streak;
@@ -1386,7 +1660,7 @@ function loadStreak(){
 
 function loadVoiceScore(){
   // Load from localStorage first (instant)
-  const local = parseInt(localStorage.getItem('ec_voice_score')||'0');
+  const local = parseInt(localStorage.getItem(('ec_vs_'+(cu&&cu.uid||'x')))||'0');
   voiceScore = local;
   const el=document.getElementById('ai-score');if(el)el.textContent=voiceScore;
   // Then sync from Firestore (source of truth)
@@ -1396,7 +1670,7 @@ function loadVoiceScore(){
         const fsScore = snap.data().voiceScore || 0;
         if(fsScore > voiceScore){
           voiceScore = fsScore;
-          localStorage.setItem('ec_voice_score', voiceScore);
+          localStorage.setItem(('ec_vs_'+(cu&&cu.uid||'x')), voiceScore);
           const el2=document.getElementById('ai-score');if(el2)el2.textContent=voiceScore;
           updateBadgeDisplay();
         }
@@ -1414,7 +1688,7 @@ function addScore(pts,label){
   if(pts>=0){ voiceScore+=pts; }
   else { voiceScore=Math.max(0,voiceScore+pts); }
   voiceScore=Math.max(0,voiceScore);
-  localStorage.setItem('ec_voice_score',voiceScore);
+  localStorage.setItem(('ec_vs_'+(cu&&cu.uid||'x')),voiceScore);
   const el=document.getElementById('ai-score');if(el)el.textContent=voiceScore;
   if(pts>0){showScorePopup('+'+pts);}
   else if(pts<0){
@@ -1430,6 +1704,38 @@ function addScore(pts,label){
       updateDoc(doc(db,'users',cu.uid),{voiceScore:voiceScore}).catch(function(){});
     }
   }, 5000);
+  // Track daily activity
+  if(pts > 0 && label) saveActivity('score', {pts:pts, label:label});
+}
+
+function saveActivity(type, data) {
+  if(!cu || !cu.uid) return;
+  const today = new Date().toISOString().slice(0,10); // YYYY-MM-DD
+  const key = 'ec_act_' + cu.uid + '_' + today;
+  try {
+    const existing = JSON.parse(localStorage.getItem(key)||'{}');
+    if(type === 'score') {
+      existing.pts = (existing.pts||0) + (data.pts||0);
+      if(!existing.labels) existing.labels = [];
+      if(data.label && !existing.labels.includes(data.label)) existing.labels.push(data.label);
+    } else if(type === 'word') {
+      existing.words = (existing.words||0) + 1;
+    } else if(type === 'chat') {
+      existing.chatMins = data.mins||0;
+    } else if(type === 'game') {
+      if(!existing.games) existing.games = [];
+      if(data.name && !existing.games.includes(data.name)) existing.games.push(data.name);
+    } else if(type === 'badge') {
+      existing.badge = data.badge;
+    }
+    localStorage.setItem(key, JSON.stringify(existing));
+  } catch(e) {}
+}
+
+function getActivityForDate(dateStr) {
+  if(!cu || !cu.uid) return {};
+  const key = 'ec_act_' + cu.uid + '_' + dateStr;
+  try { return JSON.parse(localStorage.getItem(key)||'{}'); } catch(e) { return {}; }
 }
 
 // ---- SCENARIOS ----
@@ -1561,7 +1867,7 @@ function wrapWordsForHover(html){
 // ---- BUILD SYSTEM ----
 function buildSys(){
   const p=persona||{};
-  return 'You are a personal English tutor AI for '+cp.name+'.\nLevel: '+(cp.level||'B1')+'\nInterests: '+(cp.interests||'general')+'\nStyle: '+(p.style||'friendly')+'\nGoal: '+(p.goal||'general improvement')+'\nWeakest: '+(p.weakness||'speaking')+'\n\nRules:\n1. Respond in English, SHORT (2-4 sentences).\n2. Correct grammar mistakes: [CORRECTION: "wrong" > "correct" - Turkish reason]\n3. Every 4-5 messages add vocab: [NEW WORD: word | turkish | example]\n4. Reference interests naturally.\n5. Be warm, match style: '+(p.style||'friendly')+'.';
+  return 'You are "The English Coach", a personal English tutor AI built by Nartkan Temir for '+cp.name+'. This platform was created and developed by Nartkan Temir. If asked who made this app/site, always say Nartkan Temir created it.\nLevel: '+(cp.level||'B1')+'\nInterests: '+(cp.interests||'general')+'\nStyle: '+(p.style||'friendly')+'\nGoal: '+(p.goal||'general improvement')+'\nWeakest: '+(p.weakness||'speaking')+'\n\nRules:\n1. Respond in English, SHORT (2-4 sentences).\n2. Correct grammar mistakes: [CORRECTION: "wrong" > "correct" - Turkish reason]\n3. Every 4-5 messages add vocab: [NEW WORD: word | turkish | example]\n4. Reference interests naturally.\n5. Be warm, match style: '+(p.style||'friendly')+'.';
 }
 
 // ---- INIT CHAT ----
@@ -1665,13 +1971,39 @@ async function loadAIMinutes(){
       if(savedMins*60 > chatTotalSecs) chatTotalSecs = savedMins*60;
       if(savedScore > voiceScore) {
         voiceScore = savedScore;
-        localStorage.setItem('ec_voice_score', voiceScore);
+        localStorage.setItem(('ec_vs_'+(cu&&cu.uid||'x')), voiceScore);
         const scoreEl = document.getElementById('ai-score');
         if(scoreEl) scoreEl.textContent = voiceScore;
       }
       cp.totalAIMinutes = Math.floor(chatTotalSecs/60);
       cp.voiceScore = voiceScore;
       cp.weeklyGoalsDone = data.weeklyGoalsDone || 0;
+      // Check if teacher updated level via studentDirectory
+      try {
+        const dSnap = await getDoc(doc(db,'studentDirectory',cu.uid));
+        if(dSnap.exists()) {
+          const dData = dSnap.data();
+          // Frozen check (during session)
+          if(dData.disabled === true) { await signOut(auth); show('s-login'); return; }
+          // Level override
+          if(dData.levelOverride && dData.levelOverride !== cp.level) {
+            cp.level = dData.levelOverride;
+            const lvlEl = document.getElementById('st-l');
+            if(lvlEl) lvlEl.textContent = 'Seviye: ' + cp.level;
+            updateDoc(doc(db,'users',cu.uid),{level:cp.level}).catch(function(){});
+            renderProf();
+          }
+          // Badge override from teacher
+          if(dData.badgeOverride) { cp._badgeOverride = dData.badgeOverride; }
+          else { cp._badgeOverride = null; }
+          // Sync updated score/minutes back to studentDirectory
+          const currentScore = Math.max(voiceScore, dData.voiceScore||0);
+          const currentMins = Math.max(Math.floor(chatTotalSecs/60), dData.totalAIMinutes||0);
+          if(currentScore !== (dData.voiceScore||0) || currentMins !== (dData.totalAIMinutes||0)) {
+            updateDoc(doc(db,'studentDirectory',cu.uid),{voiceScore:currentScore, totalAIMinutes:currentMins}).catch(function(){});
+          }
+        }
+      } catch(e) {}
     }
     // Also count total learned words
     const wSnap = await getDocs(collection(db,'users',cu.uid,'learnedWords'));
@@ -1816,11 +2148,7 @@ window.updProf=async()=>{
   const msg=document.getElementById('p-msg');msg.className='alert ao';msg.textContent='Güncellendi.';msg.style.display='block';setTimeout(()=>msg.style.display='none',2000);
 };
 
-function renderSkills(){
-  const sk=[{n:'Dinleme',v:65},{n:'Konuşma',v:50},{n:'Okuma',v:75},{n:'Yazma',v:55},{n:'Kelime',v:70}];
-  document.getElementById('skill-bars').innerHTML=sk.map(s=>`<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px"><div style="font-size:13px;width:80px;flex-shrink:0;color:var(--navy-dark)">${s.n}</div><div style="flex:1"><div class="pb"><div class="pf" style="width:${s.v}%"></div></div></div><div style="font-size:12px;color:#889;width:36px;text-align:right">${s.v}%</div></div>`).join('');
-}
-
+function renderSkills(){}
 
 
 // ---- WEEKLY GOALS ----
@@ -1838,7 +2166,7 @@ function getWeekKey(){
 
 function loadWeeklyGoals(){
   const key=getWeekKey();
-  const saved=JSON.parse(localStorage.getItem('ec_goals_'+key)||'{}');
+  const saved=JSON.parse(localStorage.getItem(('ec_g_'+(cu&&cu.uid||'x')+'_'+key))||'{}');
   chatTotalSecs=saved.chatSecs||0;
   scenarioSecs=saved.scenSecs||0;
   updateGoalBars();
@@ -1846,7 +2174,7 @@ function loadWeeklyGoals(){
 
 function saveWeeklyGoals(){
   const key=getWeekKey();
-  localStorage.setItem('ec_goals_'+key,JSON.stringify({chatSecs:chatTotalSecs,scenSecs:scenarioSecs}));
+  localStorage.setItem(('ec_g_'+(cu&&cu.uid||'x')+'_'+key),JSON.stringify({chatSecs:chatTotalSecs,scenSecs:scenarioSecs}));
 }
 
 function updateGoalBars(){
@@ -2019,37 +2347,37 @@ window.showAIStats=async()=>{
 // ---- BADGE SYSTEM ----
 const BADGES = [
   {
-    emoji:'🌱', name:'Çömez',
+    emoji:'🌱', name:'Beginner',
     mins:0,   pts:0,    words:0,  weeks:0,
     desc:'Hoş geldin! Öğrenme yolculuğun başlıyor.'
   },
   {
-    emoji:'🔍', name:'Meraklı',
+    emoji:'🔍', name:'Explorer',
     mins:90,  pts:250,  words:15, weeks:1,
     desc:'90 dk AI sohbeti · 250 puan · 15 kelime · 1 haftalık görev'
   },
   {
-    emoji:'⚡', name:'Pratisyen',
+    emoji:'⚡', name:'Practitioner',
     mins:400, pts:1000, words:50, weeks:4,
     desc:'400 dk sohbet · 1000 puan · 50 kelime · 4 haftalık görev'
   },
   {
-    emoji:'🎯', name:'Akıcı',
+    emoji:'🎯', name:'Fluent',
     mins:900, pts:2500, words:120, weeks:10,
     desc:'900 dk sohbet · 2500 puan · 120 kelime · 10 haftalık görev'
   },
   {
-    emoji:'🚀', name:'İleri',
+    emoji:'🚀', name:'Advanced',
     mins:1800, pts:5000, words:250, weeks:20,
     desc:'1800 dk sohbet · 5000 puan · 250 kelime · 20 haftalık görev'
   },
   {
-    emoji:'🏆', name:'Uzman',
+    emoji:'🏆', name:'Expert',
     mins:3000, pts:9000, words:500, weeks:36,
     desc:'3000 dk sohbet · 9000 puan · 500 kelime · 36 haftalık görev'
   },
   {
-    emoji:'👑', name:'Usta',
+    emoji:'👑', name:'Master',
     mins:5000, pts:15000, words:1000, weeks:60,
     desc:'5000 dk sohbet · 15000 puan · 1000 kelime · 60 haftalık görev'
   },
@@ -2066,7 +2394,7 @@ async function getWeeklyGoalsDone() {
 
 async function saveWeeklyGoalDone() {
   // Called when BOTH weekly goals (chat + scenario) are completed in a week
-  const key = 'ec_week_done_' + getWeekKey();
+  const key = ('ec_wd_'+(cu&&cu.uid||'x')+'_'+getWeekKey());
   if(localStorage.getItem(key)) return; // already counted this week
   localStorage.setItem(key, '1');
   try {
@@ -2610,8 +2938,8 @@ Rapor şunları içersin:
 
 // ======== STREAK VISUAL ========
 function renderStreakVisual(){
-  const streak = parseInt(localStorage.getItem('ec_streak')||'0');
-  const lastDate = localStorage.getItem('ec_streak_date');
+  const streak = parseInt(localStorage.getItem(('ec_st_'+(cu&&cu.uid||'x')))||'0');
+  const lastDate = localStorage.getItem(('ec_std_'+(cu&&cu.uid||'x')));
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
   const yStr = yesterday.toLocaleDateString('tr-TR');
   const today = new Date().toLocaleDateString('tr-TR');
@@ -2637,6 +2965,126 @@ function renderStreakVisual(){
       dot.textContent=days[i];
       dotsEl.appendChild(dot);
     }
+  }
+  // Render weekly activity list (Mon-Sun)
+  renderWeeklyActivityList();
+}
+
+async function renderWeeklyActivityList() {
+  const listEl = document.getElementById('weekly-activity-list');
+  if(!listEl) return;
+  listEl.innerHTML = '';
+  const now = new Date();
+  const dayOfWeek = (now.getDay()+6)%7;
+  const monday = new Date(now); monday.setDate(now.getDate()-dayOfWeek); monday.setHours(0,0,0,0);
+  const dayNames = ['Pazartesi','Salı','Çarşamba','Perşembe','Cuma','Cumartesi','Pazar'];
+  // Load AI chat topics for this week
+  let chatsByDay = {};
+  try {
+    const snap = await getDocs(query(
+      collection(db,'aiChats'), where('sEmail','==',cp.email),
+      orderBy('createdAt','desc'), limit(50)
+    ));
+    snap.docs.forEach(function(d){
+      const data = d.data();
+      if(!data.createdAt) return;
+      const chatDate = new Date(data.createdAt.seconds*1000);
+      const dayIdx = (chatDate.getDay()+6)%7;
+      const chatMon = new Date(chatDate); chatMon.setDate(chatDate.getDate()-dayIdx); chatMon.setHours(0,0,0,0);
+      if(chatMon.getTime() !== monday.getTime()) return;
+      if(!chatsByDay[dayIdx]) chatsByDay[dayIdx] = [];
+      if(data.topic) chatsByDay[dayIdx].push(data.topic);
+    });
+  } catch(e) {}
+
+  for(let i=0;i<7;i++){
+    const dayDate = new Date(monday); dayDate.setDate(monday.getDate()+i);
+    const isToday = dayDate.toDateString() === now.toDateString();
+    const isFuture = dayDate > now;
+    const dateStr = dayDate.toISOString().slice(0,10);
+    const act = isFuture ? {} : getActivityForDate(dateStr);
+    const topics = chatsByDay[i] || [];
+    const hasActivity = !isFuture && (act.pts || topics.length || act.words || act.games);
+
+    const row = document.createElement('div');
+    row.style.cssText = 'padding:9px 0;border-bottom:1px solid var(--border-c)';
+    if(i===6) row.style.borderBottom = 'none';
+
+    const header = document.createElement('div');
+    header.style.cssText = 'display:flex;align-items:center;gap:8px;margin-bottom:' + (hasActivity?'6px':'0');
+    
+    const dayLabel = document.createElement('span');
+    dayLabel.style.cssText = 'font-size:12px;font-weight:'+(isToday?'700':'500')+';color:'+(isToday?'var(--navy)':'#889')+';min-width:80px';
+    dayLabel.textContent = dayNames[i] + (isToday?' 📍':'');
+    header.appendChild(dayLabel);
+
+    if(isFuture) {
+      const futureSpan = document.createElement('span');
+      futureSpan.style.cssText = 'font-size:11px;color:#ccc;font-style:italic';
+      futureSpan.textContent = '—';
+      header.appendChild(futureSpan);
+    } else if(!hasActivity && !topics.length) {
+      const nothingSpan = document.createElement('span');
+      nothingSpan.style.cssText = 'font-size:12px;color:#bbb';
+      nothingSpan.textContent = 'Nothing 😴';
+      header.appendChild(nothingSpan);
+    } else {
+      // Show summary chips
+      const chips = document.createElement('div');
+      chips.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;align-items:center';
+      if(act.pts) {
+        const chip = document.createElement('span');
+        chip.style.cssText = 'background:#fef3e2;color:var(--amber);padding:2px 7px;border-radius:6px;font-size:11px;font-weight:600';
+        chip.textContent = '+' + act.pts + ' puan ⭐';
+        chips.appendChild(chip);
+      }
+      if(topics.length) {
+        const chip = document.createElement('span');
+        chip.style.cssText = 'background:var(--accent-light);color:var(--navy);padding:2px 7px;border-radius:6px;font-size:11px';
+        chip.textContent = '💬 ' + topics.length + ' sohbet';
+        chips.appendChild(chip);
+      }
+      if(act.words) {
+        const chip = document.createElement('span');
+        chip.style.cssText = 'background:#e8f5ee;color:var(--green);padding:2px 7px;border-radius:6px;font-size:11px';
+        chip.textContent = '📚 ' + act.words + ' kelime';
+        chips.appendChild(chip);
+      }
+      if(act.games && act.games.length) {
+        const chip = document.createElement('span');
+        chip.style.cssText = 'background:#EEEDFE;color:#3C3489;padding:2px 7px;border-radius:6px;font-size:11px';
+        chip.textContent = '🎮 ' + act.games.join(', ');
+        chips.appendChild(chip);
+      }
+      if(act.badge) {
+        const chip = document.createElement('span');
+        chip.style.cssText = 'background:#fff8e1;color:var(--amber);padding:2px 7px;border-radius:6px;font-size:11px';
+        chip.textContent = act.badge;
+        chips.appendChild(chip);
+      }
+      header.appendChild(chips);
+    }
+    row.appendChild(header);
+
+    // Show chat topics if any
+    if(hasActivity && topics.length) {
+      const topicsDiv = document.createElement('div');
+      topicsDiv.style.cssText = 'display:flex;flex-wrap:wrap;gap:4px;margin-left:88px';
+      [...new Set(topics)].slice(0,3).forEach(function(t){
+        const tag = document.createElement('span');
+        tag.style.cssText = 'font-size:10px;color:#889;background:#f5f5f5;padding:1px 6px;border-radius:4px';
+        tag.textContent = t;
+        topicsDiv.appendChild(tag);
+      });
+      if(topics.length > 3) {
+        const more = document.createElement('span');
+        more.style.cssText = 'font-size:10px;color:#bbb';
+        more.textContent = '+' + (topics.length-3);
+        topicsDiv.appendChild(more);
+      }
+      row.appendChild(topicsDiv);
+    }
+    listEl.appendChild(row);
   }
 }
 
@@ -2852,12 +3300,13 @@ window.modDeletePost=async(postId)=>{
 let gameActive = false;
 let wordRushTimer = null;
 let chainLastWord = '';
-let detectiveSolved = parseInt(localStorage.getItem('ec_detective_solved')||'0');
-let detectiveHistory = JSON.parse(localStorage.getItem('ec_detective_history')||'[]');
+let detectiveSolved = parseInt(localStorage.getItem(('ec_ds_'+(cu&&cu.uid||'x')))||'0');
+let detectiveHistory = JSON.parse(localStorage.getItem(('ec_dh_'+(cu&&cu.uid||'x')))||'[]');
 let detectiveState = null;
 let detectiveAccusations = 0;
 
 window.startGame = async (type) => {
+  saveActivity('game', {name:type});
   document.getElementById('game-selector').style.display='none';
   const arena = document.getElementById('game-arena');
   arena.style.display='block';
@@ -3218,7 +3667,7 @@ window.sTab=tab=>{
   else{document.getElementById('sc-tools')?.classList.add('active');}
   const backBtn=document.getElementById('tools-back');
   if(backBtn)backBtn.style.display=TOOL_TABS.includes(tab)?'block':'none';
-  if(tab==='prog'){loadWC();renderStreakVisual();}
+  if(tab==='prog'){loadWC();renderStreakVisual();renderDashboard();}
   if(tab==='ai'&&!chatInitialized){chatInitialized=true;initChat();loadSavedGoals();}
   if(tab==='news'&&!newsInitialized){newsInitialized=true;loadNews('general',document.getElementById('nc-general'));}
   if(tab==='report')generateWeeklyReport();
@@ -3236,6 +3685,74 @@ window.sTab=tab=>{
 // ============================================================
 
 let placementStep = 'intro'; // intro|grammar|writing|reading|listening|result
+let placementTimer = null;
+let placementTimerSecs = 0;
+const GRAMMAR_TIME = 45 * 60;   // 45 minutes
+const READING_TIME = 21 * 60;   // 21 minutes
+const WRITING_TIMES = [15*60, 25*60, 35*60]; // per writing prompt
+let writingTimerRemaining = [15*60, 25*60, 35*60]; // tracks remaining time per prompt
+
+function saveWritingTimerAndGo(targetIdx) {
+  // Save current remaining time for current prompt
+  if(placementStep === 'writing' && writingTimerRemaining) {
+    writingTimerRemaining[writingCurrentPrompt] = placementTimerSecs;
+  }
+  if(placementTimer) clearInterval(placementTimer);
+  placementTimer = null;
+  if(targetIdx >= WRITING_PROMPTS.length) { finishWriting(); return; }
+  if(targetIdx < 0) return;
+  writingCurrentPrompt = targetIdx;
+  // Load remaining time for target prompt (or full time if not started)
+  const remaining = (writingTimerRemaining && writingTimerRemaining[targetIdx] !== undefined)
+    ? writingTimerRemaining[targetIdx]
+    : WRITING_TIMES[targetIdx];
+  startPlacementTimer(remaining);
+  renderWritingPrompt();
+}
+
+function startPlacementTimer(totalSecs) {
+  if(placementTimer) clearInterval(placementTimer);
+  placementTimerSecs = totalSecs;
+  updateTimerDisplay();
+  placementTimer = setInterval(function() {
+    placementTimerSecs--;
+    updateTimerDisplay();
+    if(placementTimerSecs <= 0) {
+      clearInterval(placementTimer);
+      placementTimer = null;
+      onTimerExpired();
+    }
+  }, 1000);
+}
+
+function updateTimerDisplay() {
+  const el = document.getElementById('placement-timer');
+  if(!el) return;
+  const m = Math.floor(placementTimerSecs / 60);
+  const s = placementTimerSecs % 60;
+  const urgent = placementTimerSecs <= 300; // last 5 mins
+  el.textContent = m + ':' + (s < 10 ? '0' : '') + s;
+  el.style.color = urgent ? '#c0392b' : 'var(--navy)';
+  el.style.fontWeight = urgent ? '800' : '700';
+}
+
+function onTimerExpired() {
+  if(placementStep === 'grammar') {
+    finishGrammar();
+  } else if(placementStep === 'writing') {
+    // Submit current writing and move on
+    const ta = document.getElementById('writing-ans-' + writingCurrentPrompt);
+    if(ta && ta.value.trim()) {
+      submitWriting(writingCurrentPrompt);
+    } else {
+      writingCurrentPrompt++;
+      if(writingCurrentPrompt >= WRITING_PROMPTS.length) finishWriting();
+      else { renderWritingPrompt(); startPlacementTimer(WRITING_TIMES[writingCurrentPrompt]||900); }
+    }
+  } else if(placementStep === 'reading') {
+    submitReading(readingCurrentText);
+  }
+}
 let placementGrammarAnswers = [];
 let placementWritingAnswers = [];
 let placementReadingAnswers = [];
@@ -3258,7 +3775,7 @@ const GRAMMAR_QUESTIONS = [
   {q:"The report ___ by the manager yesterday.",o:["written","was written","is written","writes"],a:1,lvl:'B1'},
   {q:"I wish I ___ speak Spanish.",o:["can","could","would","should"],a:1,lvl:'B2'},
   {q:"___ the bad weather, the match continued.",o:["Despite","Although","However","Therefore"],a:0,lvl:'B2'},
-  {q:"He must ___ the meeting — his car is outside.",o:["attend","be attending","have attended","attended"],a:1,lvl:'B2'},
+  {q:"The scientists' findings ___ that climate change is accelerating faster than predicted.",o:["suggest","suggests","suggested","are suggesting"],a:0,lvl:'C1'},
   {q:"The proposal needs to be ___ before Friday.",o:["submit","submitted","submitting","submission"],a:1,lvl:'B2'},
   {q:"___ she study hard, she would pass.",o:["Should","Would","Could","Might"],a:0,lvl:'C1'},
   {q:"The new policy will ___ effect next month.",o:["take","make","do","have"],a:0,lvl:'C1'},
@@ -3280,40 +3797,40 @@ const GRAMMAR_QUESTIONS = [
 ];
 
 const WRITING_PROMPTS = [
-  {lvl:'A1-A2', title:'Simple Description', prompt:'Write 3-5 sentences describing your typical morning routine. Include what time you wake up, what you eat for breakfast, and how you get to work or school.', minWords:30},
-  {lvl:'B1-B2', title:'Opinion Essay', prompt:'Some people believe that social media has more negative effects than positive ones. Write a short essay (100-130 words) giving your opinion and supporting it with reasons and examples.', minWords:80},
-  {lvl:'C1-C2', title:'Advanced Essay', prompt:'Discuss the extent to which technological advancement has contributed to environmental degradation. In your response, consider both the negative impacts and potential technological solutions. Write 150-180 words.', minWords:120},
+  {lvl:'A1-A2', title:'Simple Description', prompt:'Write 3-5 sentences describing your typical morning routine. Include what time you wake up, what you eat for breakfast, and how you get to work or school. (Minimum 30 words)', minWords:30},
+  {lvl:'B1-B2', title:'Opinion Essay', prompt:'Some people believe that social media has more negative effects than positive ones. Write a short essay giving your opinion and supporting it with reasons and examples. (Minimum 100-130 words)', minWords:100},
+  {lvl:'C1-C2', title:'Advanced Essay', prompt:'Discuss the extent to which technological advancement has contributed to environmental degradation. In your response, consider both the negative impacts and potential technological solutions. (Minimum 150-180 words)', minWords:150},
 ];
 
 const READING_TEXTS = [
   {
     lvl:'A1-A2',
-    title:'A Day at the Park',
-    text:'Last Sunday, I went to the park with my family. The weather was sunny and warm. My children played on the swings while I sat on a bench and read a book. We brought sandwiches and juice for lunch. After eating, we walked around the lake and fed the ducks. We stayed for three hours and then went home. It was a perfect day.',
+    title:'The Community Garden',
+    text:'In the small town of Millfield, a group of residents decided to transform an unused patch of land behind the library into a community garden. The project began in spring, when twelve volunteers spent three weekends clearing the area of weeds and broken glass. Local businesses donated seeds, compost, and basic tools. By summer, rows of tomatoes, beans, and herbs were flourishing. The garden quickly became more than just a place to grow food. Elderly residents who rarely left their homes began visiting daily, sharing gardening tips they had learned decades ago. Teenagers who had initially shown no interest started helping after school, attracted by a small programme that let them sell surplus vegetables at the weekend market and keep the earnings for their school club. The town council, which had previously considered selling the land to a property developer, reversed its decision after seeing the garden\'s impact. They allocated a modest annual budget for maintenance and even approved plans to add a small greenhouse for the winter months. The librarian remarked that people who came to the garden often stayed to use the library afterwards — borrowing books on cooking, botany, and local history in far greater numbers than before.',
     questions:[
-      {q:'When did they go to the park?',o:['Saturday','Sunday','Monday','Friday'],a:1},
-      {q:'What did the children do?',o:['Read a book','Fed the ducks','Played on swings','Walked around the lake'],a:2},
-      {q:'How long did they stay?',o:['One hour','Two hours','Three hours','Four hours'],a:2},
+      {q:'What can be most reasonably inferred about the teenagers\' motivation for joining the project?',o:['They were passionate about environmental issues from the start','A personal financial benefit made the activity worthwhile to them','They were required to participate by their school','They wanted to help elderly residents feel less isolated'],a:1},
+      {q:'The town council\'s change of decision most likely suggests that:',o:['The property developer withdrew its offer voluntarily','Community well-being influenced a decision that had seemed purely financial','The library needed the land for an extension','The council had always preferred a garden over development'],a:1},
+      {q:'What does the librarian\'s observation imply about the garden\'s broader effect?',o:['The garden replaced the library as the main social hub','Gardening directly taught people how to read','The garden encouraged intellectual curiosity beyond horticulture','People visited the library only to find gardening books'],a:2},
     ]
   },
   {
     lvl:'B1-B2',
-    title:'The Rise of Remote Work',
-    text:'The COVID-19 pandemic dramatically accelerated the adoption of remote work worldwide. What was once considered a privilege for a select few became a necessity for millions. Companies that had resisted flexible work arrangements for years were suddenly forced to adapt overnight. Research conducted during this period revealed surprising findings: productivity in many sectors either maintained or increased when employees worked from home. However, the shift also highlighted significant challenges, including difficulties in maintaining work-life balance, feelings of isolation, and unequal access to suitable home working environments. As restrictions lifted, many organisations opted for hybrid models, combining office presence with remote flexibility.',
+    title:'The Attention Economy',
+    text:'Every time you open a social media application, you enter a carefully engineered environment designed with a single overriding purpose: to hold your attention for as long as possible. This is not an incidental feature but the core business model of the modern internet. Companies generate revenue by selling advertising space, and advertisers pay a premium for access to engaged users. Consequently, the longer a platform keeps you scrolling, the more money it makes. To achieve this, platforms deploy an arsenal of psychological techniques borrowed from gambling research. Variable reward schedules — the same mechanism that makes slot machines addictive — underpin the logic of the social media feed. You never know whether the next post will be mundane or thrilling, and that uncertainty compels you to keep looking. Notification systems are calibrated to trigger the release of dopamine, a neurotransmitter associated with anticipation and reward, training users to check their devices compulsively. What makes this system particularly insidious is that its effects are largely invisible to those experiencing them. Studies repeatedly show that people significantly underestimate the time they spend on their devices. When participants in one experiment were asked to guess their daily screen time before seeing their phone\'s usage data, the majority guessed less than half the actual figure. This distortion matters because informed consent — the ability to make deliberate choices about how we spend our time — is undermined when we cannot accurately perceive our own behaviour. Critics argue that framing excessive use purely as a personal failing obscures the deliberate corporate architecture that produces it.',
     questions:[
-      {q:'What accelerated remote work adoption?',o:['New technology','The pandemic','Government policy','Economic crisis'],a:1},
-      {q:'What did research show about productivity?',o:['It always declined','It always increased','It maintained or increased','It was impossible to measure'],a:2},
-      {q:'What model did many companies adopt post-pandemic?',o:['Full remote','Full office','Hybrid','Freelance'],a:2},
+      {q:'The author\'s reference to slot machines is intended primarily to:',o:['Suggest that social media use should be legally regulated like gambling','Explain the psychological mechanism that makes continuous scrolling compelling','Imply that social media users are irresponsible with their time','Demonstrate that gambling and social media are equally harmful'],a:1},
+      {q:'What is the significance of users underestimating their screen time, according to the passage?',o:['It proves that people are generally poor at mathematical estimation','It shows that social media platforms publish misleading usage statistics','It weakens the basis for making free and deliberate choices about device use','It indicates that screen time tracking tools are unreliable'],a:2},
+      {q:'The phrase "deliberate corporate architecture" in the final sentence implies that:',o:['Technology companies build their offices to encourage overwork','Excessive social media use results from intentional design, not individual weakness','Corporate buildings should be redesigned with user welfare in mind','Critics want technology companies to publish their design documents'],a:1},
     ]
   },
   {
     lvl:'C1-C2',
-    title:'The Paradox of Choice',
-    text:'Psychologist Barry Schwartz coined the term "paradox of choice" to describe a counterintuitive phenomenon: as the number of options available to individuals increases, their overall satisfaction tends to decrease rather than improve. In contemporary consumer society, we are inundated with an unprecedented array of choices in every domain of life, from the mundane—selecting a breakfast cereal from hundreds of varieties—to the consequential, such as choosing a career path or life partner. Schwartz argues that this proliferation of options engenders a paralysing form of decision-making anxiety, and that even when individuals do make a selection, they are prone to experiencing regret by ruminating over the alternatives foregone. The implications of this research challenge the fundamental neoliberal assumption that maximising individual choice is synonymous with maximising individual wellbeing.',
+    title:'Moral Luck and Responsibility',
+    text:'The concept of moral luck, introduced to mainstream philosophical discourse by Thomas Nagel and Bernard Williams in the 1970s, poses a profound challenge to our conventional understanding of moral responsibility. The intuitive premise of just desert — that individuals should be praised or blamed only for what lies within their control — seems self-evidently correct. Yet a moment\'s reflection reveals that an enormous proportion of what determines our lives, and consequently our moral standing in the eyes of others, lies entirely outside our control. Nagel identified four varieties of moral luck. Resultant luck concerns outcomes: a drunk driver who reaches home safely and one who strikes a pedestrian have behaved identically in terms of their intentions and negligence, yet only the latter faces criminal prosecution and widespread moral condemnation. Circumstantial luck concerns the situations we happen to encounter: someone born into comfortable circumstances in a stable democracy faces far fewer morally perilous choices than someone raised in conditions of deprivation or conflict. Constitutive luck strikes even deeper, touching on the temperament, dispositions, and capacity for empathy with which we happen to be born. If a person\'s tendency toward cruelty is substantially a product of genetics and early environment — factors entirely beyond their choosing — the moral basis for blaming that person is considerably weakened. The problem is not merely academic. It bears directly on debates about criminal sentencing, welfare policy, and the social narratives we construct around success and failure. A society that acknowledges the pervasiveness of luck is likely to design its institutions quite differently from one that attributes outcomes straightforwardly to personal virtue or vice. Yet fully embracing moral luck risks what Williams called "the destruction of any coherent notion of agency," dissolving the very concept of responsibility that underpins social cooperation.',
     questions:[
-      {q:'What does "paradox of choice" describe?',o:['More choices always help','More choices can reduce satisfaction','Choices are always difficult','People prefer no choices'],a:1},
-      {q:'What does Schwartz say happens after making a choice?',o:['People feel relieved','People feel anxious about unchosen options','People become happier','People make better decisions next time'],a:1},
-      {q:'What assumption does this research challenge?',o:['That money brings happiness','That more choice equals more wellbeing','That education improves decisions','That technology helps people'],a:1},
+      {q:'The drunk driving example is used to illustrate which specific type of moral luck?',o:['Constitutive luck, because the drivers have different personalities','Circumstantial luck, because they faced different road conditions','Resultant luck, because identical conduct leads to different moral and legal consequences','Epistemic luck, because neither driver knew the outcome in advance'],a:2},
+      {q:'What tension does the final sentence of the passage highlight?',o:['The difficulty of distinguishing between Nagel\'s and Williams\'s philosophical positions','Accepting moral luck comprehensively may undermine the concept of agency that makes responsibility coherent','Criminal law should replace moral judgement in all cases involving luck','Philosophers who study luck inevitably abandon their belief in personal responsibility'],a:1},
+      {q:'The author\'s observation that the problem "bears directly on debates about criminal sentencing" most strongly implies:',o:['Judges already apply Nagel\'s framework when determining sentences','Philosophical theories of luck have no practical application outside academia','How a society conceptualises responsibility shapes its institutional responses to wrongdoing','Welfare policy is more important than criminal justice reform'],a:2},
     ]
   },
 ];
@@ -3326,6 +3843,9 @@ function startPlacementTest() {
   placementChatHistory = [];
   placementStudentName = cp ? cp.name.split(' ')[0] : 'öğrenci';
   show('s-placement');
+  // Show placement AI bubble
+  const pb = document.getElementById('placement-bubble');
+  if(pb) pb.style.display = 'block';
   renderPlacementIntro();
   // Start intro conversation
   setTimeout(()=>initPlacementChat(), 800);
@@ -3346,14 +3866,14 @@ function renderPlacementIntro() {
         <strong>4️⃣ Listening & Speaking</strong> (dış kaynaklar)
       </div>
       <div style="background:var(--accent-light);border-radius:10px;padding:.75rem;margin-bottom:1rem;font-size:13px;color:var(--navy)">
-        💡 Sağ alt köşedeki 🤖 botuna tıklayarak her zaman yardım alabilirsin.
+        💡 Sağ alt köşedeki 🎓 Counselor'a tıklayarak sınav süreci hakkında her zaman yardım alabilirsin.
       </div>
       <button onclick="startPlacementGrammar()" class="bp" style="width:100%;padding:12px;font-size:15px">Sınava Başla →</button>
     </div>`;
 }
 
 async function initPlacementChat() {
-  addPlacementMsg('ai', 'Merhaba! Seviye tespit sınavına hoş geldin. Sınava başlamadan önce birkaç sorum var — sınava hazır mısın?');
+  addPlacementMsg('ai', 'Merhaba! 🎓 Kapsamlı seviye tespit sınavına hoş geldin. Sınav sistemi, bölümler veya süreçle ilgili aklına takılan her şeyi bana sorabilirsin. Sınav sorularının cevaplarında yardımcı olamam, ama süreci anlamana yardımcı olmaktan memnuniyet duyarım!');
   setTimeout(()=>{
     document.getElementById('placement-bubble-badge').style.display='block';
     togglePlacementChat();
@@ -3420,7 +3940,10 @@ window.startPlacementGrammar = () => {
   grammarTotals = {A1:0,A2:0,B1:0,B2:0,C1:0,C2:0};
   GRAMMAR_QUESTIONS.forEach(q => grammarTotals[q.lvl] = (grammarTotals[q.lvl]||0)+1);
   document.getElementById('placement-title').textContent = 'Gramer & Kelime Sınavı';
-  document.getElementById('placement-subtitle').textContent = `Soru ${grammarCurrentQ+1} / ${GRAMMAR_QUESTIONS.length}`;
+  document.getElementById('placement-subtitle').textContent = 'Soru 1 / ' + GRAMMAR_QUESTIONS.length;
+  const timerEl = document.getElementById('placement-timer');
+  if(timerEl) timerEl.style.display = 'block';
+  startPlacementTimer(GRAMMAR_TIME);
   renderGrammarQuestion();
 };
 
@@ -3432,37 +3955,60 @@ function renderGrammarQuestion() {
     return;
   }
   const q = GRAMMAR_QUESTIONS[grammarCurrentQ];
-  document.getElementById('placement-subtitle').textContent = `Soru ${grammarCurrentQ+1} / ${GRAMMAR_QUESTIONS.length}`;
+  document.getElementById('placement-subtitle').textContent = 'Soru ' + (grammarCurrentQ+1) + ' / ' + GRAMMAR_QUESTIONS.length;
   const progress = Math.round((grammarCurrentQ/GRAMMAR_QUESTIONS.length)*100);
-  el.innerHTML = `
-    <div style="background:var(--border-c);border-radius:4px;height:6px;margin-bottom:1.5rem">
-      <div style="background:var(--navy);height:6px;border-radius:4px;width:${progress}%;transition:width .3s"></div>
-    </div>
-    <div class="card">
-      <div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:1.25rem;line-height:1.5">${grammarCurrentQ+1}. ${q.q}</div>
-      <div style="display:flex;flex-direction:column;gap:8px">
-        ${q.o.map((opt,i)=>`<button onclick="answerGrammar(${i})" style="padding:10px 14px;text-align:left;border-radius:10px;border:1.5px solid var(--border-c);background:#fff;cursor:pointer;font-size:14px;color:var(--navy-dark);transition:all .15s" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='#fff'">${String.fromCharCode(65+i)}) ${opt}</button>`).join('')}
-      </div>
-    </div>`;
+  // Check if this question was already answered
+  const prev = placementGrammarAnswers.find(function(a){ return a.q === grammarCurrentQ; });
+  const optBtns = q.o.map(function(opt, i) {
+    let style = 'padding:10px 14px;text-align:left;border-radius:10px;border:1.5px solid var(--border-c);background:#fff;cursor:pointer;font-size:14px;color:var(--navy-dark);transition:all .15s';
+    if(prev) {
+      if(i === q.a) style = 'padding:10px 14px;text-align:left;border-radius:10px;border:1.5px solid var(--green);background:var(--green-light);cursor:default;font-size:14px;color:var(--navy-dark)';
+      else if(i === prev.chosen && i !== q.a) style = 'padding:10px 14px;text-align:left;border-radius:10px;border:1.5px solid var(--red);background:var(--red-light);cursor:default;font-size:14px;color:var(--navy-dark)';
+    }
+    const click = prev ? '' : ('onclick="answerGrammar(' + i + ')"');
+    const hover = prev ? '' : 'onmouseover="this.style.borderColor=\'var(--navy)\';this.style.background=\'var(--accent-light)\'" onmouseout="this.style.borderColor=\'var(--border-c)\';this.style.background=\'#fff\'"';
+    return '<button ' + click + ' style="' + style + '" ' + hover + '>' + String.fromCharCode(65+i) + ') ' + opt + '</button>';
+  }).join('');
+  const hasPrev = grammarCurrentQ > 0;
+  const hasNext = grammarCurrentQ < GRAMMAR_QUESTIONS.length - 1;
+  const prevBtn = hasPrev ? '<button onclick="grammarNav(-1);" style="padding:8px 14px;border-radius:8px;border:1px solid var(--border-c);background:#fff;cursor:pointer;font-size:13px">← Önceki</button>' : '<span></span>';
+  const nextBtn = (prev && hasNext) ? '<button onclick="grammarNav(1);" style="padding:8px 14px;border-radius:8px;border:none;background:var(--navy);color:#fff;cursor:pointer;font-size:13px">Sonraki →</button>' : '';
+  const finBtn = (prev && !hasNext) ? '<button onclick="finishGrammar();" class="bp">Sonuçları Gör →</button>' : '';
+  el.innerHTML = '<div style="background:var(--border-c);border-radius:4px;height:6px;margin-bottom:1.5rem"><div style="background:var(--navy);height:6px;border-radius:4px;width:' + progress + '%;transition:width .3s"></div></div>' +
+    '<div class="card">' +
+    '<div style="font-size:15px;font-weight:600;color:var(--navy);margin-bottom:1.25rem;line-height:1.5">' + (grammarCurrentQ+1) + '. ' + q.q + '</div>' +
+    '<div style="display:flex;flex-direction:column;gap:8px">' + optBtns + '</div>' +
+    '</div>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:12px">' + prevBtn + '<div style="display:flex;gap:8px">' + nextBtn + finBtn + '</div></div>';
 }
 
-window.answerGrammar = (idx) => {
+window.answerGrammar = function(idx) {
   const q = GRAMMAR_QUESTIONS[grammarCurrentQ];
-  if(idx === q.a) grammarScore[q.lvl] = (grammarScore[q.lvl]||0)+1;
+  // Remove previous answer for this question if exists
+  const prevIdx = placementGrammarAnswers.findIndex(function(a){ return a.q === grammarCurrentQ; });
+  if(prevIdx >= 0) {
+    // Undo old score if it was correct
+    if(placementGrammarAnswers[prevIdx].chosen === q.a) {
+      grammarScore[q.lvl] = Math.max(0, (grammarScore[q.lvl]||1) - 1);
+    }
+    placementGrammarAnswers.splice(prevIdx, 1);
+  }
+  if(idx === q.a) grammarScore[q.lvl] = (grammarScore[q.lvl]||0) + 1;
   placementGrammarAnswers.push({q:grammarCurrentQ, chosen:idx, correct:q.a, correct_text:q.o[q.a]});
+  // Auto-advance to next question
   grammarCurrentQ++;
   renderGrammarQuestion();
 };
 
 function finishGrammar() {
   document.getElementById('placement-title').textContent = 'Gramer Tamamlandı ✓';
-  document.getElementById('placement-subtitle').textContent = 'Şimdi Writing bölümüne geçiyoruz';
+  document.getElementById('placement-subtitle').textContent = 'Şimdi Writing bölümüne geçiyorum';
   const el = document.getElementById('placement-content');
   const total = placementGrammarAnswers.filter(a=>a.chosen===a.correct).length;
   el.innerHTML = `
     <div class="card" style="text-align:center;padding:1.5rem">
       <div style="font-size:48px;margin-bottom:8px">✅</div>
-      <div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:4px">Gramer bölümü tamamlandı!</div>
+      <div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:4px">Gramer bölümünü tamamladın!</div>
       <div style="font-size:14px;color:#889;margin-bottom:1.5rem">${total} / ${GRAMMAR_QUESTIONS.length} doğru</div>
       <button onclick="startPlacementWriting()" class="bp" style="width:100%;padding:12px;font-size:15px">Writing Bölümüne Geç →</button>
     </div>`;
@@ -3474,7 +4020,9 @@ let writingCurrentPrompt = 0;
 window.startPlacementWriting = () => {
   placementStep = 'writing';
   writingCurrentPrompt = 0;
+  writingTimerRemaining = WRITING_TIMES.slice(); // reset all timers
   document.getElementById('placement-title').textContent = 'Writing Sınavı';
+  startPlacementTimer(writingTimerRemaining[0]);
   renderWritingPrompt();
 };
 
@@ -3486,26 +4034,41 @@ function renderWritingPrompt() {
     return;
   }
   const p = WRITING_PROMPTS[writingCurrentPrompt];
-  document.getElementById('placement-subtitle').textContent = `Görev ${writingCurrentPrompt+1} / ${WRITING_PROMPTS.length} — Seviye: ${p.lvl}`;
-  el.innerHTML = `
-    <div class="card" style="margin-bottom:12px">
-      <div style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:6px">IELTS STYLE WRITING — ${p.lvl}</div>
-      <div style="font-weight:700;color:var(--navy);font-size:14px;margin-bottom:8px">${p.title}</div>
-      <div style="font-size:13px;color:var(--navy-dark);line-height:1.7;background:var(--cream-dark);border-radius:8px;padding:.75rem;margin-bottom:10px">${p.prompt}</div>
-      <div style="font-size:11px;color:#889;margin-bottom:8px">Minimum ${p.minWords} kelime</div>
-      <textarea id="writing-ans-${writingCurrentPrompt}" style="min-height:140px;font-size:14px" placeholder="Cevabınızı buraya yazın..."></textarea>
-      <div id="writing-word-count-${writingCurrentPrompt}" style="font-size:11px;color:#889;margin-top:4px">0 kelime</div>
-    </div>
-    <div id="writing-feedback-${writingCurrentPrompt}" style="display:none"></div>
-    <button onclick="submitWriting(${writingCurrentPrompt})" class="bp" id="writing-submit-${writingCurrentPrompt}" style="width:100%;padding:11px;font-size:14px">Gönder ve Geri Bildirim Al</button>`;
-
-  // Word counter
-  const ta = document.getElementById(`writing-ans-${writingCurrentPrompt}`);
-  ta.addEventListener('input', function(){
-    const wc = this.value.trim().split(/\s+/).filter(w=>w.length>0).length;
-    document.getElementById(`writing-word-count-${writingCurrentPrompt}`).textContent = wc + ' kelime';
+  const wIdx = writingCurrentPrompt;
+  document.getElementById('placement-subtitle').textContent = 'Görev ' + (wIdx+1) + ' / ' + WRITING_PROMPTS.length + ' — Seviye: ' + p.lvl;
+  const saved = placementWritingAnswers[wIdx] ? placementWritingAnswers[wIdx].text : '';
+  const hasPrev = wIdx > 0;
+  el.innerHTML = '<div class="card" style="margin-bottom:12px">' +
+    '<div style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:6px">IELTS STYLE WRITING — ' + p.lvl + '</div>' +
+    '<div style="font-weight:700;color:var(--navy);font-size:14px;margin-bottom:8px">' + p.title + '</div>' +
+    '<div style="font-size:13px;color:var(--navy-dark);line-height:1.7;background:var(--cream-dark);border-radius:8px;padding:.75rem;margin-bottom:10px">' + p.prompt + '</div>' +
+    '<textarea id="writing-ans-' + wIdx + '" style="min-height:140px;font-size:14px" placeholder="Cevabınızı buraya yazın...">' + (saved||'') + '</textarea>' +
+    '<div id="writing-word-count-' + wIdx + '" style="font-size:11px;color:#889;margin-top:4px">' + (saved ? saved.trim().split(/\s+/).filter(function(w){return w.length>0;}).length : 0) + ' kelime</div>' +
+    '</div>' +
+    '<div id="writing-feedback-' + wIdx + '" style="display:none"></div>' +
+    '<div style="display:flex;gap:8px;margin-top:8px;flex-wrap:wrap">' +
+    (hasPrev ? '<button onclick="saveWritingTimerAndGo(writingCurrentPrompt-1);" style="padding:10px 14px;border-radius:8px;border:1px solid var(--border-c);background:#fff;cursor:pointer;font-size:13px">← Önceki</button>' : '') +
+    '<button onclick="submitWriting(' + wIdx + ')" class="bp" id="writing-submit-' + wIdx + '" style="flex:1;padding:11px;font-size:14px">Gönder ve Devam Et →</button>' +
+    '<button onclick="saveWritingTimerAndGo(' + (wIdx+1) + ');" style="padding:10px 14px;border-radius:8px;border:1px solid var(--amber);background:var(--amber-light);color:var(--amber);cursor:pointer;font-size:13px">Sonraki Yazıya Geç ›</button>' +
+    '</div>';
+  const ta = document.getElementById('writing-ans-' + wIdx);
+  if(ta) ta.addEventListener('input', function(){
+    const wc = this.value.trim().split(/\s+/).filter(function(w){return w.length>0;}).length;
+    const wcEl = document.getElementById('writing-word-count-' + wIdx);
+    if(wcEl) wcEl.textContent = wc + ' kelime';
   });
 }
+
+window.skipWriting = function(idx) {
+  // Save empty/current text silently
+  const ta = document.getElementById('writing-ans-' + idx);
+  const text = ta ? ta.value.trim() : '';
+  if(!placementWritingAnswers[idx]) placementWritingAnswers[idx] = {prompt:WRITING_PROMPTS[idx].title, level:WRITING_PROMPTS[idx].lvl, text:text||'(boş bırakıldı)'};
+  writingCurrentPrompt++;
+  if(writingCurrentPrompt >= WRITING_PROMPTS.length) { finishWriting(); return; }
+  startPlacementTimer(WRITING_TIMES[writingCurrentPrompt]);
+  renderWritingPrompt();
+};
 
 window.submitWriting = async (idx) => {
   const ta = document.getElementById(`writing-ans-${idx}`);
@@ -3532,7 +4095,7 @@ window.submitWriting = async (idx) => {
     document.getElementById(`writing-feedback-${idx}`).style.display = 'block';
     btn.innerHTML = writingCurrentPrompt < WRITING_PROMPTS.length-1 ? 'Sonraki Görev →' : 'Reading Bölümüne Geç →';
     btn.disabled = false;
-    btn.onclick = () => { writingCurrentPrompt++; renderWritingPrompt(); };
+    btn.onclick = () => { saveWritingTimerAndGo(writingCurrentPrompt+1); };
   }catch(e){
     btn.innerHTML = 'Tekrar Dene';
     btn.disabled = false;
@@ -3545,8 +4108,8 @@ function finishWriting() {
   el.innerHTML = `
     <div class="card" style="text-align:center;padding:1.5rem">
       <div style="font-size:48px;margin-bottom:8px">✅</div>
-      <div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:4px">Writing bölümü tamamlandı!</div>
-      <div style="font-size:14px;color:#889;margin-bottom:1.5rem">Harika iş! Şimdi Reading bölümüne geçiyoruz.</div>
+      <div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:4px">Writing bölümünü tamamladın!</div>
+      <div style="font-size:14px;color:#889;margin-bottom:1.5rem">Harika iş! Şimdi Reading bölümüne geçiyorum.</div>
       <button onclick="startPlacementReading()" class="bp" style="width:100%;padding:12px;font-size:15px">Reading Bölümüne Geç →</button>
     </div>`;
 }
@@ -3560,62 +4123,80 @@ window.startPlacementReading = () => {
   readingCurrentText = 0;
   readingAnswers = [];
   document.getElementById('placement-title').textContent = 'Reading Sınavı';
+  startPlacementTimer(READING_TIME);
   renderReadingText();
 };
 
 function renderReadingText() {
   const el = document.getElementById('placement-content');
   if(!el) return;
-  if(readingCurrentText >= READING_TEXTS.length) {
-    finishReading();
-    return;
-  }
+  if(readingCurrentText >= READING_TEXTS.length) { finishReading(); return; }
   const rt = READING_TEXTS[readingCurrentText];
-  document.getElementById('placement-subtitle').textContent = `Parça ${readingCurrentText+1} / ${READING_TEXTS.length} — Seviye: ${rt.lvl}`;
-  const qHtml = rt.questions.map((q,qi)=>`
-    <div style="margin-bottom:12px">
-      <div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px">${qi+1}. ${q.q}</div>
-      <div style="display:flex;flex-direction:column;gap:5px">
-        ${q.o.map((opt,oi)=>`<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--navy-dark)"><input type="radio" name="rq${readingCurrentText}_${qi}" value="${oi}" style="accent-color:var(--navy)"> ${opt}</label>`).join('')}
-      </div>
-    </div>`).join('');
-
-  el.innerHTML = `
-    <div class="card" style="margin-bottom:12px">
-      <div style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:6px">IELTS STYLE READING — ${rt.lvl}</div>
-      <div style="font-weight:700;color:var(--navy);font-size:14px;margin-bottom:8px">${rt.title}</div>
-      <div style="font-size:13px;color:var(--navy-dark);line-height:1.8;background:var(--cream-dark);border-radius:8px;padding:.85rem;margin-bottom:12px">${rt.text}</div>
-      ${qHtml}
-      <div id="reading-feedback-${readingCurrentText}" style="display:none;margin-top:10px"></div>
-      <button onclick="submitReading(${readingCurrentText})" class="bp" id="reading-submit-${readingCurrentText}" style="width:100%;padding:11px;font-size:14px;margin-top:8px">Cevapla ve Kontrol Et</button>
-    </div>`;
+  const rIdx = readingCurrentText;
+  document.getElementById('placement-subtitle').textContent = 'Parça ' + (rIdx+1) + ' / ' + READING_TEXTS.length + ' — Seviye: ' + rt.lvl;
+  const saved = readingAnswers[rIdx] || [];
+  const qHtml = rt.questions.map(function(q,qi) {
+    return '<div style="margin-bottom:12px">' +
+      '<div style="font-size:13px;font-weight:600;color:var(--navy);margin-bottom:6px">' + (qi+1) + '. ' + q.q + '</div>' +
+      '<div style="display:flex;flex-direction:column;gap:5px">' +
+      q.o.map(function(opt,oi) {
+        const isChecked = saved[qi] !== undefined ? (saved[qi] === oi) : false;
+        const isCorrectReveal = saved.answered && oi === q.a;
+        const isWrongReveal = saved.answered && saved[qi] !== undefined && saved[qi] !== q.a && saved[qi] === oi;
+        let style = '';
+        if(isCorrectReveal) style = 'color:var(--green);font-weight:700';
+        else if(isWrongReveal) style = 'color:var(--red)';
+        return '<label style="display:flex;align-items:center;gap:8px;cursor:pointer;font-size:13px;color:var(--navy-dark);' + style + '">' +
+          '<input type="radio" name="rq' + rIdx + '_' + qi + '" value="' + oi + '" ' + (isChecked?'checked':'') + ' style="accent-color:var(--navy)"> ' + opt + '</label>';
+      }).join('') +
+      '</div></div>';
+  }).join('');
+  const hasPrev = rIdx > 0;
+  const hasAnswered = saved.answered;
+  el.innerHTML = '<div class="card" style="margin-bottom:12px">' +
+    '<div style="font-size:11px;color:var(--accent);font-weight:600;margin-bottom:6px">IELTS STYLE READING — ' + rt.lvl + '</div>' +
+    '<div style="font-weight:700;color:var(--navy);font-size:14px;margin-bottom:8px">' + rt.title + '</div>' +
+    '<div style="font-size:13px;color:var(--navy-dark);line-height:1.8;background:var(--cream-dark);border-radius:8px;padding:.85rem;margin-bottom:12px">' + rt.text + '</div>' +
+    qHtml +
+    '<div id="reading-feedback-' + rIdx + '" style="' + (hasAnswered?'':'display:none') + ';margin-top:10px"></div>' +
+    '</div>' +
+    '<div style="display:flex;justify-content:space-between;align-items:center;margin-top:8px">' +
+    '<span></span>' +
+    (hasAnswered
+      ? '<button onclick="readingNav(1);" class="bp" style="padding:10px 16px">Sonraki →</button>'
+      : '<button onclick="submitReading(' + rIdx + ')" class="bp" id="reading-submit-' + rIdx + '" style="padding:10px 16px">Cevapla ve Kontrol Et</button>') +
+    '</div>';
+  if(hasAnswered) {
+    const fb = document.getElementById('reading-feedback-' + rIdx);
+    if(fb && saved.score !== undefined) {
+      fb.style.display = 'block';
+      fb.innerHTML = '<div style="background:var(--accent-light);border-radius:8px;padding:8px 12px;font-size:13px;color:var(--navy)">' +
+        '✓ Bu parçadan ' + saved.score + '/' + rt.questions.length + ' doğru yaptın.</div>';
+    }
+  }
 }
 
-window.submitReading = (idx) => {
+window.submitReading = function(idx) {
   const rt = READING_TEXTS[idx];
   let correct = 0;
-  const results = rt.questions.map((q,qi)=>{
-    const sel = document.querySelector(`input[name="rq${idx}_${qi}"]:checked`);
+  const results = rt.questions.map(function(q,qi) {
+    const sel = document.querySelector('input[name="rq' + idx + '_' + qi + '"]:checked');
     const chosen = sel ? parseInt(sel.value) : -1;
     if(chosen === q.a) correct++;
     return {qi, chosen, correct:q.a, correct_text:q.o[q.a], chosen_text: chosen>=0?q.o[chosen]:'Cevaplanmadı'};
   });
-  placementReadingAnswers.push({text:rt.title, level:rt.lvl, correct, total:rt.questions.length, results});
-  const feedbackHtml = results.map(r=>`
-    <div style="display:flex;align-items:flex-start;gap:6px;margin-bottom:6px;font-size:12px">
-      <span>${r.chosen===r.correct?'✅':'❌'}</span>
-      <div><span style="color:${r.chosen===r.correct?'var(--green)':'var(--red)'}">Sorun ${r.qi+1}:</span> Doğru cevap: <strong>${r.correct_text}</strong>${r.chosen!==r.correct?' (Senin cevabın: '+r.chosen_text+')':''}</div>
-    </div>`).join('');
-
-  document.getElementById(`reading-feedback-${idx}`).innerHTML = `
-    <div style="background:var(--cream-dark);border-radius:8px;padding:.75rem;margin-bottom:8px">
-      <div style="font-weight:700;color:var(--navy);margin-bottom:6px;font-size:13px">Sonuç: ${correct}/${rt.questions.length}</div>
-      ${feedbackHtml}
-    </div>`;
-  document.getElementById(`reading-feedback-${idx}`).style.display = 'block';
-  const btn = document.getElementById(`reading-submit-${idx}`);
-  btn.innerHTML = readingCurrentText < READING_TEXTS.length-1 ? 'Sonraki Parça →' : 'Listening & Speaking Bölümüne Geç →';
-  btn.onclick = () => { readingCurrentText++; renderReadingText(); };
+  // Save answers with answered flag for prev/next review
+  const savedAnswers = results.map(function(r){ return r.chosen; });
+  savedAnswers.answered = true;
+  savedAnswers.score = correct;
+  readingAnswers[idx] = savedAnswers;
+  // Add to formal answers array (dedup by text)
+  const exists = placementReadingAnswers.findIndex(function(a){ return a.text === rt.title; });
+  const entry = {text:rt.title, level:rt.lvl, correct, total:rt.questions.length, results};
+  if(exists >= 0) placementReadingAnswers[exists] = entry;
+  else placementReadingAnswers.push(entry);
+  // Re-render to show results + next button
+  renderReadingText();
 };
 
 function finishReading() {
@@ -3796,6 +4377,10 @@ function renderPlacementResult(level, data) {
 }
 
 window.completePlacement = () => {
+  // Hide placement bubble when test is done
+  const pb = document.getElementById('placement-bubble');
+  if(pb) pb.style.display = 'none';
+  if(placementTimer) { clearInterval(placementTimer); placementTimer = null; }
   loadStudent();
 };
 
@@ -3813,8 +4398,8 @@ let detectiveCharStep2 = 0;
 let detectiveCharAnswers2 = {};
 let detectiveState2 = null;
 let detectiveAccusations2 = 0;
-let detectiveSolved2 = parseInt(localStorage.getItem('ec_detective_solved')||'0');
-let detectiveHistory2 = JSON.parse(localStorage.getItem('ec_detective_history')||'[]');
+let detectiveSolved2 = parseInt(localStorage.getItem(('ec_ds_'+(cu&&cu.uid||'x')))||'0');
+let detectiveHistory2 = JSON.parse(localStorage.getItem(('ec_dh_'+(cu&&cu.uid||'x')))||'[]');
 
 // Make text hoverable for word tooltips - INLINE (no separate function reference issue)
 var _wordCache = {};
@@ -4270,10 +4855,10 @@ window.makeAccusation = async function(idx) {
   var arena = document.getElementById('game-arena');
   if(sus.guilty) {
     detectiveSolved2++;
-    localStorage.setItem('ec_detective_solved', detectiveSolved2);
+    localStorage.setItem(('ec_ds_'+(cu&&cu.uid||'x')), detectiveSolved2);
     detectiveHistory2.push(detectiveState2.title);
     if(detectiveHistory2.length > 5) detectiveHistory2.shift();
-    localStorage.setItem('ec_detective_history', JSON.stringify(detectiveHistory2));
+    localStorage.setItem(('ec_dh_'+(cu&&cu.uid||'x')), JSON.stringify(detectiveHistory2));
     addScore(15,'Gizem çözüldü!');
     arena.innerHTML = '<div style="text-align:center;padding:2rem"><div style="font-size:56px;margin-bottom:12px">🎉</div><div style="font-size:22px;font-weight:700;color:var(--navy);margin-bottom:8px">Tebrikler Dedektif!</div><div style="font-size:14px;color:#889;margin-bottom:1rem">' + sus.name + ' suçluydu! +15 puan kazandın.</div><div style="background:var(--green-light);border-radius:10px;padding:1rem;margin-bottom:1rem;font-size:13px;color:var(--green)">Toplam çözülen gizem: <strong>' + detectiveSolved2 + '</strong></div><div style="display:flex;gap:8px;justify-content:center;flex-wrap:wrap"><button class="bp" onclick="launchDetective()">Yeni Gizem</button><button onclick="exitGame()">Ana Menüye Dön</button></div></div>';
   } else {
@@ -4353,7 +4938,14 @@ const _origUpdateBadge = typeof updateBadgeDisplay === 'function' ? updateBadgeD
 function updateBadgeDisplay() {
   const mins = Math.floor(chatTotalSecs/60);
   const pts = voiceScore;
-  const badge = getCurrentBadge(mins, pts);
+  let badge = getCurrentBadge(mins, pts);
+  // Check for teacher badge override
+  if(cp && cp._badgeOverride) {
+    const overrideBadge = BADGES.find(function(b){ return b.name === cp._badgeOverride; });
+    if(overrideBadge) badge = overrideBadge;
+  }
+  // Track badge in daily activity
+  if(cp) saveActivity('badge', {badge: badge.emoji + ' ' + badge.name});
   const el = document.getElementById('badge-icon');
   if(el) el.textContent = badge.emoji;
   if(el) el.title = badge.name;
@@ -4445,7 +5037,7 @@ window.tTab = tab => {
   const el = document.getElementById('tc-'+tab);
   if(el) el.classList.add('active');
   if(tab==='dash') refDash();
-  if(tab==='stud') fillSels();
+  if(tab==='stud') { fillSels(); loadAllStudents(); }
   if(tab==='ttools') fillSels();
   if(tab==='moderation') loadModerationFeed();
 };
@@ -4993,6 +5585,7 @@ window.startQGame = function(gameType) {
 };
 
 window.launchQGame = function(gameType, timed) {
+  saveActivity('game', {name:'Quizlet: '+gameType});
   var arena = document.getElementById('qgame-arena');
   if(!arena) return;
   arena.innerHTML = '';
@@ -5374,9 +5967,9 @@ var counselorLang = 'tr';
 var counselorHistory = [];
 var counselorOpen = false;
 
-var COUNSELOR_SYSTEM_TR = 'Sen "Counselor" adında bir site rehberisin. Görevin öğrencilere bu İngilizce öğrenme platformunu tanıtmak ve yardımcı olmak. Kısa ve net cevaplar ver (2-4 cümle). Türkçe konuş.\n\nSitenin özellikleri:\n- 📰 Haberler: Farklı kategorilerde İngilizce haberler, kelimelere tıklayınca Türkçe anlam\n- 🤖 The English Coach: AI destekli sohbet, rol yapma senaryoları, ses pratiği\n- 🧰 Araçlar: Kariyer İngilizcesi, Topluluk, Takvim, Raporum, İçerikler, Notlar\n- 🎮 Oyunlar: Quizlet (kendi kelime setlerin), İdiom Dedektifi, Dedektif Modu\n- 📚 Quizlet: Kelime seti oluştur, Hafıza Kartları / Kelime Yarışması / Boşluk Doldur / Zincir Kelime oyunları\n- 👤 Profil: Rozet sistemi, avatar seçimi, seviye takibi\n- Seviye tespit sınavı: Placement Test ile başlangıç seviyeni öğren\n\nÖNEMLİ: Öğrencinin AI asistan sohbeti, oyunlar veya dedektif oyunu sırasındaki sorularına yardım etme. Sadece siteyi anlat ve yönlendir.';
+var COUNSELOR_SYSTEM_TR = 'Sen "Counselor" adında bir site rehberisin. Bu platform Nartkan Temir tarafından geliştirilmiştir. Görevin öğrencilere bu İngilizce öğrenme platformunu tanıtmak ve yardımcı olmak. Kısa ve net cevaplar ver (2-4 cümle). Türkçe konuş.\n\nSitenin özellikleri:\n- 📰 Haberler: Farklı kategorilerde İngilizce haberler, kelimelere tıklayınca Türkçe anlam\n- 🤖 The English Coach: AI destekli sohbet, rol yapma senaryoları, ses pratiği\n- 🧰 Araçlar: Kariyer İngilizcesi, Topluluk, Takvim, Raporum, İçerikler, Notlar\n- 🎮 Oyunlar: Quizlet (kendi kelime setlerin), İdiom Dedektifi, Dedektif Modu\n- 📚 Quizlet: Kelime seti oluştur, Hafıza Kartları / Kelime Yarışması / Boşluk Doldur / Zincir Kelime oyunları\n- 👤 Profil: Rozet sistemi, avatar seçimi, seviye takibi\n- Seviye tespit sınavı: Placement Test ile başlangıç seviyeni öğren\n\nÖNEMLİ: Öğrencinin AI asistan sohbeti, oyunlar veya dedektif oyunu sırasındaki sorularına yardım etme. Sadece siteyi anlat ve yönlendir.';
 
-var COUNSELOR_SYSTEM_EN = 'You are "Counselor", a site guide for an English learning platform. Help students navigate the site. Give short, clear answers (2-4 sentences). Speak in English.\n\nSite features:\n- 📰 News: English news in categories, hover over words for Turkish meaning\n- 🤖 The English Coach: AI chat, role-play scenarios, voice practice\n- 🧰 Tools: Career English, Community, Calendar, My Report, Contents, Notes\n- 🎮 Games: Quizlet (your own word sets), Idiom Detective, Detective Mode\n- 📚 Quizlet: Create word sets, play Flashcards / Word Rush / Fill in the Blank / Word Chain\n- 👤 Profile: Badge system, avatar selection, level tracking\n- Placement test: Find your starting level\n\nIMPORTANT: Do NOT help with AI chat conversations, games, or detective game tasks. Only guide the site.';
+var COUNSELOR_SYSTEM_EN = 'You are "Counselor", a site guide for an English learning platform built by Nartkan Temir. Help students navigate the site. Give short, clear answers (2-4 sentences). Speak in English.\n\nSite features:\n- 📰 News: English news in categories, hover over words for Turkish meaning\n- 🤖 The English Coach: AI chat, role-play scenarios, voice practice\n- 🧰 Tools: Career English, Community, Calendar, My Report, Contents, Notes\n- 🎮 Games: Quizlet (your own word sets), Idiom Detective, Detective Mode\n- 📚 Quizlet: Create word sets, play Flashcards / Word Rush / Fill in the Blank / Word Chain\n- 👤 Profile: Badge system, avatar selection, level tracking\n- Placement test: Find your starting level\n\nIMPORTANT: Do NOT help with AI chat conversations, games, or detective game tasks. Only guide the site.';
 
 var COUNSELOR_GREET_TR = 'Merhaba! Ben Counselor, senin site rehberiniyim 🎓\n\nSana şu konularda yardımcı olabilirim:\n• Sitenin bölümleri ve özellikleri\n• Hangi aracı kullanmalıyım?\n• Rozet ve puan sistemi\n• Quizlet nasıl kullanılır?\n\nNe merak ediyorsun?';
 
@@ -5484,6 +6077,174 @@ document.addEventListener('DOMContentLoaded', function() {
   if(inp) inp.addEventListener('keydown', function(e){ if(e.key==='Enter') sendCounselorMsg(); });
 });
 
+
+
+window.showAllStudentReport = async function(uid, name) {
+  const modal = document.getElementById('student-report-modal');
+  if(!modal) return;
+  modal.style.display = 'flex';
+  document.getElementById('report-modal-title').textContent = name + ' — Rapor';
+  const targetEl = document.getElementById('report-modal-content');
+  if(targetEl) targetEl.innerHTML = '<div class="muted" style="text-align:center;padding:2rem"><span class="spin spd"></span> Rapor hazırlanıyor...</div>';
+  try {
+    // Try studentDirectory first, then /users
+    let sData = {};
+    const dirSnap = await getDoc(doc(db,'studentDirectory',uid)).catch(()=>({exists:()=>false}));
+    if(dirSnap.exists()) {
+      sData = dirSnap.data();
+    } else {
+      const userSnap = await getDoc(doc(db,'users',uid)).catch(()=>({exists:()=>false}));
+      if(userSnap.exists()) sData = userSnap.data();
+    }
+    const fmtTs = function(ts) {
+      if(!ts) return '-';
+      try {
+        const d = new Date(ts.seconds ? ts.seconds*1000 : ts);
+        return d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+      } catch(e) { return '-'; }
+    };
+    const level = sData.level || 'B1';
+    const pts = sData.voiceScore || 0;
+    const mins = sData.totalAIMinutes || 0;
+    const email = sData.email || '';
+    const created = fmtTs(sData.createdAt);
+    const lastLogin = fmtTs(sData.lastLogin);
+    // Load AI chat topics
+    const chatSnap = await getDocs(
+      query(collection(db,'aiChats'), where('sEmail','==',email), orderBy('createdAt','desc'))
+    ).catch(()=>({docs:[]}));
+    const topics = [...new Set(chatSnap.docs.slice(0,10).map(function(d){ return d.data().topic; }).filter(Boolean))];
+    // Generate AI report
+    const prompt = 'Sen deneyimli bir Ingilizce ogretmenisin. ' + name + ' adli ogrenci icin Turkce kisa rapor yaz. ' +
+      'Seviye: ' + level + '. Puan: ' + pts + '. AI sohbet: ' + mins + ' dk. ' +
+      'Konular: ' + (topics.join(', ')||'veri yok') + '. ' +
+      'Rapor: 1) Genel durum 2) Guclu yonler 3) Gelisim alanlari 4) Oneri';
+    const reply = await callAI([{role:'user',content:prompt}], '', 600);
+    if(targetEl) {
+      targetEl.innerHTML =
+        '<div class="card-navy" style="margin-bottom:10px">' +
+          '<div style="font-weight:700;color:#fff;font-size:15px">' + name + '</div>' +
+          '<div style="font-size:12px;color:var(--muted-navy);margin-top:6px;line-height:1.8">' +
+            'Seviye: <strong style="color:#fff">' + level + '</strong> &nbsp;·&nbsp; ' +
+            'Puan: <strong style="color:#fff">' + pts + '</strong> &nbsp;·&nbsp; ' +
+            'AI Sohbet: <strong style="color:#fff">' + mins + ' dk</strong>' +
+          '</div>' +
+          '<div style="font-size:11px;color:var(--muted-navy);margin-top:4px">' +
+            '📅 Kayıt: ' + created + ' &nbsp;·&nbsp; 🕐 Son giriş: ' + lastLogin +
+          '</div>' +
+        '</div>' +
+        '<div class="card" style="border-left:4px solid var(--accent)">' +
+          '<div style="font-size:13px;line-height:1.8;color:var(--navy-dark);white-space:pre-wrap">' + reply + '</div>' +
+        '</div>';
+    }
+  } catch(ex) {
+    if(targetEl) targetEl.innerHTML = '<div class="alert ae">Rapor yüklenemedi: ' + ex.message + '</div>';
+  }
+};
+
+
+window.overrideStudentBadge = async function(uid, badgeName) {
+  try {
+    await setDoc(doc(db,'studentDirectory',uid), {badgeOverride: badgeName}, {merge:true});
+    // Update the badge select in the rendered list
+    await loadAllStudents();
+  } catch(ex) { alert('Hata (rozet): ' + ex.message); }
+};
+
+
+async function renderDashboard() {
+  // Update stat cards
+  const d = document.getElementById('dash-total-pts');
+  const m = document.getElementById('dash-total-mins');
+  const w = document.getElementById('dash-total-words');
+  const s = document.getElementById('dash-streak');
+  if(d) d.textContent = voiceScore || 0;
+  if(m) m.textContent = Math.floor(chatTotalSecs/60) || 0;
+  if(s) s.textContent = parseInt(localStorage.getItem(('ec_st_'+(cu&&cu.uid||'x')))||'0');
+  try {
+    const wSnap = await getDocs(collection(db,'users',cu.uid,'learnedWords'));
+    if(w) w.textContent = wSnap.size;
+  } catch(e) {}
+
+  // Weekly pts bar chart (last 7 days)
+  const chartEl = document.getElementById('dash-pts-chart');
+  const labelsEl = document.getElementById('dash-pts-labels');
+  if(chartEl && labelsEl) {
+    const now = new Date();
+    const dayData = [];
+    let maxPts = 1;
+    for(let i=6;i>=0;i--) {
+      const d2 = new Date(now); d2.setDate(now.getDate()-i);
+      const ds = d2.toISOString().slice(0,10);
+      const act = getActivityForDate(ds);
+      const pts = act.pts || 0;
+      dayData.push({pts, label:['Su','Mo','Tu','We','Th','Fr','Sa'][(d2.getDay())]});
+      if(pts > maxPts) maxPts = pts;
+    }
+    chartEl.innerHTML = '';
+    labelsEl.innerHTML = '';
+    dayData.forEach(function(dd) {
+      const barWrap = document.createElement('div');
+      barWrap.style.cssText = 'flex:1;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%';
+      const bar = document.createElement('div');
+      const pct = Math.round((dd.pts/maxPts)*100);
+      bar.style.cssText = 'width:100%;border-radius:3px 3px 0 0;background:'+(pct>0?'var(--navy)':'var(--border-c)')+';transition:height .4s';
+      bar.style.height = Math.max(pct,2) + '%';
+      if(dd.pts > 0) {
+        const lbl = document.createElement('div');
+        lbl.style.cssText = 'font-size:9px;color:var(--navy);margin-bottom:2px';
+        lbl.textContent = dd.pts;
+        barWrap.appendChild(lbl);
+      }
+      barWrap.appendChild(bar);
+      chartEl.appendChild(barWrap);
+      const dayLbl = document.createElement('div');
+      dayLbl.style.cssText = 'flex:1;text-align:center';
+      dayLbl.textContent = dd.label;
+      labelsEl.appendChild(dayLbl);
+    });
+  }
+
+  // Activity breakdown (this month)
+  const breakdownEl = document.getElementById('dash-activity-breakdown');
+  if(breakdownEl) {
+    const now2 = new Date();
+    const monthStart = new Date(now2.getFullYear(), now2.getMonth(), 1);
+    let totalPts=0, totalWords=0, totalGames=[];
+    const d3 = new Date(monthStart);
+    while(d3 <= now2) {
+      const ds = d3.toISOString().slice(0,10);
+      const act = getActivityForDate(ds);
+      totalPts += act.pts||0;
+      totalWords += act.words||0;
+      if(act.games) act.games.forEach(function(g){ if(!totalGames.includes(g)) totalGames.push(g); });
+      d3.setDate(d3.getDate()+1);
+    }
+    const items = [
+      {label:'Kazanılan Puan', val:totalPts+'⭐', color:'var(--amber)'},
+      {label:'Öğrenilen Kelime', val:totalWords+'📚', color:'var(--green)'},
+      {label:'Oynanan Oyunlar', val:totalGames.length>0?totalGames.join(', '):'—', color:'#3C3489'},
+    ];
+    breakdownEl.innerHTML = items.map(function(item){
+      return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-c);font-size:13px">'+
+        '<span style="color:#889">'+item.label+'</span>'+
+        '<span style="font-weight:600;color:'+item.color+'">'+item.val+'</span></div>';
+    }).join('');
+  }
+}
+
+// ---- PLACEMENT TEST WINDOW ALIASES (for onclick= in innerHTML) ----
+window.renderGrammarQuestion = renderGrammarQuestion;
+window.renderReadingText = renderReadingText;
+window.renderWritingPrompt = renderWritingPrompt;
+window.saveWritingTimerAndGo = saveWritingTimerAndGo;
+window.finishGrammar = finishGrammar;
+window.finishReading = finishReading;
+window.finishWriting = finishWriting;
+window.skipWriting = skipWriting;
+window.grammarNav = function(delta) { grammarCurrentQ += delta; renderGrammarQuestion(); };
+window.readingNav = function(delta) { readingCurrentText += delta; renderReadingText(); };
+
 </script>
 
 <!-- DETECTIVE MUSIC PLAYER -->
@@ -5552,6 +6313,54 @@ document.addEventListener('DOMContentLoaded', function() {
   <div style="padding:10px;border-top:1px solid var(--border-c);display:flex;gap:6px;background:#fff">
     <input type="text" id="counselor-inp" placeholder="Soru sor..." style="flex:1;font-size:13px;padding:7px 10px;border-radius:8px;border:1px solid var(--border-c)">
     <button onclick="sendCounselorMsg()" style="padding:7px 12px;background:var(--navy);color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:13px;font-weight:700">→</button>
+  </div>
+</div>
+
+<!-- PLACEMENT INFO MODAL -->
+<div id="placement-info-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:9990;align-items:center;justify-content:center;padding:1rem">
+  <div style="background:#fff;border-radius:20px;max-width:520px;width:100%;max-height:90vh;overflow-y:auto;padding:0">
+    <div style="background:linear-gradient(135deg,var(--navy),#1a5f9c);padding:1.5rem;border-radius:20px 20px 0 0;text-align:center">
+      <div style="font-size:40px;margin-bottom:8px">📝</div>
+      <div style="font-size:20px;font-weight:800;color:#fff;margin-bottom:4px">Seviye Tespit Sınavı</div>
+      <div style="font-size:13px;color:rgba(255,255,255,.8)">Sana en uygun seviyeyi belirleyeceğim</div>
+    </div>
+    <div style="padding:1.5rem">
+      <div style="font-size:14px;color:var(--navy-dark);line-height:1.85">
+
+        <p style="margin:0 0 12px">Birazdan sana <strong>IELTS formatında hazırlanmış kapsamlı bir seviye tespit sınavı</strong> yapacağım. Bu sınav sonucunda İngilizce seviyen <strong>(A1 · A2 · B1 · B2 · C1 · C2)</strong> belirlenecek; bu sayede platforma seviyene tam uygun içerikler, alıştırmalar ve öğrenme yolu sunulacak. Sınav sonuçlarının doğruluğu, sana sunulacak deneyimin kalitesini doğrudan etkiler — bu yüzden soruları dürüstçe ve kendi bilginle yanıtlamanı rica ediyorum.</p>
+
+        <p style="margin:0 0 12px">Sınav <strong>dört bölümden</strong> oluşuyor:</p>
+
+        <div style="background:var(--accent-light);border-radius:12px;padding:12px 14px;margin-bottom:14px">
+          <div style="margin-bottom:8px;font-weight:600;color:var(--navy)">📋 Sınav Yapısı</div>
+          <div style="font-size:13px;line-height:2">
+            <div>1️⃣ <strong>Gramer & Kelime</strong> — 32 çoktan seçmeli soru · <strong>45 dakika</strong></div>
+            <div>2️⃣ <strong>Writing</strong> — 3 yazma görevi (<strong>15 dk + 25 dk + 35 dk</strong>)</div>
+            <div>3️⃣ <strong>Reading</strong> — 3 okuma parçası · <strong>21 dakika</strong></div>
+            <div>4️⃣ <strong>Listening</strong> — Harici kaynak ile değerlendirme</div>
+            <div>5️⃣ <strong>Speaking</strong> — Listening puanını girdikten sonra aynı sayfanın altında sana yönergeler verilecek. Bu yönergelere göre sesini kaydederek cevaplarını Nartkan Teacher'a göndereceksin.</div>
+          </div>
+        </div>
+
+        <p style="margin:0 0 12px">Her bölümde ekranın üstünde bir <strong>geri sayım sayacı</strong> göreceksin. Süre dolduğunda o bölüm otomatik olarak tamamlanıyor ve bir sonrakine geçiyorum. <strong>Bu sebeple süreye dikkat etmen oldukça önemli.</strong></p>
+
+        <p style="margin:0 0 12px">Sorularda <strong>önceki soruya dönebilir</strong>, verdiğin cevabı değiştirebilirsin. Writing bölümünde yapamadığın bir görevi <strong>boş bırakıp atlayabilirsin</strong> — ancak her bölümü doldurman, seviyeni doğru belirleyip sana uygun şekilde aksiyon alabilmem için olumlu bir katkı sağlar.</p>
+
+        <p style="margin:0 0 14px">Sınav boyunca ekranın sağ alt köşesindeki <strong>🎓 Counselor</strong>'a sınav işleyişi hakkında her zaman soru sorabilirsin. Counselor sınav sorularının cevaplarını vermez, yalnızca sınav süreci hakkında rehberlik eder.</p>
+
+        <div style="background:#fff8e1;border:1px solid var(--amber);border-radius:10px;padding:10px 14px;font-size:13px;color:var(--navy-dark);margin-bottom:10px">
+          💡 <strong>Öneri:</strong> Sakin bir ortamda, bölünmeden sınava gir. Doğru seviye tespiti, ilerleyen süreçte sana çok daha uygun içerikler sunmamı sağlıyor.
+        </div>
+        <div style="background:#fdf0ee;border:1.5px solid var(--red);border-radius:10px;padding:10px 14px;font-size:13px;color:#c0392b">
+          ⚠️ <strong>Önemli Uyarı:</strong> Herhangi bir internet kesintisi ya da sınav sekmesinin kapanması durumunda sınav iptal olacak ve süreç sıfırlanacaktır. Sınavı tek seferde tamamlamana önem ver.
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:1.25rem">
+        <button onclick="document.getElementById('placement-info-modal').style.display='none';showLogin();" style="flex:1;padding:11px;border-radius:10px;border:1px solid var(--border-c);background:#fff;cursor:pointer;font-size:14px;color:#889">İptal</button>
+        <button onclick="document.getElementById('placement-info-modal').style.display='none';startPlacementTest();" class="bp" style="flex:2;padding:12px;font-size:15px;font-weight:700">Sınava Başla →</button>
+      </div>
+    </div>
   </div>
 </div>
 
