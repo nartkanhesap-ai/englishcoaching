@@ -2034,7 +2034,9 @@ window.setAccent=function(lang){
   const accentMap = {us:'en-US', uk:'en-GB', au:'en-AU', 'in':'en-IN'};
   currentAccent = accentMap[lang] || 'en-US';
   // Refresh voice cache when accent changes
-  _loadVoices();
+  _loadVoicesNow();
+  // Also update ResponsiveVoice if available
+  if(window.responsiveVoice) window.responsiveVoice.cancel();
   ['us','uk','au','in'].forEach(function(k){
     const b=document.getElementById('vbtn-'+k);
     if(!b) return;
