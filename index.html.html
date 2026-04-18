@@ -186,6 +186,9 @@ button:active{transform:scale(.98)}
     <div class="lbl">Şifre</div><input type="password" id="l-pass" placeholder="••••••" style="margin-bottom:14px" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="bp" style="width:100%;margin-bottom:8px" onclick="doLogin()" id="l-btn">Giriş yap</button>
     <button style="width:100%" onclick="showReg()">Öğrenci hesabı oluştur</button>
+    <div style="margin-top:12px;background:#fdf0ee;border:1.5px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:12px;color:#c0392b;line-height:1.6">
+      ⚠️ <strong>Tarayıcı Uyarısı:</strong> Sitenin düzgün çalışabilmesi için lütfen <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong> veya <strong>Yandex</strong> tarayıcısını kullanın.
+    </div>
   </div>
 </div>
 
@@ -1289,11 +1292,8 @@ function addLiveFeedEvent(emoji, name, action, color) {
   const placeholder = feed.querySelector('div[style*="italic"]');
   if(placeholder) placeholder.remove();
   const now = new Date();
-  const today = new Date(); today.setHours(0,0,0,0);
-  const isToday = now.toDateString() === today.toDateString();
-  const timeStr = isToday
-    ? now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})
-    : now.toLocaleDateString('tr-TR',{day:'numeric',month:'short'}) + ' ' + now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+  const timeStr = now.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'2-digit'}) +
+                  ' ' + now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
   const item = document.createElement('div');
   item.style.cssText = 'display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.08);font-size:12px;animation:fadeInFeed .3s ease';
   item.innerHTML = '<span style="font-size:14px">' + emoji + '</span>' +
