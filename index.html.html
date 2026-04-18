@@ -609,6 +609,8 @@ button:active{transform:scale(.98)}
         <div style="font-size:12px;color:var(--muted-navy);align-self:center">Aksan:</div>
         <button onclick="setAccent('us')" id="vbtn-us" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.2);color:#fff">🇺🇸 Amerikan</button>
         <button onclick="setAccent('uk')" id="vbtn-uk" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--muted-navy)">🇬🇧 İngiliz</button>
+        <button onclick="setAccent('au')" id="vbtn-au" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--muted-navy)">🇦🇺 Avustralya</button>
+        <button onclick="setAccent('in')" id="vbtn-in" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--muted-navy)">🇮🇳 Hint</button>
         <button onclick="toggleMute()" id="mute-btn" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--muted-navy);margin-left:auto">🔊 Açık</button>
       </div>
     </div>
@@ -1869,42 +1871,142 @@ window.checkWord=async()=>{
 let currentAccent='en-US', isMuted=false, voiceScore=0, currentMode='chat', currentScenario=null;
 
 function getBestEnglishVoice(lang){
-  const voices=window.speechSynthesis.getVoices();
-  // Try exact lang match with Natural/Online voices first
-  let v=voices.find(x=>x.lang===lang&&(x.name.includes('Natural')||x.name.includes('Online')));
-  if(!v) v=voices.find(x=>x.lang===lang&&!x.name.includes('Google'));
-  if(!v) v=voices.find(x=>x.lang===lang);
-  if(!v) v=voices.find(x=>x.lang.startsWith('en-')&&(x.name.includes('Natural')||x.name.includes('Online')));
-  if(!v) v=voices.find(x=>x.lang.startsWith('en-'));
-  return v;
+  // Use cached voices (more reliable on mobile)
+  const voices = _cachedVoices.length ? _cachedVoices : window.speechSynthesis.getVoices();
+  if(!voices.length) return null;
+
+  // Priority: Natural/Online → any matching lang → fallback to any English
+  const pref = [
+    x => x.lang === lang && (x.name.includes('Natural') || x.name.includes('Online') || x.name.includes('Premium')),
+    x => x.lang === lang && !x.name.includes('Google'),
+    x => x.lang === lang,
+    x => x.lang.startsWith(lang.slice(0,5)) && (x.name.includes('Natural') || x.name.includes('Online')),
+    x => x.lang.startsWith(lang.slice(0,5)),
+    x => x.lang.startsWith('en-') && (x.name.includes('Natural') || x.name.includes('Online')),
+    x => x.lang.startsWith('en-'),
+  ];
+  for(const pred of pref) {
+    const v = voices.find(pred);
+    if(v) return v;
+  }
+  return null;
 }
 
-function speak(text){
-  if(isMuted||!text)return;
-  window.speechSynthesis.cancel();
-  const clean=text.replace(/\[.*?\]/g,'').replace(/<[^>]+>/g,'').replace(/[*_~`]/g,'').trim();
-  if(!clean)return;
-  const trySpeak=()=>{
-    const utt=new SpeechSynthesisUtterance(clean);
-    const v=getBestEnglishVoice(currentAccent);
-    if(v){utt.voice=v;utt.lang=v.lang;}
-    else{utt.lang=currentAccent;}
-    utt.pitch=1.0;utt.rate=0.92;
-    window.speechSynthesis.speak(utt);
+// Pre-loaded voice cache for mobile compatibility
+let _cachedVoices = [];
+let _voiceLoadAttempts = 0;
+
+function _loadVoices() {
+  const vv = window.speechSynthesis.getVoices();
+  if(vv.length > 0) { _cachedVoices = vv; return true; }
+  return false;
+}
+
+// Pre-warm voices on first user interaction (critical for iOS)
+function _prewarmVoices() {
+  if(_cachedVoices.length > 0) return;
+  if(!_loadVoices()) {
+    // Polling fallback for iOS (voiceschanged may never fire)
+    window.speechSynthesis.onvoiceschanged = function() {
+      _loadVoices();
+    };
+    // Also poll every 100ms for up to 3 seconds (iOS workaround)
+    const poll = setInterval(function() {
+      if(_loadVoices() || _voiceLoadAttempts++ > 30) clearInterval(poll);
+    }, 100);
+  }
+}
+// Start prewarming immediately
+_prewarmVoices();
+
+function speak(text) {
+  if(isMuted || !text) return;
+  const clean = text.replace(/\[.*?\]/g,'').replace(/<[^>]+>/g,'').replace(/[*_~`]/g,'').trim();
+  if(!clean) return;
+
+  // Refresh voice cache
+  _loadVoices();
+
+  const doSpeak = function() {
+    try {
+      window.speechSynthesis.cancel();
+      // iOS needs a tiny delay after cancel() or it stays silent
+      setTimeout(function() {
+        // Split long text into chunks (iOS cuts off after ~200 chars)
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const chunks = isIOS ? _splitIntoChunks(clean, 180) : [clean];
+        _speakChunks(chunks, 0);
+      }, 50);
+    } catch(e) { console.log('TTS error:', e); }
   };
-  // Voices may not be loaded yet
-  if(window.speechSynthesis.getVoices().length>0){trySpeak();}
-  else{window.speechSynthesis.onvoiceschanged=()=>trySpeak();}
+
+  if(_cachedVoices.length > 0) {
+    doSpeak();
+  } else {
+    // Last-resort: try to get voices one more time
+    let attempts = 0;
+    const wait = setInterval(function() {
+      if(_loadVoices() || attempts++ > 20) {
+        clearInterval(wait);
+        doSpeak();
+      }
+    }, 100);
+  }
 }
 
-window.setAccent=lang=>{
-  currentAccent=lang==='uk'?'en-GB':'en-US';
-  ['us','uk'].forEach(k=>{
+function _splitIntoChunks(text, maxLen) {
+  if(text.length <= maxLen) return [text];
+  const chunks = [];
+  // Split on sentence boundaries
+  const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
+  let current = '';
+  sentences.forEach(function(s) {
+    if((current + s).length > maxLen && current) {
+      chunks.push(current.trim());
+      current = s;
+    } else {
+      current += s;
+    }
+  });
+  if(current.trim()) chunks.push(current.trim());
+  return chunks.length ? chunks : [text];
+}
+
+function _speakChunks(chunks, idx) {
+  if(idx >= chunks.length) return;
+  const utt = new SpeechSynthesisUtterance(chunks[idx]);
+  const v = getBestEnglishVoice(currentAccent);
+  if(v) { utt.voice = v; utt.lang = v.lang; }
+  else { utt.lang = currentAccent; }
+  utt.pitch = 1.0;
+  utt.rate  = 0.92;
+  utt.onend = function() {
+    // Small gap between chunks
+    setTimeout(function() { _speakChunks(chunks, idx+1); }, 100);
+  };
+  utt.onerror = function(e) {
+    if(e.error !== 'interrupted') console.log('TTS chunk error:', e.error);
+  };
+  try { window.speechSynthesis.speak(utt); } catch(e) {}
+}
+
+window.setAccent=function(lang){
+  const accentMap = {us:'en-US', uk:'en-GB', au:'en-AU', 'in':'en-IN'};
+  currentAccent = accentMap[lang] || 'en-US';
+  // Refresh voice cache when accent changes
+  _loadVoices();
+  ['us','uk','au','in'].forEach(function(k){
     const b=document.getElementById('vbtn-'+k);
-    if(!b)return;
-    const active=((lang==='us'&&currentAccent==='en-US')||(lang==='uk'&&currentAccent==='en-GB'));
-    if((k===lang)){b.style.background='rgba(255,255,255,.25)';b.style.color='#fff';b.style.borderColor='rgba(255,255,255,.4)';}
-    else{b.style.background='transparent';b.style.color='var(--muted-navy)';b.style.borderColor='rgba(255,255,255,.15)';}
+    if(!b) return;
+    if(k===lang){
+      b.style.background='rgba(255,255,255,.25)';
+      b.style.color='#fff';
+      b.style.borderColor='rgba(255,255,255,.4)';
+    } else {
+      b.style.background='transparent';
+      b.style.color='var(--muted-navy)';
+      b.style.borderColor='rgba(255,255,255,.15)';
+    }
   });
 };
 
@@ -6714,6 +6816,17 @@ window.readingNav = function(delta) { readingCurrentText += delta; renderReading
 <div id="ios-install-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:9970" onclick="document.getElementById('ios-install-modal').style.display='none';document.getElementById('ios-install-overlay').style.display='none'"></div>
 
 <script>
+// Prewarm TTS voices on first user interaction (iOS requirement)
+(function(){
+  const warm = function() {
+    _prewarmVoices && _prewarmVoices();
+    document.removeEventListener('touchstart', warm);
+    document.removeEventListener('click', warm);
+  };
+  document.addEventListener('touchstart', warm, {once:true, passive:true});
+  document.addEventListener('click', warm, {once:true});
+})();
+
 // Service Worker registration (skip on preview/dev domains)
 if('serviceWorker' in navigator) {
   const _swHost = window.location.hostname;
