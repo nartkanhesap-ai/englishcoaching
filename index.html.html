@@ -1342,11 +1342,9 @@ function fmtFeedTime(ts) {
   if(!ts) return '';
   try {
     let d = ts.toDate ? ts.toDate() : ts.seconds ? new Date(ts.seconds*1000) : new Date(ts);
-    const now = new Date();
-    const sameDay = d.toDateString() === now.toDateString();
+    const dateStr = d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'2-digit'});
     const timeStr = d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
-    if(sameDay) return timeStr;
-    return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'}) + ' ' + timeStr;
+    return dateStr + ' ' + timeStr;
   } catch(e){ return ''; }
 }
 
