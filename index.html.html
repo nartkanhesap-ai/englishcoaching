@@ -2,12 +2,48 @@
 <html lang="tr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>English Coach</title>
+
+<!-- PWA Meta Tags -->
+<meta name="application-name" content="English Coach">
+<meta name="description" content="İngilizce öğrenme platformu — AI destekli kişisel koçunuz">
+<meta name="theme-color" content="#1a3a5c">
+<meta name="mobile-web-app-capable" content="yes">
+
+<!-- iOS (Safari) PWA Tags -->
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="English Coach">
+
+<!-- iOS Splash / Icons (inline SVG as data URI) -->
+<link rel="apple-touch-icon" href="data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHZpZXdCb3g9IjAgMCAxOTIgMTkyIj48cmVjdCB3aWR0aD0iMTkyIiBoZWlnaHQ9IjE5MiIgcng9IjM4IiBmaWxsPSIjMWEzYTVjIi8+PHRleHQgeD0iOTYiIHk9IjEyNSIgZm9udC1zaXplPSI5NiIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZm9udC1mYW1pbHk9IkFyaWFsIj7wn46TPC90ZXh0Pjwvc3ZnPg==">
+
+<!-- Web App Manifest -->
+<link rel="manifest" href="manifest.json">
+
+<!-- PWA Install prompt handler -->
+<script>
+  let _pwaPrompt = null;
+  window.addEventListener('beforeinstallprompt', function(e) {
+    e.preventDefault();
+    _pwaPrompt = e;
+    // Show install button after a delay if not installed
+    setTimeout(function() {
+      const btn = document.getElementById('pwa-install-btn');
+      if(btn) btn.style.display = 'flex';
+    }, 3000);
+  });
+  window.addEventListener('appinstalled', function() {
+    const btn = document.getElementById('pwa-install-btn');
+    if(btn) btn.style.display = 'none';
+    _pwaPrompt = null;
+  });
+</script>
 <style>
 :root{--navy:#1a3a5c;--navy-dark:#0f2440;--navy-light:#2a4f7a;--navy-lighter:#3a6494;--cream:#f5f0e8;--cream-dark:#ede8dd;--white:#ffffff;--ton:#f0ece3;--muted-navy:#a8bdd0;--accent:#4a9eda;--accent-light:#e8f4fd;--green:#2d8a4e;--green-light:#e8f5ee;--red:#c0392b;--red-light:#fdf0ee;--amber:#d4870a;--amber-light:#fef3e2;--border:rgba(26,58,92,0.15);--border-c:rgba(26,58,92,0.1)}
 *{box-sizing:border-box;margin:0;padding:0}
-body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--navy-dark);background:var(--cream);min-height:100vh}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;font-size:14px;color:var(--navy-dark);background:var(--cream);min-height:100vh;padding-top:env(safe-area-inset-top);padding-bottom:env(safe-area-inset-bottom)}
 .app{max-width:720px;margin:0 auto;padding:1rem}
 input,select,textarea{width:100%;padding:9px 12px;border:1px solid var(--border);border-radius:8px;background:#fff;color:var(--navy-dark);font-size:14px;font-family:inherit;outline:none;transition:border .2s}
 input:focus,select:focus,textarea:focus{border-color:var(--navy-light)}
@@ -33,7 +69,7 @@ button:active{transform:scale(.98)}
 .tab{padding:9px 13px;border:none;background:transparent;cursor:pointer;font-size:13px;color:var(--navy-lighter);border-bottom:2px solid transparent;margin-bottom:-2px;border-radius:0;white-space:nowrap;transition:all .15s}
 .tab:hover{background:var(--accent-light)}
 .tab.active{color:var(--navy);font-weight:700;border-bottom-color:var(--accent)}
-.tc{display:none}.tc.active{display:block}
+@keyframes livePulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.3)}} .tc{display:none}.tc.active{display:block}
 .row{display:flex;gap:10px;margin-bottom:10px}.row>*{flex:1}
 .lbl{font-size:12px;color:var(--navy-lighter);margin-bottom:4px;font-weight:500}
 .flex{display:flex;align-items:center;gap:10px}.f1{flex:1}
@@ -251,8 +287,23 @@ button:active{transform:scale(.98)}
 
   <!-- TEACHER: STUDENTS -->
   <div id="tc-stud" class="tc">
-    <div class="flex" style="margin-bottom:1rem">
-      <div class="st f1" style="margin:0">Öğrencilerim</div>
+    <!-- LIVE ACTIVITY FEED -->
+    <div class="card-navy" style="margin-bottom:12px;padding:10px 14px">
+      <div style="display:flex;align-items:center;margin-bottom:8px">
+        <div style="flex:1;font-size:13px;font-weight:700;color:#fff">🔴 Canlı Aktivite</div>
+        <div style="display:flex;align-items:center;gap:5px">
+          <div id="live-dot" style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:livePulse 2s infinite"></div>
+          <span style="font-size:11px;color:rgba(255,255,255,.5)" id="live-status">Bağlanıyor...</span>
+        </div>
+      </div>
+      <div id="live-feed" style="max-height:130px;overflow-y:auto;display:flex;flex-direction:column;gap:3px">
+        <div style="font-size:12px;color:rgba(255,255,255,.4);font-style:italic">Öğrenci hareketi burada anlık görünecek...</div>
+      </div>
+    </div>
+    <!-- STUDENT LIST HEADER -->
+    <div style="display:flex;align-items:center;margin-bottom:10px;gap:8px">
+      <div class="st f1" style="margin:0">Öğrencilerim <span id="stud-count-badge" style="font-size:12px;font-weight:400;color:#889"></span></div>
+      <button onclick="loadAllStudents()" style="font-size:12px;padding:5px 10px">🔄 Yenile</button>
       <button onclick="toggleAS()">+ Ekle</button>
     </div>
     <div id="as-form" class="card" style="display:none">
@@ -268,7 +319,7 @@ button:active{transform:scale(.98)}
         <button onclick="toggleAS()">İptal</button>
       </div>
     </div>
-    <div id="stud-list"><div class="muted">Yükleniyor...</div></div>
+    <div id="stud-list"><div class="muted"><span class="spin spd"></span> Yükleniyor...</div></div>
   </div>
 
   <!-- TEACHER: TOOLS -->
@@ -992,7 +1043,7 @@ async function requestNotificationPermission() {
     const permission = await Notification.requestPermission();
     if(permission === 'granted') {
       // VAPID key - replace with your FCM web push certificate key from Firebase Console
-      const VAPID_KEY = 'BOUOMQ6hvrgbjcyt4c1ksJXSCLB_HJ2cwb2VegNy5mhKC9qCKRdZS2YQVPYFlTm2REPb1G3m6k8waB5-KJ4O53A';
+      const VAPID_KEY = 'YOUR_VAPID_KEY_HERE';
       const token = await getToken(messaging, {vapidKey: VAPID_KEY}).catch(()=>null);
       if(token && cu && cu.uid) {
         // Save FCM token to studentDirectory
@@ -1090,7 +1141,7 @@ window.doReg=async()=>{
   b.innerHTML='Üyeliği Oluştur ve Seviye Tespit Sınavına Başla';b.disabled=false;
 };
 
-window.doLogout=async()=>{await signOut(auth);show('s-login');};
+window.doLogout=async()=>{if(_studSnapshotUnsub){_studSnapshotUnsub();_studSnapshotUnsub=null;} await signOut(auth);show('s-login');};
 
 // ONBOARDING
 function startOb(){obStep=0;obA={};show('s-ob');renderOb();}
@@ -1116,6 +1167,8 @@ async function loadTeacher(){
   await refDash();
   await fillSels();
   loadHistRT();
+  // Start real-time student monitoring immediately (even before stud tab is opened)
+  loadAllStudents();
   tTab('dash');
 }
 
@@ -1130,46 +1183,121 @@ async function fillSels(){
   await loadAllStudents();
 }
 
-async function loadAllStudents() {
+// onSnapshot listener handle - keep reference to unsubscribe
+let _studSnapshotUnsub = null;
+let _prevStudData = {}; // track previous state to detect changes
+
+function loadAllStudents() {
   const el = document.getElementById('stud-list');
   if(!el) return;
   el.innerHTML = '<div class="muted"><span class="spin spd"></span> Öğrenciler yükleniyor...</div>';
-  try {
-    const merged = {};
 
-    // Source 1: studentDirectory (most up to date)
-    const dirSnap = await getDocs(collection(db,'studentDirectory')).catch(()=>({docs:[]}));
-    dirSnap.docs.forEach(function(d){ merged[d.id] = {id:d.id, src:'dir', _d:d.data()}; });
+  // Unsubscribe from previous listener if exists
+  if(_studSnapshotUnsub) { _studSnapshotUnsub(); _studSnapshotUnsub = null; }
 
-    // Source 2: teacher's manually-added students subcollection
-    const teachSnap = await getDocs(collection(db,'teachers',cu.uid,'students')).catch(()=>({docs:[]}));
+  // Also load from teachers/{uid}/students (existing students not yet in directory)
+  getDocs(collection(db,'teachers',cu.uid,'students')).then(function(teachSnap){
     teachSnap.docs.forEach(function(d){
-      if(!merged[d.id]) {
-        const sd = d.data();
-        merged[d.id] = {id:d.id, src:'teacher', _d:{
-          name:sd.name||'?', email:sd.email||'', level:sd.level||'B1',
-          interests:sd.interests||'', voiceScore:0, totalAIMinutes:0,
-          createdAt:sd.createdAt||null, uid:d.id
-        }};
-        // Sync this student to studentDirectory so they appear in future loads
-        setDoc(doc(db,'studentDirectory',d.id), merged[d.id]._d).catch(function(){});
+      const sd = d.data();
+      setDoc(doc(db,'studentDirectory',d.id),{
+        name:sd.name||'?', email:sd.email||'', level:sd.level||'B1',
+        interests:sd.interests||'', voiceScore:sd.voiceScore||0,
+        totalAIMinutes:sd.totalAIMinutes||0,
+        createdAt:sd.createdAt||null, uid:d.id
+      },{merge:true}).catch(function(){});
+    });
+  }).catch(function(){});
+
+  // Real-time listener on studentDirectory
+  _studSnapshotUnsub = onSnapshot(
+    collection(db,'studentDirectory'),
+    function(snap) {
+      // Update live feed with changes
+      snap.docChanges().forEach(function(change) {
+        const s = change.doc.data();
+        const prev = _prevStudData[change.doc.id] || {};
+        if(change.type === 'added' && Object.keys(_prevStudData).length > 0) {
+          addLiveFeedEvent('🆕', s.name || '?', 'platforma katıldı', '#4ade80');
+        } else if(change.type === 'modified') {
+          // Detect specific changes
+          if(s.voiceScore !== prev.voiceScore && s.voiceScore > (prev.voiceScore||0)) {
+            const gained = s.voiceScore - (prev.voiceScore||0);
+            addLiveFeedEvent('⭐', s.name||'?', '+' + gained + ' puan kazandı', '#f59e0b');
+          }
+          if(s.totalAIMinutes !== prev.totalAIMinutes && s.totalAIMinutes > (prev.totalAIMinutes||0)) {
+            addLiveFeedEvent('💬', s.name||'?', 'AI sohbet: ' + s.totalAIMinutes + ' dk', '#60a5fa');
+          }
+          // Detect badge change (compute badge from score/mins)
+          const prevBadge = getBadgeForStudent(prev.voiceScore||0, prev.totalAIMinutes||0);
+          const newBadge = getBadgeForStudent(s.voiceScore||0, s.totalAIMinutes||0);
+          if(newBadge.name !== prevBadge.name && Object.keys(prev).length > 0) {
+            addLiveFeedEvent(newBadge.emoji, s.name||'?', newBadge.name + ' rozetine yükseldi! 🎉', '#a78bfa');
+          }
+          if(s.level !== prev.level && prev.level) {
+            addLiveFeedEvent('📈', s.name||'?', 'seviye ' + (prev.level||'?') + ' → ' + s.level, '#34d399');
+          }
+        } else if(change.type === 'removed') {
+          addLiveFeedEvent('🗑️', s.name||'?', 'hesap silindi', '#f87171');
+        }
+        // Update previous state
+        _prevStudData[change.doc.id] = Object.assign({}, s);
+      });
+
+      // Re-render student list
+      const sorted = snap.docs.sort(function(a,b){
+        return (b.data().createdAt?.seconds||0) - (a.data().createdAt?.seconds||0);
+      });
+
+      // Update student count badge
+      const countEl = document.getElementById('stud-count-badge');
+      if(countEl) countEl.textContent = '(' + sorted.length + ' öğrenci)';
+
+      if(!sorted.length) {
+        el.innerHTML = '<div class="muted" style="padding:1rem;text-align:center">Henüz kayıtlı öğrenci yok.</div>';
+        return;
       }
-    });
+      renderAllStudents(sorted);
 
-    const allStudents = Object.values(merged).sort(function(a,b){
-      return (b._d.createdAt?.seconds||0) - (a._d.createdAt?.seconds||0);
-    });
-
-    if(!allStudents.length) {
-      el.innerHTML = '<div class="muted" style="padding:1rem;text-align:center">Henüz kayıtlı öğrenci yok.</div>';
-      return;
+      // Update live status
+      const statusEl = document.getElementById('live-status');
+      if(statusEl) statusEl.textContent = sorted.length + ' öğrenci izleniyor';
+    },
+    function(err) {
+      el.innerHTML = '<div class="alert ae">Hata: ' + err.message + '</div>';
+      const statusEl = document.getElementById('live-status');
+      if(statusEl) statusEl.textContent = 'Bağlantı hatası';
     }
-    renderAllStudents(allStudents.map(function(s){ return {id:s.id, data:function(){ return s._d; }}; }));
-  } catch(ex) {
-    el.innerHTML = '<div class="alert ae">Hata: ' + ex.message + '</div>';
-  }
+  );
 }
-function renderAllStudents(docs) {
+
+function getBadgeForStudent(pts, mins) {
+  let badge = BADGES[0];
+  for(let i=0;i<BADGES.length;i++){
+    if(pts >= BADGES[i].pts && mins >= BADGES[i].mins) badge = BADGES[i];
+    else break;
+  }
+  return badge;
+}
+
+function addLiveFeedEvent(emoji, name, action, color) {
+  const feed = document.getElementById('live-feed');
+  if(!feed) return;
+  // Remove placeholder
+  const placeholder = feed.querySelector('div[style*="italic"]');
+  if(placeholder) placeholder.remove();
+  const now = new Date();
+  const timeStr = now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+  const item = document.createElement('div');
+  item.style.cssText = 'display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.08);font-size:12px;animation:fadeInFeed .3s ease';
+  item.innerHTML = '<span style="font-size:14px">' + emoji + '</span>' +
+    '<span style="color:rgba(255,255,255,.9);flex:1"><strong>' + name + '</strong> ' + action + '</span>' +
+    '<span style="color:rgba(255,255,255,.35);font-size:11px;flex-shrink:0">' + timeStr + '</span>';
+  feed.insertBefore(item, feed.firstChild);
+  // Keep max 20 items
+  while(feed.children.length > 20) feed.removeChild(feed.lastChild);
+  // Scroll to top
+  feed.scrollTop = 0;
+}function renderAllStudents(docs) {
   const el = document.getElementById('stud-list');
   if(!el) return;
   el.innerHTML = '';
@@ -5037,7 +5165,7 @@ window.tTab = tab => {
   const el = document.getElementById('tc-'+tab);
   if(el) el.classList.add('active');
   if(tab==='dash') refDash();
-  if(tab==='stud') { fillSels(); loadAllStudents(); }
+  if(tab==='stud') { fillSels(); if(!_studSnapshotUnsub) loadAllStudents(); }
   if(tab==='ttools') fillSels();
   if(tab==='moderation') loadModerationFeed();
 };
@@ -6363,6 +6491,87 @@ window.readingNav = function(delta) { readingCurrentText += delta; renderReading
     </div>
   </div>
 </div>
+
+<!-- PWA Install Button (Android Chrome) -->
+<div id="pwa-install-btn" style="display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9970;background:var(--navy);color:#fff;padding:10px 20px;border-radius:24px;box-shadow:0 4px 20px rgba(0,0,0,.3);align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap" onclick="installPWA()">
+  <span style="font-size:18px">📱</span>
+  <span>Uygulamayı Yükle</span>
+  <button onclick="event.stopPropagation();document.getElementById('pwa-install-btn').style.display='none'" style="background:rgba(255,255,255,.2);border:none;color:#fff;border-radius:50%;width:20px;height:20px;cursor:pointer;padding:0;font-size:12px;line-height:20px">✕</button>
+</div>
+
+<!-- iOS Install Instructions Modal -->
+<div id="ios-install-modal" style="display:none;position:fixed;bottom:0;left:0;right:0;z-index:9971;background:#fff;border-radius:20px 20px 0 0;box-shadow:0 -4px 30px rgba(0,0,0,.2);padding:20px 20px 40px">
+  <div style="text-align:center;margin-bottom:16px">
+    <div style="width:40px;height:4px;background:#ddd;border-radius:2px;margin:0 auto 16px"></div>
+    <div style="font-size:18px;font-weight:700;color:var(--navy);margin-bottom:6px">📱 Uygulamayı Yükle</div>
+    <div style="font-size:13px;color:#889">Ana ekrana ekle — uygulama gibi çalışır</div>
+  </div>
+  <div style="background:var(--cream);border-radius:12px;padding:14px;margin-bottom:14px">
+    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">1</div>
+      <div style="font-size:13px;color:var(--navy-dark);padding-top:4px">Tarayıcı alt çubuğundaki <strong>Paylaş</strong> butonuna dokun <span style="font-size:16px">⬆️</span></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:12px;margin-bottom:12px">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">2</div>
+      <div style="font-size:13px;color:var(--navy-dark);padding-top:4px">Listeden <strong>"Ana Ekrana Ekle"</strong> seçeneğini seç <span style="font-size:16px">➕</span></div>
+    </div>
+    <div style="display:flex;align-items:flex-start;gap:12px">
+      <div style="width:28px;height:28px;border-radius:50%;background:var(--navy);color:#fff;display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0">3</div>
+      <div style="font-size:13px;color:var(--navy-dark);padding-top:4px">Sağ üstten <strong>"Ekle"</strong>ye dokun — bitti! 🎉</div>
+    </div>
+  </div>
+  <button onclick="document.getElementById('ios-install-modal').style.display='none'" style="width:100%;background:var(--navy);color:#fff;border:none;border-radius:12px;padding:14px;font-size:15px;font-weight:600;cursor:pointer">Anladım</button>
+</div>
+<div id="ios-install-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:9970" onclick="document.getElementById('ios-install-modal').style.display='none';document.getElementById('ios-install-overlay').style.display='none'"></div>
+
+<script>
+// Service Worker registration (skip on preview/dev domains)
+if('serviceWorker' in navigator) {
+  const _swHost = window.location.hostname;
+  const _swSkip = _swHost.includes('claudeusercontent.com') ||
+                  _swHost.includes('localhost') ||
+                  _swHost.includes('127.0.0.1');
+  if(!_swSkip) {
+    window.addEventListener('load', function() {
+      navigator.serviceWorker.register('/firebase-messaging-sw.js').then(function(reg) {
+        console.log('SW registered:', reg.scope);
+      }).catch(function(err) {
+        console.log('SW registration failed:', err);
+      });
+    });
+  }
+}
+
+function installPWA() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
+  if(isIOS) {
+    document.getElementById('ios-install-modal').style.display = 'block';
+    document.getElementById('ios-install-overlay').style.display = 'block';
+  } else if(_pwaPrompt) {
+    _pwaPrompt.prompt();
+    _pwaPrompt.userChoice.then(function(result) {
+      if(result.outcome === 'accepted') {
+        document.getElementById('pwa-install-btn').style.display = 'none';
+      }
+      _pwaPrompt = null;
+    });
+  }
+}
+
+// Auto-show iOS install hint after 5 seconds if on Safari iOS and not standalone
+(function() {
+  const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+  const isStandalone = window.navigator.standalone === true;
+  const isSafari = /^((?!chrome|android).)*safari/i.test(navigator.userAgent);
+  if(isIOS && isSafari && !isStandalone) {
+    // Show install button
+    setTimeout(function() {
+      const btn = document.getElementById('pwa-install-btn');
+      if(btn) btn.style.display = 'flex';
+    }, 5000);
+  }
+})();
+</script>
 
 </body>
 </html>
