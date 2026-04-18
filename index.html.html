@@ -1938,7 +1938,7 @@ function _prewarmVoices() {
     }, 150);
   }
 }
-_prewarmVoices();
+try{_prewarmVoices();}catch(e){}
 
 function getBestEnglishVoice(lang) {
   const voices = _cachedVoices.length ? _cachedVoices : window.speechSynthesis.getVoices();
@@ -6937,7 +6937,7 @@ window.readingNav = function(delta) { readingCurrentText += delta; renderReading
 </div>
 
 <!-- FORGOT PASSWORD MODAL -->
-<div id="forgot-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,20,40,.8);z-index:9995;display:none;align-items:center;justify-content:center;padding:1rem">
+<div id="forgot-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,20,40,.8);z-index:9995;align-items:center;justify-content:center;padding:1rem">
   <div style="background:#fff;border-radius:16px;padding:1.5rem;max-width:380px;width:100%">
     <div style="font-weight:700;font-size:16px;color:var(--navy);margin-bottom:8px">🔑 Şifre Sıfırlama</div>
     <div style="font-size:13px;color:#667;margin-bottom:16px;line-height:1.6">E-posta adresinizi girin. Şifre sıfırlama bağlantısı e-postanıza gönderilecek.</div>
