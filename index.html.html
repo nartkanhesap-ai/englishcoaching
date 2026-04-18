@@ -1222,28 +1222,30 @@ function loadAllStudents() {
       snap.docChanges().forEach(function(change) {
         const s = change.doc.data();
         const prev = _prevStudData[change.doc.id] || {};
+        // Get the best available timestamp from Firestore data
+        const evTs = s.activityAt || s.lastLogin || null;
         if(change.type === 'added' && Object.keys(_prevStudData).length > 0) {
-          addLiveFeedEvent('🆕', s.name || '?', 'platforma katıldı', '#4ade80');
+          addLiveFeedEvent('🆕', s.name || '?', 'platforma katıldı', '#4ade80', s.lastLogin);
         } else if(change.type === 'modified') {
           // Detect specific changes
           if(s.voiceScore !== prev.voiceScore && s.voiceScore > (prev.voiceScore||0)) {
             const gained = s.voiceScore - (prev.voiceScore||0);
-            addLiveFeedEvent('⭐', s.name||'?', '+' + gained + ' puan kazandı', '#f59e0b');
+            addLiveFeedEvent('⭐', s.name||'?', '+' + gained + ' puan kazandı', '#f59e0b', s.activityAt||evTs);
           }
           if(s.totalAIMinutes !== prev.totalAIMinutes && s.totalAIMinutes > (prev.totalAIMinutes||0)) {
-            addLiveFeedEvent('💬', s.name||'?', 'AI sohbet: ' + s.totalAIMinutes + ' dk', '#60a5fa');
+            addLiveFeedEvent('💬', s.name||'?', 'AI sohbet: ' + s.totalAIMinutes + ' dk', '#60a5fa', s.activityAt||evTs);
           }
-          // Detect badge change (compute badge from score/mins)
+          // Detect badge change
           const prevBadge = getBadgeForStudent(prev.voiceScore||0, prev.totalAIMinutes||0);
           const newBadge = getBadgeForStudent(s.voiceScore||0, s.totalAIMinutes||0);
           if(newBadge.name !== prevBadge.name && Object.keys(prev).length > 0) {
-            addLiveFeedEvent(newBadge.emoji, s.name||'?', newBadge.name + ' rozetine yükseldi! 🎉', '#a78bfa');
+            addLiveFeedEvent(newBadge.emoji, s.name||'?', newBadge.name + ' rozetine yükseldi! 🎉', '#a78bfa', evTs);
           }
           if(s.level !== prev.level && prev.level) {
-            addLiveFeedEvent('📈', s.name||'?', 'seviye ' + (prev.level||'?') + ' → ' + s.level, '#34d399');
+            addLiveFeedEvent('📈', s.name||'?', 'seviye ' + (prev.level||'?') + ' → ' + s.level, '#34d399', evTs);
           }
         } else if(change.type === 'removed') {
-          addLiveFeedEvent('🗑️', s.name||'?', 'hesap silindi', '#f87171');
+          addLiveFeedEvent('🗑️', s.name||'?', 'hesap silindi', '#f87171', null);
         }
         // Update previous state
         _prevStudData[change.doc.id] = Object.assign({}, s);
@@ -1285,15 +1287,21 @@ function getBadgeForStudent(pts, mins) {
   return badge;
 }
 
-function addLiveFeedEvent(emoji, name, action, color) {
+function addLiveFeedEvent(emoji, name, action, color, tsData) {
   const feed = document.getElementById('live-feed');
   if(!feed) return;
   // Remove placeholder
   const placeholder = feed.querySelector('div[style*="italic"]');
   if(placeholder) placeholder.remove();
-  const now = new Date();
-  const timeStr = now.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'2-digit'}) +
-                  ' ' + now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+  // Use provided Firestore timestamp if available, otherwise current time
+  let eventTime;
+  try {
+    if(tsData && tsData.toDate) eventTime = tsData.toDate();
+    else if(tsData && tsData.seconds) eventTime = new Date(tsData.seconds * 1000);
+    else eventTime = new Date();
+  } catch(e) { eventTime = new Date(); }
+  const timeStr = eventTime.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'2-digit'}) +
+                  ' ' + eventTime.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
   const item = document.createElement('div');
   item.style.cssText = 'display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.08);font-size:12px;animation:fadeInFeed .3s ease';
   item.innerHTML = '<span style="font-size:14px">' + emoji + '</span>' +
@@ -2146,7 +2154,11 @@ async function loadAIMinutes(){
           const currentScore = Math.max(voiceScore, dData.voiceScore||0);
           const currentMins = Math.max(Math.floor(chatTotalSecs/60), dData.totalAIMinutes||0);
           if(currentScore !== (dData.voiceScore||0) || currentMins !== (dData.totalAIMinutes||0)) {
-            updateDoc(doc(db,'studentDirectory',cu.uid),{voiceScore:currentScore, totalAIMinutes:currentMins}).catch(function(){});
+            updateDoc(doc(db,'studentDirectory',cu.uid),{
+              voiceScore:currentScore,
+              totalAIMinutes:currentMins,
+              activityAt:serverTimestamp()
+            }).catch(function(){});
           }
         }
       } catch(e) {}
