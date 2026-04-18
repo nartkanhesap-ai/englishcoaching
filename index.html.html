@@ -1056,13 +1056,7 @@ const cfg={apiKey:"AIzaSyD6cPednhXxhBawUJq4N1rR8c-XGkai5VI",authDomain:"english-
 const TEACHER_EMAIL="ogretmen@englishcoach.com";
 const fapp=initializeApp(cfg);
 const auth=getAuth(fapp);
-// Clear stale auth session on fresh page load (prevents auto-login)
-// sessionStorage is cleared when browser tab is closed, not on refresh
-if(!sessionStorage.getItem('ec_session_active')) {
-  // Fresh page load - sign out any lingering session
-  signOut(auth).catch(()=>{});
-}
-sessionStorage.setItem('ec_session_active', '1');
+
 
 // Firebase Cloud Messaging setup
 let messaging = null;
