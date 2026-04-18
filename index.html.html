@@ -297,13 +297,41 @@ button:active{transform:scale(.98)}
     <div class="card-navy" style="margin-bottom:12px;padding:10px 14px">
       <div style="display:flex;align-items:center;margin-bottom:8px">
         <div style="flex:1;font-size:13px;font-weight:700;color:#fff">🔴 Canlı Aktivite</div>
-        <div style="display:flex;align-items:center;gap:5px">
-          <div id="live-dot" style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:livePulse 2s infinite"></div>
-          <span style="font-size:11px;color:rgba(255,255,255,.5)" id="live-status">Bağlanıyor...</span>
+        <div style="display:flex;align-items:center;gap:8px">
+          <div style="display:flex;align-items:center;gap:5px">
+            <div id="live-dot" style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:livePulse 2s infinite"></div>
+            <span style="font-size:11px;color:rgba(255,255,255,.5)" id="live-status">Bağlanıyor...</span>
+          </div>
+          <button onclick="openLiveFeedModal()" style="background:rgba(255,255,255,.15);border:none;color:#fff;font-size:11px;padding:3px 10px;border-radius:6px;cursor:pointer">Tümünü Gör ↗</button>
         </div>
       </div>
-      <div id="live-feed" style="max-height:130px;overflow-y:auto;display:flex;flex-direction:column;gap:3px">
+      <div id="live-feed" style="max-height:160px;overflow-y:auto;display:flex;flex-direction:column;gap:3px">
         <div style="font-size:12px;color:rgba(255,255,255,.4);font-style:italic">Öğrenci hareketi burada anlık görünecek...</div>
+      </div>
+    </div>
+
+    <!-- LIVE FEED FULL MODAL -->
+    <div id="live-feed-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,20,40,.85);z-index:9990;padding:1rem">
+      <div style="max-width:600px;margin:2rem auto;background:#fff;border-radius:16px;overflow:hidden;max-height:90vh;display:flex;flex-direction:column">
+        <div style="background:var(--navy);padding:14px 18px;display:flex;align-items:center;flex-shrink:0">
+          <div style="flex:1;color:#fff;font-weight:700;font-size:15px">🔴 Aktivite Geçmişi</div>
+          <div style="display:flex;align-items:center;gap:5px;margin-right:12px">
+            <div style="width:8px;height:8px;border-radius:50%;background:#4ade80;animation:livePulse 2s infinite"></div>
+            <span style="font-size:11px;color:rgba(255,255,255,.6)">Canlı izleniyor</span>
+          </div>
+          <button onclick="closeLiveFeedModal()" style="background:rgba(255,255,255,.15);border:none;color:#fff;border-radius:50%;width:28px;height:28px;cursor:pointer;font-size:16px;line-height:28px;text-align:center">✕</button>
+        </div>
+        <div style="padding:8px 12px;background:var(--cream);border-bottom:1px solid var(--border-c);display:flex;gap:6px;flex-wrap:wrap;flex-shrink:0">
+          <button onclick="filterFeed('all',this)" class="bp bsm" id="feed-filter-all">Tümü</button>
+          <button onclick="filterFeed('login',this)" class="bsm" id="feed-filter-login">🔑 Girişler</button>
+          <button onclick="filterFeed('score',this)" class="bsm" id="feed-filter-score">⭐ Puanlar</button>
+          <button onclick="filterFeed('chat',this)" class="bsm" id="feed-filter-chat">💬 Sohbet</button>
+          <button onclick="filterFeed('badge',this)" class="bsm" id="feed-filter-badge">🏅 Rozetler</button>
+          <button onclick="filterFeed('word',this)" class="bsm" id="feed-filter-word">📚 Kelimeler</button>
+        </div>
+        <div id="live-feed-modal-list" style="overflow-y:auto;flex:1;padding:12px;min-height:200px">
+          <div class="muted" style="text-align:center;padding:2rem"><span class="spin spd"></span> Yükleniyor...</div>
+        </div>
       </div>
     </div>
     <!-- STUDENT LIST HEADER -->
@@ -1147,7 +1175,7 @@ window.doReg=async()=>{
   b.innerHTML='Üyeliği Oluştur ve Seviye Tespit Sınavına Başla';b.disabled=false;
 };
 
-window.doLogout=async()=>{if(_studSnapshotUnsub){_studSnapshotUnsub();_studSnapshotUnsub=null;} await signOut(auth);show('s-login');};
+window.doLogout=async()=>{if(_studSnapshotUnsub){_studSnapshotUnsub();_studSnapshotUnsub=null;} if(_feedUnsub){_feedUnsub();_feedUnsub=null;} await signOut(auth);show('s-login');};
 
 // ONBOARDING
 function startOb(){obStep=0;obA={};show('s-ob');renderOb();}
@@ -1173,8 +1201,9 @@ async function loadTeacher(){
   await refDash();
   await fillSels();
   loadHistRT();
-  // Start real-time student monitoring immediately (even before stud tab is opened)
+  // Start real-time student monitoring + activity feed
   loadAllStudents();
+  startLiveFeedListener();
   tTab('dash');
 }
 
@@ -1292,32 +1321,112 @@ function getBadgeForStudent(pts, mins) {
   return badge;
 }
 
-function addLiveFeedEvent(emoji, name, action, color, tsData) {
+// ── FIRESTORE-BACKED LIVE FEED ───────────────────────────
+let _allFeedEvents = [];
+let _feedFilter = 'all';
+let _feedUnsub = null;
+
+function startLiveFeedListener() {
+  if(_feedUnsub) { _feedUnsub(); _feedUnsub = null; }
+  const feedQ = query(collection(db,'activityFeed'), orderBy('ts','desc'), limit(60));
+  _feedUnsub = onSnapshot(feedQ, function(snap) {
+    _allFeedEvents = snap.docs.map(function(d){ return Object.assign({id:d.id}, d.data()); });
+    renderLiveFeedPanel();
+    renderLiveFeedModal();
+    const statusEl = document.getElementById('live-status');
+    if(statusEl) statusEl.textContent = _allFeedEvents.length + ' aktivite izleniyor';
+  }, function(err){ console.log('Feed err:', err.message); });
+}
+
+function fmtFeedTime(ts) {
+  if(!ts) return '';
+  try {
+    let d = ts.toDate ? ts.toDate() : ts.seconds ? new Date(ts.seconds*1000) : new Date(ts);
+    const now = new Date();
+    const sameDay = d.toDateString() === now.toDateString();
+    const timeStr = d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+    if(sameDay) return timeStr;
+    return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit'}) + ' ' + timeStr;
+  } catch(e){ return ''; }
+}
+
+function buildFeedItem(ev, dark) {
+  const av    = ev.avatarEmoji || '👤';
+  const avBg  = ev.avatarColor || '#1a3a5c';
+  const time  = fmtFeedTime(ev.ts);
+  const rowBg = dark ? 'rgba(255,255,255,.08)' : '#f8fafc';
+  const nameC = dark ? 'rgba(255,255,255,.9)'  : 'var(--navy)';
+  const subC  = dark ? 'rgba(255,255,255,.55)' : '#667';
+  const timeC = dark ? 'rgba(255,255,255,.35)' : '#aaa';
+  return '<div style="display:flex;align-items:center;gap:8px;padding:7px 8px;border-radius:8px;background:'+rowBg+';margin-bottom:3px">'
+    + '<div style="width:30px;height:30px;border-radius:50%;background:'+avBg+';display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0">'+av+'</div>'
+    + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:12px;font-weight:600;color:'+nameC+';white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'
+          + '<span style="margin-right:4px">'+ev.emoji+'</span>'+(ev.name||'?')
+      + '</div>'
+      + '<div style="font-size:11px;color:'+subC+';margin-top:1px">'+(ev.action||'')+'</div>'
+    + '</div>'
+    + '<div style="text-align:right;flex-shrink:0;min-width:54px">'
+      + '<div style="font-size:10px;color:'+timeC+'">'+time+'</div>'
+      + '<div style="font-size:9px;color:'+timeC+';margin-top:2px">'+(ev.platform||'')+'</div>'
+    + '</div>'
+    + '</div>';
+}
+
+function getFilteredEvents() {
+  if(_feedFilter==='all')   return _allFeedEvents;
+  if(_feedFilter==='login') return _allFeedEvents.filter(function(e){ return (e.action||'').includes('giriş'); });
+  if(_feedFilter==='score') return _allFeedEvents.filter(function(e){ return (e.action||'').includes('puan'); });
+  if(_feedFilter==='chat')  return _allFeedEvents.filter(function(e){ return (e.action||'').includes('sohbet'); });
+  if(_feedFilter==='badge') return _allFeedEvents.filter(function(e){ return (e.action||'').includes('rozet'); });
+  if(_feedFilter==='word')  return _allFeedEvents.filter(function(e){ return (e.action||'').includes('kelime'); });
+  return _allFeedEvents;
+}
+
+function renderLiveFeedPanel() {
   const feed = document.getElementById('live-feed');
   if(!feed) return;
-  // Remove placeholder
-  const placeholder = feed.querySelector('div[style*="italic"]');
-  if(placeholder) placeholder.remove();
-  // Use provided Firestore timestamp if available, otherwise current time
-  let eventTime;
-  try {
-    if(tsData && tsData.toDate) eventTime = tsData.toDate();
-    else if(tsData && tsData.seconds) eventTime = new Date(tsData.seconds * 1000);
-    else eventTime = new Date();
-  } catch(e) { eventTime = new Date(); }
-  const timeStr = eventTime.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'2-digit'}) +
-                  ' ' + eventTime.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
-  const item = document.createElement('div');
-  item.style.cssText = 'display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.08);font-size:12px;animation:fadeInFeed .3s ease';
-  item.innerHTML = '<span style="font-size:14px">' + emoji + '</span>' +
-    '<span style="color:rgba(255,255,255,.9);flex:1"><strong>' + name + '</strong> ' + action + '</span>' +
-    '<span style="color:rgba(255,255,255,.35);font-size:11px;flex-shrink:0">' + timeStr + '</span>';
-  feed.insertBefore(item, feed.firstChild);
-  // Keep max 20 items
-  while(feed.children.length > 20) feed.removeChild(feed.lastChild);
-  // Scroll to top
-  feed.scrollTop = 0;
-}function renderAllStudents(docs) {
+  const recent = _allFeedEvents.slice(0,8);
+  if(!recent.length) {
+    feed.innerHTML = '<div style="font-size:12px;color:rgba(255,255,255,.4);font-style:italic">Henüz aktivite kaydı yok...</div>';
+    return;
+  }
+  feed.innerHTML = recent.map(function(ev){ return buildFeedItem(ev,true); }).join('');
+}
+
+function renderLiveFeedModal() {
+  const list = document.getElementById('live-feed-modal-list');
+  if(!list) return;
+  const evs = getFilteredEvents();
+  if(!evs.length) {
+    list.innerHTML = '<div class="muted" style="text-align:center;padding:2rem">Bu kategoride aktivite yok.</div>';
+    return;
+  }
+  list.innerHTML = evs.map(function(ev){ return buildFeedItem(ev,false); }).join('');
+}
+
+window.openLiveFeedModal = function() {
+  const m = document.getElementById('live-feed-modal');
+  if(m) m.style.display = 'block';
+  renderLiveFeedModal();
+};
+window.closeLiveFeedModal = function() {
+  const m = document.getElementById('live-feed-modal');
+  if(m) m.style.display = 'none';
+};
+window.filterFeed = function(type, btn) {
+  _feedFilter = type;
+  ['all','login','score','chat','badge','word'].forEach(function(t){
+    const b = document.getElementById('feed-filter-'+t);
+    if(b) b.className = (t===type ? 'bp bsm' : 'bsm');
+  });
+  renderLiveFeedModal();
+};
+
+// Legacy stub — events now come from Firestore listener
+function addLiveFeedEvent() {}
+
+function renderAllStudents(docs) {
   const el = document.getElementById('stud-list');
   if(!el) return;
   el.innerHTML = '';
@@ -1356,7 +1465,14 @@ function addLiveFeedEvent(emoji, name, action, color, tsData) {
     const flex = document.createElement('div'); flex.className = 'flex';
     // Avatar
     const av = document.createElement('div'); av.className = 'av'; av.style.flexShrink='0';
-    av.style.background = col.bg; av.style.color = col.fg; av.textContent = ini;
+    const studAvOpt = s.avatarId ? AVATAR_OPTIONS.find(function(a){return a.id===s.avatarId;}) : null;
+    if(studAvOpt) {
+      av.style.background = studAvOpt.color || col.bg;
+      av.style.color = '#fff'; av.style.fontSize = '22px';
+      av.textContent = studAvOpt.emoji;
+    } else {
+      av.style.background = col.bg; av.style.color = col.fg; av.textContent = ini;
+    }
     // Info
     const info = document.createElement('div'); info.className = 'f1'; info.style.cssText='margin-left:10px;min-width:0';
     const nameLine = document.createElement('div'); nameLine.style.cssText='font-weight:700;color:var(--navy);font-size:14px';
@@ -1695,6 +1811,7 @@ async function loadStudent(){
   chatInitialized=false;
   showCounselorBubble();
   setTimeout(requestNotificationPermission, 3000);
+  setTimeout(function(){ logActivity('🔑','platforma giriş yaptı','#4a9eda'); },2000);
 }
 
 async function checkPendW(){
@@ -1722,7 +1839,7 @@ window.checkWord=async()=>{
   if(isCorrect){
     document.getElementById('word-ov').style.display='none';
     const pl=document.createElement('div');pl.className='wplus';pl.textContent='+1 word';document.body.appendChild(pl);setTimeout(()=>pl.remove(),1000);
-    addScore(2,'Kelime bildin!');
+    addScore(2,'Kelime bildin!'); logActivity('📚','yeni kelime öğrendi','#2d8a4e');
     if(pendW.isSuggestion){
       // Just save to learned words, no Firestore delete needed
       try{
@@ -1864,7 +1981,10 @@ function addScore(pts,label){
     }
   }, 5000);
   // Track daily activity
-  if(pts > 0 && label) saveActivity('score', {pts:pts, label:label});
+  if(pts > 0 && label) {
+    saveActivity('score', {pts:pts, label:label});
+    if(pts >= 3) logActivity('⭐','+'+pts+' puan ('+label+')','#f59e0b');
+  }
 }
 
 function saveActivity(type, data) {
@@ -1888,6 +2008,29 @@ function saveActivity(type, data) {
       existing.badge = data.badge;
     }
     localStorage.setItem(key, JSON.stringify(existing));
+  } catch(e) {}
+}
+
+function getDevicePlatform() {
+  const ua = navigator.userAgent || '';
+  const isMobile = /Android|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(ua);
+  return isMobile ? '📱 Mobil' : '🖥️ Web';
+}
+
+async function logActivity(emoji, action, color) {
+  if(!cu || !cu.uid || !cp) return;
+  try {
+    const av = getMyAvatar();
+    await addDoc(collection(db,'activityFeed'), {
+      uid:cu.uid, name:cp.name||'?', email:cp.email||'',
+      avatarId:cp.avatarId||null,
+      avatarEmoji: av ? av.emoji : null,
+      avatarColor: av ? av.color : null,
+      emoji:emoji, action:action, color:color||'#4a9eda',
+      platform:getDevicePlatform(),
+      ts:serverTimestamp(),
+      date:new Date().toISOString().slice(0,10)
+    });
   } catch(e) {}
 }
 
@@ -2107,6 +2250,8 @@ async function logChat(topic){
 async function syncAIMinutes(){
   const prevMins=Math.floor((chatTotalSecs-60)/60);
   const mins=Math.floor(chatTotalSecs/60);
+  if(mins>0 && mins%5===0 && mins!==prevMins)
+    logActivity('💬',mins+' dk AI sohbet tamamladı','#60a5fa');
   try{await updateDoc(doc(db,'users',cu.uid),{totalAIMinutes:mins});}catch(ex){}
   const el=document.getElementById('sp-c');if(el)el.textContent=mins;
   cp.totalAIMinutes = mins;
@@ -5087,6 +5232,7 @@ function renderAvatarGrid() {
 window.selectAvatar = async (avatarId) => {
   try {
     await updateDoc(doc(db,'users',cu.uid),{avatarId});
+    updateDoc(doc(db,'studentDirectory',cu.uid),{avatarId}).catch(()=>{});
     cp = {...cp, avatarId};
     renderAvatarGrid();
     updateBadgeDisplay();
@@ -5108,7 +5254,12 @@ function updateBadgeDisplay() {
     if(overrideBadge) badge = overrideBadge;
   }
   // Track badge in daily activity
-  if(cp) saveActivity('badge', {badge: badge.emoji + ' ' + badge.name});
+  if(cp) {
+    saveActivity('badge', {badge: badge.emoji+' '+badge.name});
+    if(cp._lastLoggedBadge && cp._lastLoggedBadge !== badge.name)
+      logActivity(badge.emoji, badge.name+' rozetine yükseldi! 🎉','#a78bfa');
+    cp._lastLoggedBadge = badge.name;
+  }
   const el = document.getElementById('badge-icon');
   if(el) el.textContent = badge.emoji;
   if(el) el.title = badge.name;
