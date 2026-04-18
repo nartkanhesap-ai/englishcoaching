@@ -1215,6 +1215,7 @@ function loadAllStudents() {
   }).catch(function(){});
 
   // Real-time listener on studentDirectory
+  let _initialLoadDone = false; // prevents fake "joined" events on first load
   _studSnapshotUnsub = onSnapshot(
     collection(db,'studentDirectory'),
     function(snap) {
@@ -1224,9 +1225,10 @@ function loadAllStudents() {
         const prev = _prevStudData[change.doc.id] || {};
         // Get the best available timestamp from Firestore data
         const evTs = s.activityAt || s.lastLogin || null;
-        if(change.type === 'added' && Object.keys(_prevStudData).length > 0) {
+        if(change.type === 'added' && _initialLoadDone) {
+          // Only fire for truly NEW students (not initial snapshot load)
           addLiveFeedEvent('🆕', s.name || '?', 'platforma katıldı', '#4ade80', s.lastLogin);
-        } else if(change.type === 'modified') {
+        } else if(change.type === 'modified' && _initialLoadDone) {
           // Detect specific changes
           if(s.voiceScore !== prev.voiceScore && s.voiceScore > (prev.voiceScore||0)) {
             const gained = s.voiceScore - (prev.voiceScore||0);
@@ -1250,6 +1252,9 @@ function loadAllStudents() {
         // Update previous state
         _prevStudData[change.doc.id] = Object.assign({}, s);
       });
+
+      // Mark initial load complete — from now on, new 'added' events are real
+      _initialLoadDone = true;
 
       // Re-render student list
       const sorted = snap.docs.sort(function(a,b){
