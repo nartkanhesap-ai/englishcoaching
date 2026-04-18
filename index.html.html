@@ -185,9 +185,8 @@ button:active{transform:scale(.98)}
     <div class="lbl">E-posta</div><input type="email" id="l-email" placeholder="ornek@email.com" style="margin-bottom:10px">
     <div class="lbl">Şifre</div><input type="password" id="l-pass" placeholder="••••••" style="margin-bottom:14px" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="bp" style="width:100%;margin-bottom:8px" onclick="doLogin()" id="l-btn">Giriş yap</button>
-    <button style="width:100%;margin-bottom:8px" onclick="showReg()">Öğrenci hesabı oluştur</button>
-    <button style="width:100%;background:transparent;border:none;color:rgba(255,255,255,.65);font-size:12px;cursor:pointer;padding:4px;margin-bottom:4px" onclick="showForgotPassword()">Şifremi unuttum</button>
-    <div style="margin-top:8px;background:#fdf0ee;border:1.5px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:12px;color:#c0392b;line-height:1.6">
+    <button style="width:100%" onclick="showReg()">Öğrenci hesabı oluştur</button>
+    <div style="margin-top:12px;background:#fdf0ee;border:1.5px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:12px;color:#c0392b;line-height:1.6">
       ⚠️ <strong>Tarayıcı Uyarısı:</strong> Sitenin düzgün çalışabilmesi için lütfen <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong> veya <strong>Yandex</strong> tarayıcısını kullanın.
     </div>
   </div>
@@ -1046,7 +1045,7 @@ button:active{transform:scale(.98)}
 
 <script type="module">
 import{initializeApp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-app.js";
-import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,browserSessionPersistence,setPersistence,sendPasswordResetEmail}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
+import{getAuth,createUserWithEmailAndPassword,signInWithEmailAndPassword,signOut,onAuthStateChanged,browserSessionPersistence,setPersistence}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-auth.js";
 import{getFirestore,doc,setDoc,getDoc,collection,addDoc,getDocs,query,where,orderBy,limit,updateDoc,deleteDoc,onSnapshot,serverTimestamp}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-firestore.js";
 import{getStorage,ref,uploadBytes,getDownloadURL}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-storage.js";
 import{getMessaging,getToken,onMessage}from"https://www.gstatic.com/firebasejs/10.12.0/firebase-messaging.js";
@@ -1894,136 +1893,102 @@ function getBestEnglishVoice(lang){
 }
 
 // Pre-loaded voice cache for mobile compatibility
-// ── TTS SYSTEM (Mobile-compatible) ─────────────────────────
 let _cachedVoices = [];
-let _ttsUnlocked = false;
-let _speakQueue = [];
-let _isSpeaking = false;
+let _voiceLoadAttempts = 0;
 
-function _isIOS() {
-  return /iPad|iPhone|iPod/.test(navigator.userAgent) && !window.MSStream;
-}
-function _isAndroid() {
-  return /Android/i.test(navigator.userAgent);
-}
-
-function _loadVoicesNow() {
-  if(!window.speechSynthesis) return;
+function _loadVoices() {
   const vv = window.speechSynthesis.getVoices();
-  if(vv.length > 0) _cachedVoices = vv;
+  if(vv.length > 0) { _cachedVoices = vv; return true; }
+  return false;
 }
 
-// Call this from a user gesture to unlock iOS audio
-function _unlockTTS() {
-  if(_ttsUnlocked || !window.speechSynthesis) return;
-  _loadVoicesNow();
-  // iOS: speak a silent utterance to unlock audio session
-  try {
-    const unlock = new SpeechSynthesisUtterance('');
-    unlock.volume = 0;
-    window.speechSynthesis.speak(unlock);
-    _ttsUnlocked = true;
-  } catch(e) {}
-}
-
+// Pre-warm voices on first user interaction (critical for iOS)
 function _prewarmVoices() {
-  _loadVoicesNow();
-  if(window.speechSynthesis) {
-    window.speechSynthesis.onvoiceschanged = function() { _loadVoicesNow(); };
-    // Poll for voices (iOS workaround)
-    let tries = 0;
-    const poll = setInterval(function() {
-      _loadVoicesNow();
-      if(_cachedVoices.length > 0 || tries++ > 40) clearInterval(poll);
-    }, 150);
-  }
-}
-try{_prewarmVoices();}catch(e){}
-
-function getBestEnglishVoice(lang) {
-  const voices = _cachedVoices.length ? _cachedVoices : window.speechSynthesis.getVoices();
-  if(!voices.length) return null;
-  const pref = [
-    v => v.lang === lang && (v.name.includes('Natural') || v.name.includes('Online') || v.name.includes('Premium')),
-    v => v.lang === lang && !v.name.includes('eSpeak'),
-    v => v.lang === lang,
-    v => v.lang.startsWith(lang.slice(0,5)) && (v.name.includes('Natural') || v.name.includes('Online')),
-    v => v.lang.startsWith(lang.slice(0,5)),
-    v => v.lang.startsWith('en-') && (v.name.includes('Natural') || v.name.includes('Online')),
-    v => v.lang.startsWith('en-'),
-  ];
-  for(const pred of pref) { const v = voices.find(pred); if(v) return v; }
-  return null;
-}
-
-function _makeUtt(text) {
-  const utt = new SpeechSynthesisUtterance(text);
-  const v = getBestEnglishVoice(currentAccent);
-  if(v) { utt.voice = v; utt.lang = v.lang; } else { utt.lang = currentAccent; }
-  utt.pitch = 1.0; utt.rate = 0.92; utt.volume = 1.0;
-  return utt;
-}
-
-function _doSpeakNow(text) {
-  if(!window.speechSynthesis) return;
-  _loadVoicesNow();
-  window.speechSynthesis.cancel();
-  
-  if(_isIOS()) {
-    // iOS: speak chunks with NO setTimeout in between
-    const chunks = text.length > 160 ? _splitSentences(text, 160) : [text];
-    let i = 0;
-    const next = function() {
-      if(i >= chunks.length) { _isSpeaking = false; _processQueue(); return; }
-      const utt = _makeUtt(chunks[i++]);
-      utt.onend = next;
-      utt.onerror = function(e) { if(e.error !== 'interrupted') next(); };
-      window.speechSynthesis.speak(utt);
+  if(_cachedVoices.length > 0) return;
+  if(!_loadVoices()) {
+    // Polling fallback for iOS (voiceschanged may never fire)
+    window.speechSynthesis.onvoiceschanged = function() {
+      _loadVoices();
     };
-    _isSpeaking = true;
-    next();
-  } else {
-    // Android/Desktop: can use single utterance or small delay
-    const utt = _makeUtt(text);
-    utt.onend = function() { _isSpeaking = false; _processQueue(); };
-    utt.onerror = function(e) { _isSpeaking = false; if(e.error !== 'interrupted') _processQueue(); };
-    _isSpeaking = true;
-    window.speechSynthesis.speak(utt);
+    // Also poll every 100ms for up to 3 seconds (iOS workaround)
+    const poll = setInterval(function() {
+      if(_loadVoices() || _voiceLoadAttempts++ > 30) clearInterval(poll);
+    }, 100);
   }
 }
-
-function _processQueue() {
-  if(_isSpeaking || !_speakQueue.length) return;
-  const next = _speakQueue.shift();
-  _doSpeakNow(next);
-}
-
-function _splitSentences(text, maxLen) {
-  if(text.length <= maxLen) return [text];
-  const chunks = [];
-  const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
-  let cur = '';
-  for(const s of sentences) {
-    if(cur.length + s.length > maxLen && cur) { chunks.push(cur.trim()); cur = s; }
-    else cur += s;
-  }
-  if(cur.trim()) chunks.push(cur.trim());
-  return chunks.length ? chunks : [text];
-}
+// Start prewarming immediately
+_prewarmVoices();
 
 function speak(text) {
   if(isMuted || !text) return;
   const clean = text.replace(/\[.*?\]/g,'').replace(/<[^>]+>/g,'').replace(/[*_~`]/g,'').trim();
   if(!clean) return;
-  
-  _speakQueue = []; // clear queue, new message takes priority
-  if(_isSpeaking) {
-    window.speechSynthesis.cancel();
-    _isSpeaking = false;
+
+  // Refresh voice cache
+  _loadVoices();
+
+  const doSpeak = function() {
+    try {
+      window.speechSynthesis.cancel();
+      // iOS needs a tiny delay after cancel() or it stays silent
+      setTimeout(function() {
+        // Split long text into chunks (iOS cuts off after ~200 chars)
+        const isIOS = /iPad|iPhone|iPod/.test(navigator.userAgent);
+        const chunks = isIOS ? _splitIntoChunks(clean, 180) : [clean];
+        _speakChunks(chunks, 0);
+      }, 50);
+    } catch(e) { console.log('TTS error:', e); }
+  };
+
+  if(_cachedVoices.length > 0) {
+    doSpeak();
+  } else {
+    // Last-resort: try to get voices one more time
+    let attempts = 0;
+    const wait = setInterval(function() {
+      if(_loadVoices() || attempts++ > 20) {
+        clearInterval(wait);
+        doSpeak();
+      }
+    }, 100);
   }
-  _doSpeakNow(clean);
 }
 
+function _splitIntoChunks(text, maxLen) {
+  if(text.length <= maxLen) return [text];
+  const chunks = [];
+  // Split on sentence boundaries
+  const sentences = text.match(/[^.!?]+[.!?]*/g) || [text];
+  let current = '';
+  sentences.forEach(function(s) {
+    if((current + s).length > maxLen && current) {
+      chunks.push(current.trim());
+      current = s;
+    } else {
+      current += s;
+    }
+  });
+  if(current.trim()) chunks.push(current.trim());
+  return chunks.length ? chunks : [text];
+}
+
+function _speakChunks(chunks, idx) {
+  if(idx >= chunks.length) return;
+  const utt = new SpeechSynthesisUtterance(chunks[idx]);
+  const v = getBestEnglishVoice(currentAccent);
+  if(v) { utt.voice = v; utt.lang = v.lang; }
+  else { utt.lang = currentAccent; }
+  utt.pitch = 1.0;
+  utt.rate  = 0.92;
+  utt.onend = function() {
+    // Small gap between chunks
+    setTimeout(function() { _speakChunks(chunks, idx+1); }, 100);
+  };
+  utt.onerror = function(e) {
+    if(e.error !== 'interrupted') console.log('TTS chunk error:', e.error);
+  };
+  try { window.speechSynthesis.speak(utt); } catch(e) {}
+}
 
 window.setAccent=function(lang){
   const accentMap = {us:'en-US', uk:'en-GB', au:'en-AU', 'in':'en-IN'};
@@ -6687,124 +6652,6 @@ async function renderDashboard() {
   }
 }
 
-
-
-window.showForgotPassword = function() {
-  const m = document.getElementById('forgot-modal');
-  if(m) { m.style.display = 'flex'; }
-  const emailInput = document.getElementById('l-email');
-  const forgotEmail = document.getElementById('forgot-email');
-  if(forgotEmail && emailInput) forgotEmail.value = emailInput.value || '';
-  const err = document.getElementById('forgot-err');
-  const ok = document.getElementById('forgot-ok');
-  if(err) err.style.display = 'none';
-  if(ok) ok.style.display = 'none';
-};
-window.hideForgotPassword = function() {
-  const m = document.getElementById('forgot-modal');
-  if(m) m.style.display = 'none';
-};
-window.doForgotPassword = async function() {
-  const email = (document.getElementById('forgot-email')?.value || '').trim();
-  const err = document.getElementById('forgot-err');
-  const ok = document.getElementById('forgot-ok');
-  const btn = document.getElementById('forgot-btn');
-  if(err) err.style.display = 'none';
-  if(ok) ok.style.display = 'none';
-  if(!email || !email.includes('@')) {
-    if(err) { err.textContent = 'Geçerli bir e-posta adresi girin.'; err.style.display = 'block'; }
-    return;
-  }
-  if(btn) { btn.textContent = 'Gönderiliyor...'; btn.disabled = true; }
-  try {
-    await sendPasswordResetEmail(auth, email);
-    if(ok) ok.style.display = 'block';
-    if(btn) { btn.textContent = 'Gönderildi ✓'; }
-    setTimeout(function() {
-      if(btn) { btn.textContent = 'Gönder'; btn.disabled = false; }
-    }, 4000);
-  } catch(ex) {
-    let msg = 'Hata: ' + ex.message;
-    if(ex.code === 'auth/user-not-found') msg = 'Bu e-posta adresiyle kayıtlı hesap bulunamadı.';
-    if(ex.code === 'auth/invalid-email') msg = 'Geçersiz e-posta adresi.';
-    if(ex.code === 'auth/too-many-requests') msg = 'Çok fazla deneme. Lütfen bekleyin.';
-    if(err) { err.textContent = msg; err.style.display = 'block'; }
-    if(btn) { btn.textContent = 'Gönder'; btn.disabled = false; }
-  }
-};
-
-// ── DRAGGABLE COUNSELOR BUBBLE ──────────────────────────────
-(function(){
-  function makeDraggable(el) {
-    if(!el) return;
-    let startX, startY, startRight, startBottom, dragging = false, moved = false;
-
-    function getPos() {
-      const r = parseInt(el.style.right) || 80;
-      const b = parseInt(el.style.bottom) || 24;
-      return {r, b};
-    }
-
-    // Mouse events (desktop)
-    el.addEventListener('mousedown', function(e) {
-      if(e.button !== 0) return;
-      dragging = true; moved = false;
-      startX = e.clientX; startY = e.clientY;
-      const p = getPos(); startRight = p.r; startBottom = p.b;
-      el.style.cursor = 'grabbing';
-      e.preventDefault();
-    });
-    document.addEventListener('mousemove', function(e) {
-      if(!dragging) return;
-      const dx = startX - e.clientX;
-      const dy = startY - e.clientY;
-      if(Math.abs(dx)+Math.abs(dy) > 4) moved = true;
-      const newRight  = Math.max(0, Math.min(window.innerWidth  - 70, startRight  + dx));
-      const newBottom = Math.max(0, Math.min(window.innerHeight - 70, startBottom + dy));
-      el.style.right  = newRight  + 'px';
-      el.style.bottom = newBottom + 'px';
-    });
-    document.addEventListener('mouseup', function(e) {
-      if(!dragging) return;
-      dragging = false;
-      el.style.cursor = 'grab';
-      if(moved) e.stopImmediatePropagation(); // suppress click after drag
-    });
-
-    // Touch events (mobile)
-    el.addEventListener('touchstart', function(e) {
-      const t = e.touches[0];
-      dragging = true; moved = false;
-      startX = t.clientX; startY = t.clientY;
-      const p = getPos(); startRight = p.r; startBottom = p.b;
-      // Unlock TTS on touch (iOS)
-      _unlockTTS && _unlockTTS();
-    }, {passive:true});
-    el.addEventListener('touchmove', function(e) {
-      if(!dragging) return;
-      const t = e.touches[0];
-      const dx = startX - t.clientX;
-      const dy = startY - t.clientY;
-      if(Math.abs(dx)+Math.abs(dy) > 8) moved = true;
-      const newRight  = Math.max(0, Math.min(window.innerWidth  - 70, startRight  + dx));
-      const newBottom = Math.max(0, Math.min(window.innerHeight - 70, startBottom + dy));
-      el.style.right  = newRight  + 'px';
-      el.style.bottom = newBottom + 'px';
-      if(moved) e.preventDefault();
-    }, {passive:false});
-    el.addEventListener('touchend', function(e) {
-      dragging = false;
-      if(moved) e.preventDefault(); // suppress tap after drag
-    }, {passive:false});
-  }
-
-  // Apply to both counselors after DOM ready
-  window.addEventListener('load', function() {
-    makeDraggable(document.getElementById('counselor-bubble'));
-    makeDraggable(document.getElementById('placement-bubble'));
-  });
-})();
-
 // ---- PLACEMENT TEST WINDOW ALIASES (for onclick= in innerHTML) ----
 window.renderGrammarQuestion = renderGrammarQuestion;
 window.renderReadingText = renderReadingText;
@@ -6858,7 +6705,7 @@ window.readingNav = function(delta) { readingCurrentText += delta; renderReading
 
 
 <!-- COUNSELOR CHATBOT -->
-<div id="counselor-bubble" style="position:fixed;bottom:24px;right:80px;z-index:9980;cursor:grab;display:none;user-select:none;touch-action:none" onclick="openCounselor()">
+<div id="counselor-bubble" style="position:fixed;bottom:24px;right:80px;z-index:9980;cursor:pointer;display:none" onclick="openCounselor()">
   <div style="position:relative;padding-top:44px">
     <div style="position:absolute;top:0;left:50%;transform:translateX(-50%);white-space:nowrap;background:var(--navy);color:#fff;padding:5px 12px;border-radius:10px;font-size:11px;font-weight:600;box-shadow:0 2px 8px rgba(0,0,0,.25);line-height:1.4">Sana sitede rehberlik edebilirim!</div>
     <div style="position:absolute;top:28px;left:50%;transform:translateX(-50%);width:0;height:0;border-left:6px solid transparent;border-right:6px solid transparent;border-top:6px solid var(--navy)"></div>
@@ -6936,25 +6783,6 @@ window.readingNav = function(delta) { readingCurrentText += delta; renderReading
   </div>
 </div>
 
-<!-- FORGOT PASSWORD MODAL -->
-<div id="forgot-modal" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(10,20,40,.8);z-index:9995;align-items:center;justify-content:center;padding:1rem">
-  <div style="background:#fff;border-radius:16px;padding:1.5rem;max-width:380px;width:100%">
-    <div style="font-weight:700;font-size:16px;color:var(--navy);margin-bottom:8px">🔑 Şifre Sıfırlama</div>
-    <div style="font-size:13px;color:#667;margin-bottom:16px;line-height:1.6">E-posta adresinizi girin. Şifre sıfırlama bağlantısı e-postanıza gönderilecek.</div>
-    <div id="forgot-err" class="alert ae" style="display:none;margin-bottom:10px"></div>
-    <div id="forgot-ok" style="display:none;background:#e8f5ee;border:1px solid #a8d8b8;border-radius:8px;padding:10px 14px;font-size:13px;color:#085041;margin-bottom:10px">✅ Bağlantı gönderildi! E-postanızı kontrol edin (spam klasörünü de kontrol edin).</div>
-    <div class="lbl">E-posta</div>
-    <input type="email" id="forgot-email" placeholder="ornek@email.com" style="margin-bottom:14px">
-    <div style="display:flex;gap:8px">
-      <button class="bp" style="flex:1" onclick="doForgotPassword()" id="forgot-btn">Gönder</button>
-      <button style="flex:1" onclick="hideForgotPassword()">İptal</button>
-    </div>
-    <div style="margin-top:12px;font-size:11px;color:#aaa;line-height:1.5">
-      💡 E-posta gelmezse: Spam klasörünü kontrol edin. Firebase Console → Authentication → Email Templates bölümünden e-posta şablonunu özelleştirebilirsiniz.
-    </div>
-  </div>
-</div>
-
 <!-- PWA Install Button (Android Chrome) -->
 <div id="pwa-install-btn" style="display:none;position:fixed;bottom:90px;left:50%;transform:translateX(-50%);z-index:9970;background:var(--navy);color:#fff;padding:10px 20px;border-radius:24px;box-shadow:0 4px 20px rgba(0,0,0,.3);align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;white-space:nowrap" onclick="installPWA()">
   <span style="font-size:18px">📱</span>
@@ -6988,14 +6816,15 @@ window.readingNav = function(delta) { readingCurrentText += delta; renderReading
 <div id="ios-install-overlay" style="display:none;position:fixed;top:0;left:0;right:0;bottom:0;background:rgba(0,0,0,.4);z-index:9970" onclick="document.getElementById('ios-install-modal').style.display='none';document.getElementById('ios-install-overlay').style.display='none'"></div>
 
 <script>
-// Unlock TTS on first user interaction (iOS requirement - must be in gesture handler)
+// Prewarm TTS voices on first user interaction (iOS requirement)
 (function(){
-  const unlock = function() {
+  const warm = function() {
     _prewarmVoices && _prewarmVoices();
-    _unlockTTS && _unlockTTS();
+    document.removeEventListener('touchstart', warm);
+    document.removeEventListener('click', warm);
   };
-  document.addEventListener('touchstart', unlock, {once:true, passive:true});
-  document.addEventListener('click', unlock, {once:true});
+  document.addEventListener('touchstart', warm, {once:true, passive:true});
+  document.addEventListener('click', warm, {once:true});
 })();
 
 // Service Worker registration (skip on preview/dev domains)
