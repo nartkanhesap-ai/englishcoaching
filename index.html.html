@@ -1289,7 +1289,11 @@ function addLiveFeedEvent(emoji, name, action, color) {
   const placeholder = feed.querySelector('div[style*="italic"]');
   if(placeholder) placeholder.remove();
   const now = new Date();
-  const timeStr = now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+  const today = new Date(); today.setHours(0,0,0,0);
+  const isToday = now.toDateString() === today.toDateString();
+  const timeStr = isToday
+    ? now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'})
+    : now.toLocaleDateString('tr-TR',{day:'numeric',month:'short'}) + ' ' + now.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
   const item = document.createElement('div');
   item.style.cssText = 'display:flex;align-items:center;gap:6px;padding:4px 6px;border-radius:6px;background:rgba(255,255,255,.08);font-size:12px;animation:fadeInFeed .3s ease';
   item.innerHTML = '<span style="font-size:14px">' + emoji + '</span>' +
@@ -1321,8 +1325,15 @@ function addLiveFeedEvent(emoji, name, action, color) {
     const col = avColors[i%4];
     const fmtDate = function(ts) {
       if(!ts) return '-';
-      try { const d=new Date(ts.seconds?ts.seconds*1000:ts); return d.toLocaleDateString('tr-TR')+' '+d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'}); }
-      catch(e){ return '-'; }
+      try {
+        let d;
+        if(ts && ts.toDate) d = ts.toDate();
+        else if(ts && ts.seconds) d = new Date(ts.seconds * 1000);
+        else d = new Date(ts);
+        if(isNaN(d.getTime())) return '-';
+        return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'}) +
+               ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+      } catch(e){ return '-'; }
     };
     const created = fmtDate(s.createdAt);
     const lastLogin = fmtDate(s.lastLogin);
@@ -1636,6 +1647,10 @@ async function loadStudent(){
       } else {
         cp._badgeOverride = null;
       }
+      // Write lastLogin only once here (actual login moment)
+      updateDoc(doc(db,'studentDirectory',cu.uid), {
+        lastLogin: serverTimestamp()
+      }).catch(function(){});
     }
   } catch(e) {}
   show('s-student');
@@ -1653,13 +1668,13 @@ async function loadStudent(){
     // Sync student profile to studentDirectory for teacher panel
     if(cu && cu.uid){
       // Use setDoc with merge:true to preserve badgeOverride and other teacher fields
+      // lastLogin only written once at actual login time (not on every sync)
       setDoc(doc(db,'studentDirectory',cu.uid),{
         name:cp.name, email:cp.email, level:cp.level||'B1',
         interests:cp.interests||'', voiceScore:voiceScore||0,
         totalAIMinutes:Math.floor(chatTotalSecs/60)||0,
         placementDone:cp.placementDone||false,
-        createdAt:cp.createdAt||null, uid:cu.uid,
-        lastLogin:serverTimestamp()
+        createdAt:cp.createdAt||null, uid:cu.uid
       }, {merge:true}).catch(()=>{});
     }
   });
@@ -6230,8 +6245,13 @@ window.showAllStudentReport = async function(uid, name) {
     const fmtTs = function(ts) {
       if(!ts) return '-';
       try {
-        const d = new Date(ts.seconds ? ts.seconds*1000 : ts);
-        return d.toLocaleDateString('tr-TR') + ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
+        let d;
+        if(ts && ts.toDate) d = ts.toDate();
+        else if(ts && ts.seconds) d = new Date(ts.seconds * 1000);
+        else d = new Date(ts);
+        if(isNaN(d.getTime())) return '-';
+        return d.toLocaleDateString('tr-TR',{day:'2-digit',month:'2-digit',year:'numeric'}) +
+               ' ' + d.toLocaleTimeString('tr-TR',{hour:'2-digit',minute:'2-digit'});
       } catch(e) { return '-'; }
     };
     const level = sData.level || 'B1';
