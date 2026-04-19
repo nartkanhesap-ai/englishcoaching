@@ -167,7 +167,7 @@ input:focus,select:focus,textarea:focus {
 .topbar { background:linear-gradient(90deg,var(--navy-dark),var(--navy)) !important; }
 
 /* Login screen */
-#s-login { background:linear-gradient(160deg,var(--navy-dark) 0%,var(--navy) 55%,var(--navy-light) 100%) !important; }
+#s-login { background:transparent; }
 .login-logo { background:linear-gradient(145deg,var(--navy-dark),var(--navy)); box-shadow:0 8px 32px rgba(15,36,64,.30); }
 
 /* Chat bubbles */
@@ -258,53 +258,51 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
 
 <!-- LOGIN -->
 <div id="s-login" class="screen active">
-  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;gap:48px;padding:2rem;flex-wrap:wrap">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;gap:48px;padding:2rem;flex-wrap:wrap;background:linear-gradient(160deg,#0f2440 0%,#1a3a5c 55%,#2a4f7a 100%)">
   <!-- Globe Loader — right side decoration -->
-  <div style="flex:0 0 260px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;order:2">
-    <div class="globe-loader-wrap">
-      <svg class="globe-svg" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg" style="width:220px;height:220px">
+  <div style="flex:0 0 300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:20px;order:2">
+    <div id="globe-scene" style="position:relative;width:300px;height:240px">
+      <!-- Whirl SVG rings + text arc -->
+      <svg id="globe-whirl-svg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible" viewBox="0 0 300 240">
         <defs>
-          <radialGradient id="globeGrad" cx="40%" cy="35%" r="60%">
-            <stop offset="0%" stop-color="#3a6494"/>
-            <stop offset="100%" stop-color="#0f2440"/>
+          <radialGradient id="ecRg" cx="50%" cy="40%" r="28%">
+            <stop offset="50%" stop-color="white" stop-opacity="0"/>
+            <stop offset="100%" stop-color="white" stop-opacity="0.7"/>
           </radialGradient>
-          <clipPath id="globeClip">
-            <circle cx="100" cy="100" r="80"/>
-          </clipPath>
+          <mask id="ecFadeMask">
+            <rect width="300" height="240" fill="url(#ecRg)"/>
+          </mask>
         </defs>
-        <!-- Sphere -->
-        <circle cx="100" cy="100" r="80" fill="url(#globeGrad)" opacity="0.95"/>
-        <!-- Latitude lines -->
-        <g clip-path="url(#globeClip)" fill="none" stroke="rgba(255,255,255,0.18)" stroke-width="1">
-          <ellipse cx="100" cy="100" rx="80" ry="20" class="lat-line lat1"/>
-          <ellipse cx="100" cy="100" rx="80" ry="45" class="lat-line lat2"/>
-          <ellipse cx="100" cy="100" rx="80" ry="65" class="lat-line lat3"/>
-          <line x1="20" y1="100" x2="180" y2="100"/>
-          <line x1="100" y1="20" x2="100" y2="180"/>
+        <g id="ec-whirl-g" mask="url(#ecFadeMask)">
+          <circle id="ec-wr1" fill="none" stroke="rgba(255,255,255,0.5)" stroke-width="0.8" stroke-dasharray="18 8">
+            <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="9s" repeatCount="indefinite"/>
+          </circle>
+          <circle id="ec-wr2" fill="none" stroke="rgba(255,255,255,0.4)" stroke-width="1.2" stroke-dasharray="6 14">
+            <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="13s" repeatCount="indefinite"/>
+          </circle>
+          <circle id="ec-wr3" fill="none" stroke="rgba(255,255,255,0.3)" stroke-width="0.6" stroke-dasharray="30 6">
+            <animateTransform attributeName="transform" type="rotate" from="120" to="480" dur="18s" repeatCount="indefinite"/>
+          </circle>
+          <circle id="ec-wr4" fill="none" stroke="rgba(255,255,255,0.55)" stroke-width="1.5" stroke-dasharray="2 22">
+            <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="6s" repeatCount="indefinite"/>
+          </circle>
         </g>
-        <!-- Longitude arcs -->
-        <g clip-path="url(#globeClip)" fill="none" stroke="rgba(255,255,255,0.15)" stroke-width="1">
-          <ellipse cx="100" cy="100" rx="30" ry="80" class="lon-line"/>
-          <ellipse cx="100" cy="100" rx="60" ry="80" class="lon-line"/>
-        </g>
-        <!-- Orbiting dot -->
-        <circle class="orbit-dot" cx="180" cy="100" r="6" fill="#4a9eda">
-          <animateMotion dur="3s" repeatCount="indefinite" path="M 0,0 A 80,30 0 1,1 0,-0.01"/>
-        </circle>
-        <!-- Sheen -->
-        <ellipse cx="78" cy="72" rx="22" ry="14" fill="rgba(255,255,255,0.10)" transform="rotate(-30 78 72)"/>
-        <!-- Outer ring -->
-        <circle cx="100" cy="100" r="80" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="1.5"/>
-        <!-- Spinning ring -->
-        <ellipse cx="100" cy="100" rx="94" ry="20" fill="none" stroke="rgba(74,158,218,0.5)" stroke-width="2" stroke-dasharray="12 8">
-          <animateTransform attributeName="transform" type="rotate" from="0 100 100" to="360 100 100" dur="4s" repeatCount="indefinite"/>
-        </ellipse>
+        <circle id="ec-globe-ring" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.5"/>
+        <path id="ec-textArcPath" fill="none" stroke="none"/>
+        <text id="ec-arc-text" font-family="Poppins,sans-serif" font-weight="500" fill="rgba(255,255,255,0.8)" font-size="7.5" letter-spacing="0.18em" opacity="0.9">
+          <textPath id="ec-arc-textpath" href="#ec-textArcPath" startOffset="50%" text-anchor="middle">
+            YOUR PASSPORT IS ENGLISH TO ANYWHERE
+          </textPath>
+        </text>
+        <circle id="ec-dot-l" r="2" fill="rgba(255,255,255,0.5)"/>
+        <circle id="ec-dot-r" r="2" fill="rgba(255,255,255,0.5)"/>
       </svg>
+      <canvas id="ec-globe-canvas" style="position:absolute;border-radius:50%;z-index:2;transform:translate(-50%,-50%)"></canvas>
     </div>
     <div style="text-align:center">
-      <div style="font-size:22px;font-weight:700;color:#1a3a5c;font-family:Poppins,sans-serif;letter-spacing:-0.3px">English Coach</div>
-      <div style="font-size:12px;color:#2a4f7a;font-family:Poppins,sans-serif;margin-top:4px;opacity:0.8">Kişisel İngilizce Koçluk Platformu</div>
-      <div style="font-size:11px;color:#1a3a5c;font-family:Georgia,serif;font-style:italic;margin-top:6px;opacity:0.7">by Nartkan Teacher</div>
+      <div style="font-size:20px;font-weight:700;color:#fff;font-family:Poppins,sans-serif;letter-spacing:-0.3px;text-shadow:0 2px 8px rgba(0,0,0,.2)">English Coach</div>
+      <div style="font-size:11px;color:rgba(255,255,255,.75);font-family:Poppins,sans-serif;margin-top:4px">Kişisel İngilizce Koçluk Platformu</div>
+      <div style="font-size:10px;color:rgba(255,255,255,.6);font-family:Georgia,serif;font-style:italic;margin-top:4px">by Nartkan Teacher</div>
     </div>
   </div>
   <!-- Login form -->
@@ -1267,6 +1265,11 @@ onAuthStateChanged(auth,async u=>{
     const s=await getDoc(doc(db,'users',u.uid));
     if(s.exists()){
       cp=s.data();
+      // Pre-seed localStorage with Firestore data for cross-device consistency
+      if(cp.streak!==undefined) {
+        localStorage.setItem('ec_st_'+(cu.uid), cp.streak);
+        if(cp.streakDate) localStorage.setItem('ec_std_'+(cu.uid), cp.streakDate);
+      }
       if(cp.role==='teacher') loadTeacher();
       else if(!cp.onboarded) startOb();
       else if(!cp.placementDone && cp.name && !cp.name.toLowerCase().includes('nartkan')) startPlacementTest();
@@ -2190,15 +2193,30 @@ window.toggleMute=()=>{
 // ---- STREAK ----
 function loadStreak(){
   const today=new Date().toLocaleDateString('tr-TR');
-  let streak=parseInt(localStorage.getItem(('ec_st_'+(cu&&cu.uid||'x')))||'0');
-  const last=localStorage.getItem(('ec_std_'+(cu&&cu.uid||'x')));
+  // Priority: Firestore (cross-device) > localStorage (offline fallback)
+  let streak=0, last='';
+  if(cp && cp.streak !== undefined) {
+    streak = parseInt(cp.streak)||0;
+    last   = cp.streakDate||'';
+    // Sync Firestore values into localStorage
+    localStorage.setItem('ec_st_'+(cu&&cu.uid||'x'), streak);
+    localStorage.setItem('ec_std_'+(cu&&cu.uid||'x'), last);
+  } else {
+    streak = parseInt(localStorage.getItem('ec_st_'+(cu&&cu.uid||'x'))||'0');
+    last   = localStorage.getItem('ec_std_'+(cu&&cu.uid||'x'))||'';
+  }
   const yesterday=new Date();yesterday.setDate(yesterday.getDate()-1);
   const yStr=yesterday.toLocaleDateString('tr-TR');
   if(last!==today){
-    if(last===yStr)streak++;
+    if(last===yStr) streak++;
     else streak=1;
-    localStorage.setItem(('ec_st_'+(cu&&cu.uid||'x')),streak);
-    localStorage.setItem(('ec_std_'+(cu&&cu.uid||'x')),today);
+    // Save to both localStorage and Firestore
+    localStorage.setItem('ec_st_'+(cu&&cu.uid||'x'), streak);
+    localStorage.setItem('ec_std_'+(cu&&cu.uid||'x'), today);
+    if(cu&&cu.uid) {
+      updateDoc(doc(db,'users',cu.uid),{streak:streak,streakDate:today}).catch(()=>{});
+      updateDoc(doc(db,'studentDirectory',cu.uid),{streak:streak,streakDate:today}).catch(()=>{});
+    }
   }
   const el=document.getElementById('streak-count');
   if(el)el.textContent=(last&&last!==today&&last!==yStr)?'0':streak;
@@ -2278,6 +2296,11 @@ function saveActivity(type, data) {
       existing.badge = data.badge;
     }
     localStorage.setItem(key, JSON.stringify(existing));
+    // Also sync to Firestore for cross-device access
+    if(cu && cu.uid) {
+      const firestoreKey = 'daily_' + today.replace(/-/g,'_');
+      updateDoc(doc(db,'users',cu.uid),{[firestoreKey]: existing}).catch(()=>{});
+    }
   } catch(e) {}
 }
 
@@ -3568,7 +3591,7 @@ Rapor şunları içersin:
 
 // ======== STREAK VISUAL ========
 function renderStreakVisual(){
-  const streak = parseInt(localStorage.getItem(('ec_st_'+(cu&&cu.uid||'x')))||'0');
+  const streak = (cp&&cp.streak!==undefined?parseInt(cp.streak)||0:parseInt(localStorage.getItem('ec_st_'+(cu&&cu.uid||'x'))||'0'));
   const lastDate = localStorage.getItem(('ec_std_'+(cu&&cu.uid||'x')));
   const yesterday = new Date(); yesterday.setDate(yesterday.getDate()-1);
   const yStr = yesterday.toLocaleDateString('tr-TR');
@@ -6801,7 +6824,7 @@ async function renderDashboard() {
   const s = document.getElementById('dash-streak');
   if(d) d.textContent = voiceScore || 0;
   if(m) m.textContent = Math.floor(chatTotalSecs/60) || 0;
-  if(s) s.textContent = parseInt(localStorage.getItem(('ec_st_'+(cu&&cu.uid||'x')))||'0');
+  if(s) s.textContent = (cp&&cp.streak!==undefined?parseInt(cp.streak)||0:parseInt(localStorage.getItem('ec_st_'+(cu&&cu.uid||'x'))||'0'));
   try {
     const wSnap = await getDocs(collection(db,'users',cu.uid,'learnedWords'));
     if(w) w.textContent = wSnap.size;
@@ -7230,6 +7253,163 @@ function installPWA() {
       if(btn) btn.style.display = 'flex';
     }, 5000);
   }
+})();
+</script>
+
+
+<!-- ── D3 Real Globe (Login Page) ── -->
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" defer></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" defer></script>
+<script>
+(function initGlobe() {
+  // Wait for D3 + TopoJSON to load
+  if(typeof d3 === 'undefined' || typeof topojson === 'undefined') {
+    setTimeout(initGlobe, 150); return;
+  }
+  const canvas = document.getElementById('ec-globe-canvas');
+  if(!canvas) { setTimeout(initGlobe, 150); return; }
+
+  const R = 110; // globe radius
+  const CX = 150, CY = 130; // center in 300x240 scene
+  const W = R*2+4, H = R*2+4;
+  canvas.width = W; canvas.height = H;
+  canvas.style.left = CX + 'px';
+  canvas.style.top  = CY + 'px';
+
+  const ctx = canvas.getContext('2d');
+  let projection, pathFn, land, countriesGeo, borders, flagMap = new Map();
+  let yaw = 0, phaseT = 0;
+
+  // Position whirl rings
+  const whirlG = document.getElementById('ec-whirl-g');
+  if(whirlG) whirlG.setAttribute('transform', 'translate('+CX+','+CY+')');
+  const ringR = [R*0.96, R*0.88, R*1.0, R*1.06];
+  ['ec-wr1','ec-wr2','ec-wr3','ec-wr4'].forEach(function(id, i) {
+    const el = document.getElementById(id);
+    if(el) el.setAttribute('r', ringR[i]);
+  });
+  const gr = document.getElementById('ec-globe-ring');
+  if(gr) { gr.setAttribute('cx', CX); gr.setAttribute('cy', CY); gr.setAttribute('r', R*0.84); }
+
+  // Text arc
+  const arcR = 280, gap = R + 18;
+  const arcY = CY + gap;
+  const span = Math.min(arcR * 1.72, 280);
+  const x0 = CX - span/2, x1 = CX + span/2;
+  const ap = document.getElementById('ec-textArcPath');
+  if(ap) ap.setAttribute('d', 'M '+x0+','+arcY+' A '+arcR+','+arcR+' 0 0,0 '+x1+','+arcY);
+  const dl = document.getElementById('ec-dot-l');
+  const dr = document.getElementById('ec-dot-r');
+  if(dl) { dl.setAttribute('cx', x0); dl.setAttribute('cy', arcY); }
+  if(dr) { dr.setAttribute('cx', x1); dr.setAttribute('cy', arcY); }
+
+  const ISO_MAP = {
+    4:'af',8:'al',12:'dz',24:'ao',32:'ar',36:'au',40:'at',
+    56:'be',76:'br',100:'bg',124:'ca',144:'lk',156:'cn',
+    170:'co',191:'hr',192:'cu',196:'cy',203:'cz',208:'dk',
+    246:'fi',250:'fr',276:'de',300:'gr',348:'hu',356:'in',
+    360:'id',364:'ir',372:'ie',376:'il',380:'it',392:'jp',
+    400:'jo',404:'ke',410:'kr',434:'ly',442:'lu',484:'mx',
+    504:'ma',528:'nl',554:'nz',566:'ng',578:'no',586:'pk',
+    600:'py',604:'pe',608:'ph',616:'pl',620:'pt',630:'pr',
+    634:'qa',642:'ro',643:'ru',682:'sa',686:'sn',724:'es',
+    752:'se',756:'ch',764:'th',792:'tr',804:'ua',784:'ae',
+    826:'gb',840:'us',858:'uy',862:'ve'
+  };
+
+  function loadImg(url) {
+    return new Promise(function(resolve) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.onload = function(){ resolve(img); };
+      img.onerror = function(){ resolve(null); };
+      img.src = url;
+    });
+  }
+
+  function drawFlag(feature, img) {
+    const bounds = pathFn.bounds(feature);
+    const bw = bounds[1][0]-bounds[0][0], bh = bounds[1][1]-bounds[0][1];
+    if(bw < 0.5 || bh < 0.5) return;
+    const fcx = (bounds[0][0]+bounds[1][0])/2, fcy = (bounds[0][1]+bounds[1][1])/2;
+    const asp = img.naturalWidth/img.naturalHeight;
+    let fw = Math.max(bw*1.4, 20), fh = fw/asp;
+    if(fh < bh*1.4) { fh = Math.max(bh*1.4, 14); fw = fh*asp; }
+    ctx.save();
+    ctx.beginPath(); pathFn(feature); ctx.clip();
+    ctx.drawImage(img, fcx-fw/2, fcy-fh/2, fw, fh);
+    ctx.restore();
+  }
+
+  function draw() {
+    ctx.clearRect(0, 0, W, H);
+    // Ocean
+    ctx.beginPath(); pathFn({type:'Sphere'});
+    ctx.fillStyle = '#2a4f7a'; ctx.fill();
+    // Land
+    ctx.beginPath(); pathFn(land);
+    ctx.fillStyle = '#0f2440'; ctx.fill();
+    // Flags
+    countriesGeo.features.forEach(function(feature) {
+      const id = parseInt(feature.id, 10);
+      const img = flagMap.get(id);
+      if(img) drawFlag(feature, img);
+    });
+    // Borders
+    ctx.beginPath(); pathFn(borders);
+    ctx.strokeStyle = 'rgba(255,255,255,0.35)';
+    ctx.lineWidth = 0.5; ctx.stroke();
+    // Outline
+    ctx.beginPath(); pathFn({type:'Sphere'});
+    ctx.strokeStyle = 'rgba(255,255,255,0.4)'; ctx.lineWidth = 1.2; ctx.stroke();
+    // Sheen
+    const sheen = ctx.createRadialGradient(W/2-R*.3, H/2-R*.3, 3, W/2, H/2, R);
+    sheen.addColorStop(0, 'rgba(255,255,255,0.22)');
+    sheen.addColorStop(0.4, 'rgba(255,255,255,0.04)');
+    sheen.addColorStop(1, 'rgba(0,0,0,0.15)');
+    ctx.beginPath(); pathFn({type:'Sphere'});
+    ctx.fillStyle = sheen; ctx.fill();
+  }
+
+  function tick() {
+    phaseT += 0.016;
+    yaw += 0.18;
+    projection.rotate([yaw, -15]);
+    draw();
+    requestAnimationFrame(tick);
+  }
+
+  // Init
+  projection = d3.geoOrthographic()
+    .scale(R).translate([W/2, H/2]).clipAngle(90)
+    .rotate([yaw, -15]);
+  pathFn = d3.geoPath(projection, ctx);
+
+  const ids = Object.keys(ISO_MAP).map(Number);
+  Promise.all([
+    fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json').then(function(r){ return r.json(); }),
+    ...ids.map(function(id) {
+      return loadImg('https://flagcdn.com/w160/'+ISO_MAP[id]+'.png')
+        .then(function(img){ return [id, img]; });
+    })
+  ]).then(function(results) {
+    const world = results[0];
+    const flagEntries = results.slice(1).filter(function(e){ return e[1]; });
+    flagMap = new Map(flagEntries);
+    land = topojson.feature(world, world.objects.land);
+    countriesGeo = topojson.feature(world, world.objects.countries);
+    borders = topojson.mesh(world, world.objects.countries, function(a,b){ return a!==b; });
+    tick();
+  }).catch(function(err){
+    console.log('Globe load error:', err);
+    // Fallback: simple spinning sphere if CDN fails
+    projection = d3.geoOrthographic().scale(R).translate([W/2,H/2]).clipAngle(90);
+    pathFn = d3.geoPath(projection, ctx);
+    land = {type:'FeatureCollection',features:[]};
+    countriesGeo = {type:'FeatureCollection',features:[]};
+    borders = {type:'MultiLineString',coordinates:[]};
+    tick();
+  });
 })();
 </script>
 
