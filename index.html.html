@@ -1255,44 +1255,42 @@ window.showReg=()=>show('s-reg');
 
 // Await signOut before registering auth listener
 // This prevents auto-login from stored Firebase tokens
-(async function(){
-  await signOut(auth).catch(function(){});
-  onAuthStateChanged(auth,async u=>{
-    if(u){
-      cu=u;
-      try {
-        const s=await getDoc(doc(db,'users',u.uid));
-        if(s.exists()){
-          cp=s.data();
-          if(cp.streak!==undefined){
-            localStorage.setItem('ec_st_'+cu.uid, cp.streak);
-            if(cp.streakDate) localStorage.setItem('ec_std_'+cu.uid, cp.streakDate);
-          }
-          if(cp.role==='teacher') loadTeacher();
-          else if(!cp.onboarded) startOb();
-          else if(!cp.placementDone && cp.name && !cp.name.toLowerCase().includes('nartkan')) startPlacementTest();
-          else if(!cp.placementDone && cp.name && cp.name.toLowerCase().includes('nartkan')){
-            updateDoc(doc(db,'users',cu.uid),{level:'C1',placementDone:true}).catch(()=>{});
-            cp={...cp,level:'C1',placementDone:true};
-            loadStudent();
-          } else loadStudent();
-        } else {
-          // User doc doesn't exist yet - show login with error
-          cu=null;cp=null;show('s-login');
-          const err=document.getElementById('l-err');
-          if(err){err.textContent='Hesap verisi bulunamadı. Lütfen tekrar giriş yapın.';err.style.display='block';}
+// Auth state handler - direct, no async wrapping
+let _authReady = false;
+onAuthStateChanged(auth, async function(u) {
+  if(u) {
+    cu = u;
+    try {
+      const s = await getDoc(doc(db,'users',u.uid));
+      if(s.exists()) {
+        cp = s.data();
+        if(cp.streak !== undefined) {
+          localStorage.setItem('ec_st_'+cu.uid, cp.streak);
+          if(cp.streakDate) localStorage.setItem('ec_std_'+cu.uid, cp.streakDate);
         }
-      } catch(authErr) {
-        console.error('Auth error:', authErr);
-        cu=null;cp=null;show('s-login');
+        if(cp.role === 'teacher') loadTeacher();
+        else if(!cp.onboarded) startOb();
+        else if(!cp.placementDone && cp.name && !cp.name.toLowerCase().includes('nartkan')) startPlacementTest();
+        else if(!cp.placementDone && cp.name && cp.name.toLowerCase().includes('nartkan')) {
+          updateDoc(doc(db,'users',cu.uid),{level:'C1',placementDone:true}).catch(()=>{});
+          cp = {...cp, level:'C1', placementDone:true};
+          loadStudent();
+        } else loadStudent();
+      } else {
+        cu=null; cp=null; show('s-login');
         const err=document.getElementById('l-err');
-        if(err){err.textContent='Bağlantı hatası: '+authErr.message;err.style.display='block';}
+        if(err){err.textContent='Hesap verisi bulunamadı. Tekrar giriş yapın.'; err.style.display='block';}
       }
-    } else {
-      cu=null;cp=null;show('s-login');
+    } catch(e) {
+      console.error('Auth load error:', e);
+      cu=null; cp=null; show('s-login');
+      const err=document.getElementById('l-err');
+      if(err){err.textContent='Hata: '+e.message; err.style.display='block';}
     }
-  });
-})();
+  } else {
+    cu=null; cp=null; show('s-login');
+  }
+});
 
 window.doLogin=async()=>{
   const e=document.getElementById('l-email').value.trim(),p=document.getElementById('l-pass').value,err=document.getElementById('l-err');
