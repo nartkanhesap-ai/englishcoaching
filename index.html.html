@@ -144,8 +144,8 @@ h1,h2,h3,h4,h5,h6 { font-weight:700; }
 
 /* Cream/surface → #F9F7F5 everywhere */
 body { background:#F9F7F5; }
-body:has(#s-login.active) { background:linear-gradient(160deg,#0f2440 0%,#1a3a5c 55%,#2a4f7a 100%); }
-body:has(#s-reg.active) { background:linear-gradient(160deg,#0f2440 0%,#1a3a5c 55%,#2a4f7a 100%); }
+body:has(#s-login.active) { background:#F9F7F5; }
+body:has(#s-reg.active) { background:#F9F7F5; }
 .screen.active { background:#F9F7F5; }
 input,select,textarea { background:#FDFCFB; font-family:'Poppins',sans-serif; }
 input:focus,select:focus,textarea:focus {
@@ -169,7 +169,7 @@ input:focus,select:focus,textarea:focus {
 .topbar { background:linear-gradient(90deg,var(--navy-dark),var(--navy)) !important; }
 
 /* Login screen */
-#s-login { background:linear-gradient(160deg,#0f2440 0%,#1a3a5c 55%,#2a4f7a 100%); min-height:100vh; width:100%; }
+#s-login { background:#F9F7F5; min-height:100vh; width:100%; }
 .login-logo { background:linear-gradient(145deg,var(--navy-dark),var(--navy)); box-shadow:0 8px 32px rgba(15,36,64,.30); }
 
 /* Chat bubbles */
@@ -274,27 +274,27 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
         </defs>
         <!-- Whirl rings -->
         <g id="ec-whirl-g" mask="url(#ecFadeMask)">
-          <circle id="ec-wr1" fill="none" stroke="rgba(255,255,255,0.35)" stroke-width="0.8" stroke-dasharray="18 8">
+          <circle id="ec-wr1" fill="none" stroke="rgba(26,58,92,0.20)" stroke-width="0.8" stroke-dasharray="18 8">
             <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="9s" repeatCount="indefinite"/>
           </circle>
-          <circle id="ec-wr2" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="1.2" stroke-dasharray="6 14">
+          <circle id="ec-wr2" fill="none" stroke="rgba(26,58,92,0.14)" stroke-width="1.2" stroke-dasharray="6 14">
             <animateTransform attributeName="transform" type="rotate" from="360" to="0" dur="13s" repeatCount="indefinite"/>
           </circle>
-          <circle id="ec-wr3" fill="none" stroke="rgba(255,255,255,0.20)" stroke-width="0.6" stroke-dasharray="30 6">
+          <circle id="ec-wr3" fill="none" stroke="rgba(26,58,92,0.10)" stroke-width="0.6" stroke-dasharray="30 6">
             <animateTransform attributeName="transform" type="rotate" from="120" to="480" dur="18s" repeatCount="indefinite"/>
           </circle>
-          <circle id="ec-wr4" fill="none" stroke="rgba(255,255,255,0.40)" stroke-width="1.5" stroke-dasharray="2 22">
+          <circle id="ec-wr4" fill="none" stroke="rgba(26,58,92,0.25)" stroke-width="1.5" stroke-dasharray="2 22">
             <animateTransform attributeName="transform" type="rotate" from="0" to="-360" dur="6s" repeatCount="indefinite"/>
           </circle>
         </g>
-        <circle id="ec-globe-ring" fill="none" stroke="rgba(255,255,255,0.2)" stroke-width="0.5"/>
+        <circle id="ec-globe-ring" fill="none" stroke="rgba(26,58,92,0.15)" stroke-width="0.5"/>
         <!-- Text arc -->
         <path id="ec-textArcPath" fill="none" stroke="none"/>
-        <text id="ec-arc-text" font-family="Poppins,sans-serif" font-weight="500" fill="rgba(255,255,255,0.75)" font-size="7" letter-spacing="0.20em" opacity="0.9">
-          <textPath href="#ec-textArcPath" startOffset="50%" text-anchor="middle">EXPLORE THE PLACES WHERE YOU NEED ENGLISH</textPath>
+        <text id="ec-arc-text" font-family="Poppins,sans-serif" font-weight="600" fill="#1a3a5c" font-size="8.5" letter-spacing="0.08em" opacity="0.85">
+          <textPath href="#ec-textArcPath" startOffset="50%" text-anchor="middle">Your Passport is English to Anywhere on Earth</textPath>
         </text>
-        <circle id="ec-dot-l" r="1.8" fill="rgba(255,255,255,0.45)"/>
-        <circle id="ec-dot-r" r="1.8" fill="rgba(255,255,255,0.45)"/>
+        <circle id="ec-dot-l" r="2" fill="#1a3a5c" opacity="0.4"/>
+        <circle id="ec-dot-r" r="2" fill="#1a3a5c" opacity="0.4"/>
       </svg>
       <canvas id="ec-globe-canvas" style="position:absolute;border-radius:50%;z-index:2;transform:translate(-50%,-50%);cursor:crosshair"></canvas>
       <!-- Hover tooltip -->
@@ -303,11 +303,7 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
         <span id="ec-tooltip-name"></span>
       </div>
     </div>
-    <div style="text-align:center">
-      <div style="font-size:20px;font-weight:700;color:#fff;font-family:Poppins,sans-serif;letter-spacing:-0.3px;text-shadow:0 2px 8px rgba(0,0,0,.2)">English Coach</div>
-      <div style="font-size:11px;color:rgba(255,255,255,.7);font-family:Poppins,sans-serif;margin-top:4px">Kişisel İngilizce Koçluk Platformu</div>
-      <div style="font-size:10px;color:rgba(255,255,255,.55);font-family:Georgia,serif;font-style:italic;margin-top:4px">by Nartkan Teacher</div>
-    </div>
+
   </div>
   <!-- Login form -->
   <div class="login-wrap" style="order:1;flex:0 0 min(400px,100%);margin:0">
@@ -2509,25 +2505,32 @@ function appendMsg(role,text,isAI){
   const htmlDisp=disp.replace(/\n/g,'<br>');
   const finalDisp=isAI?wrapWordsForHover(htmlDisp):htmlDisp;
   if(isAI) {
-    // Text streaming animation — words fade/slide in sequentially
-    div.innerHTML = extra; // extra (badges etc) added immediately
+    // Text streaming animation — animate PLAIN TEXT words, wrap hover after done
+    div.innerHTML = extra;
     const streamDiv = document.createElement('div');
     div.insertBefore(streamDiv, div.firstChild);
-    const words = finalDisp.split(/(<br>|\s+)/);
+    // Use plain disp (no HTML) for word splitting to avoid rendering HTML as text
+    const plainDisp = disp.replace(/\n/g,'<br>');
+    const words = plainDisp.split(/(<br>|\s+)/);
     let wIdx = 0;
     const streamNext = function() {
-      if(wIdx >= words.length) return;
+      if(wIdx >= words.length) {
+        // Animation done — now apply word hover wrapping
+        streamDiv.innerHTML = wrapWordsForHover(plainDisp);
+        makeWordHoverable(div);
+        return;
+      }
       const chunk = words[wIdx++];
       if(chunk === '<br>') {
         streamDiv.innerHTML += '<br>';
       } else if(chunk.trim()) {
         const span = document.createElement('span');
-        span.innerHTML = chunk + ' ';
+        span.textContent = chunk + ' ';
         span.style.cssText = 'opacity:0;display:inline;animation:wordRain .35s ease forwards';
-        span.style.animationDelay = (wIdx * 28) + 'ms';
+        span.style.animationDelay = (wIdx * 26) + 'ms';
         streamDiv.appendChild(span);
       }
-      if(wIdx < words.length) setTimeout(streamNext, 22);
+      if(wIdx < words.length) setTimeout(streamNext, 20);
     };
     streamNext();
   } else {
@@ -7272,8 +7275,7 @@ function installPWA() {
   const canvas = document.getElementById('ec-globe-canvas');
   if(!canvas) { setTimeout(initGlobe, 200); return; }
 
-  const R = 108;
-  const CX = 150, CY = 128;
+  const R = 108, CX = 150, CY = 128;
   const W = R*2+4, H = R*2+4;
   canvas.width = W; canvas.height = H;
   canvas.style.left = CX + 'px';
@@ -7281,189 +7283,182 @@ function installPWA() {
 
   const ctx = canvas.getContext('2d');
   let projection, pathFn, land, countriesGeo, borders;
-  let yaw = 0, hoveredCountry = null, animRunning = false;
-  const tooltip = document.getElementById('ec-globe-tooltip');
-  const tooltipFlag = document.getElementById('ec-tooltip-flag');
-  const tooltipName = document.getElementById('ec-tooltip-name');
+  let yaw = 0, paused = false, hoveredId = null;
 
-  // Country name map (numeric ID → name + ISO2 for flag)
-  const COUNTRIES = {
-    4:['Afghanistan','af'],8:['Albania','al'],12:['Algeria','dz'],
-    24:['Angola','ao'],32:['Argentina','ar'],36:['Australia','au'],
-    40:['Austria','at'],56:['Belgium','be'],76:['Brazil','br'],
-    100:['Bulgaria','bg'],124:['Canada','ca'],144:['Sri Lanka','lk'],
-    156:['China','cn'],170:['Colombia','co'],191:['Croatia','hr'],
-    192:['Cuba','cu'],203:['Czech Republic','cz'],208:['Denmark','dk'],
-    231:['Ethiopia','et'],246:['Finland','fi'],250:['France','fr'],
-    276:['Germany','de'],300:['Greece','gr'],348:['Hungary','hu'],
-    356:['India','in'],360:['Indonesia','id'],364:['Iran','ir'],
-    372:['Ireland','ie'],376:['Israel','il'],380:['Italy','it'],
-    392:['Japan','jp'],400:['Jordan','jo'],404:['Kenya','ke'],
-    410:['South Korea','kr'],434:['Libya','ly'],484:['Mexico','mx'],
-    504:['Morocco','ma'],528:['Netherlands','nl'],554:['New Zealand','nz'],
-    566:['Nigeria','ng'],578:['Norway','no'],586:['Pakistan','pk'],
-    604:['Peru','pe'],608:['Philippines','ph'],616:['Poland','pl'],
-    620:['Portugal','pt'],634:['Qatar','qa'],642:['Romania','ro'],
-    643:['Russia','ru'],682:['Saudi Arabia','sa'],710:['South Africa','za'],
-    724:['Spain','es'],752:['Sweden','se'],756:['Switzerland','ch'],
-    764:['Thailand','th'],792:['Turkey','tr'],804:['Ukraine','ua'],
-    784:['UAE','ae'],826:['United Kingdom','gb'],840:['United States','us'],
-    858:['Uruguay','uy'],862:['Venezuela','ve']
+  const tooltip    = document.getElementById('ec-globe-tooltip');
+  const tipFlag    = document.getElementById('ec-tooltip-flag');
+  const tipName    = document.getElementById('ec-tooltip-name');
+  const globeScene = document.getElementById('globe-scene');
+
+  // Full world country map: numeric TopoJSON ID → [name, ISO-2]
+  const CMAP = {
+    4:['Afghanistan','af'],8:['Albania','al'],12:['Algeria','dz'],20:['Andorra','ad'],
+    24:['Angola','ao'],28:['Antigua and Barbuda','ag'],32:['Argentina','ar'],36:['Australia','au'],
+    40:['Austria','at'],44:['Bahamas','bs'],48:['Bahrain','bh'],50:['Bangladesh','bd'],
+    52:['Barbados','bb'],56:['Belgium','be'],64:['Bhutan','bt'],68:['Bolivia','bo'],
+    70:['Bosnia and Herzegovina','ba'],72:['Botswana','bw'],76:['Brazil','br'],
+    84:['Belize','bz'],90:['Solomon Islands','sb'],96:['Brunei','bn'],100:['Bulgaria','bg'],
+    104:['Myanmar','mm'],108:['Burundi','bi'],116:['Cambodia','kh'],120:['Cameroon','cm'],
+    124:['Canada','ca'],132:['Cape Verde','cv'],140:['Central African Republic','cf'],
+    144:['Sri Lanka','lk'],148:['Chad','td'],152:['Chile','cl'],156:['China','cn'],
+    170:['Colombia','co'],174:['Comoros','km'],180:['DR Congo','cd'],188:['Costa Rica','cr'],
+    191:['Croatia','hr'],192:['Cuba','cu'],196:['Cyprus','cy'],203:['Czech Republic','cz'],
+    204:['Benin','bj'],208:['Denmark','dk'],214:['Dominican Republic','do'],
+    218:['Ecuador','ec'],222:['El Salvador','sv'],231:['Ethiopia','et'],232:['Eritrea','er'],
+    233:['Estonia','ee'],242:['Fiji','fj'],246:['Finland','fi'],250:['France','fr'],
+    262:['Djibouti','dj'],266:['Gabon','ga'],270:['Gambia','gm'],276:['Germany','de'],
+    288:['Ghana','gh'],300:['Greece','gr'],320:['Guatemala','gt'],324:['Guinea','gn'],
+    328:['Guyana','gy'],332:['Haiti','ht'],340:['Honduras','hn'],348:['Hungary','hu'],
+    352:['Iceland','is'],356:['India','in'],360:['Indonesia','id'],364:['Iran','ir'],
+    368:['Iraq','iq'],372:['Ireland','ie'],376:['Israel','il'],380:['Italy','it'],
+    384:['Ivory Coast','ci'],388:['Jamaica','jm'],392:['Japan','jp'],400:['Jordan','jo'],
+    404:['Kenya','ke'],408:['North Korea','kp'],410:['South Korea','kr'],414:['Kuwait','kw'],
+    418:['Laos','la'],422:['Lebanon','lb'],426:['Lesotho','ls'],428:['Latvia','lv'],
+    430:['Liberia','lr'],434:['Libya','ly'],440:['Lithuania','lt'],450:['Madagascar','mg'],
+    454:['Malawi','mw'],458:['Malaysia','my'],466:['Mali','ml'],470:['Malta','mt'],
+    478:['Mauritania','mr'],484:['Mexico','mx'],496:['Mongolia','mn'],498:['Moldova','md'],
+    504:['Morocco','ma'],508:['Mozambique','mz'],516:['Namibia','na'],524:['Nepal','np'],
+    528:['Netherlands','nl'],540:['New Caledonia','nc'],548:['Vanuatu','vu'],554:['New Zealand','nz'],
+    558:['Nicaragua','ni'],562:['Niger','ne'],566:['Nigeria','ng'],578:['Norway','no'],
+    586:['Pakistan','pk'],591:['Panama','pa'],598:['Papua New Guinea','pg'],600:['Paraguay','py'],
+    604:['Peru','pe'],608:['Philippines','ph'],616:['Poland','pl'],620:['Portugal','pt'],
+    630:['Puerto Rico','pr'],634:['Qatar','qa'],642:['Romania','ro'],643:['Russia','ru'],
+    646:['Rwanda','rw'],659:['Saint Kitts and Nevis','kn'],682:['Saudi Arabia','sa'],
+    686:['Senegal','sn'],694:['Sierra Leone','sl'],703:['Slovakia','sk'],704:['Vietnam','vn'],
+    706:['Somalia','so'],710:['South Africa','za'],716:['Zimbabwe','zw'],724:['Spain','es'],
+    729:['Sudan','sd'],740:['Suriname','sr'],748:['Eswatini','sz'],752:['Sweden','se'],
+    756:['Switzerland','ch'],760:['Syria','sy'],762:['Tajikistan','tj'],764:['Thailand','th'],
+    780:['Trinidad and Tobago','tt'],788:['Tunisia','tn'],792:['Turkey','tr'],
+    795:['Turkmenistan','tm'],800:['Uganda','ug'],804:['Ukraine','ua'],784:['UAE','ae'],
+    826:['United Kingdom','gb'],834:['Tanzania','tz'],840:['United States','us'],
+    858:['Uruguay','uy'],860:['Uzbekistan','uz'],862:['Venezuela','ve'],887:['Yemen','ye'],
+    894:['Zambia','zm']
   };
 
-  // Whirl rings positioning
+  // Position whirl rings
   const whirlG = document.getElementById('ec-whirl-g');
   if(whirlG) whirlG.setAttribute('transform','translate('+CX+','+CY+')');
-  const ringR = [R*0.96,R*0.88,R*1.02,R*1.08];
+  const ringR=[R*.96,R*.88,R*1.02,R*1.08];
   ['ec-wr1','ec-wr2','ec-wr3','ec-wr4'].forEach(function(id,i){
-    const el=document.getElementById(id);
-    if(el) el.setAttribute('r',ringR[i]);
+    const el=document.getElementById(id); if(el) el.setAttribute('r',ringR[i]);
   });
   const gr=document.getElementById('ec-globe-ring');
-  if(gr){gr.setAttribute('cx',CX);gr.setAttribute('cy',CY);gr.setAttribute('r',R*0.86);}
+  if(gr){gr.setAttribute('cx',CX);gr.setAttribute('cy',CY);gr.setAttribute('r',R*.86);}
 
   // Text arc
-  const arcR=290, gap=R+20;
-  const arcY=CY+gap, span=Math.min(arcR*1.6,280);
+  const arcR=300, gap=R+22;
+  const arcY=CY+gap, span=Math.min(arcR*1.55,275);
   const x0=CX-span/2, x1=CX+span/2;
   const ap=document.getElementById('ec-textArcPath');
   if(ap) ap.setAttribute('d','M '+x0+','+arcY+' A '+arcR+','+arcR+' 0 0,0 '+x1+','+arcY);
-  const dl=document.getElementById('ec-dot-l');
-  const dr=document.getElementById('ec-dot-r');
+  const dl=document.getElementById('ec-dot-l'), dr=document.getElementById('ec-dot-r');
   if(dl){dl.setAttribute('cx',x0);dl.setAttribute('cy',arcY);}
   if(dr){dr.setAttribute('cx',x1);dr.setAttribute('cy',arcY);}
 
-  function initProjection(){
-    projection = d3.geoOrthographic()
-      .scale(R).translate([W/2,H/2]).clipAngle(90)
-      .rotate([yaw,-20]);
-    pathFn = d3.geoPath(projection, ctx);
+  function initProj(){
+    projection=d3.geoOrthographic().scale(R).translate([W/2,H/2]).clipAngle(90).rotate([yaw,-20]);
+    pathFn=d3.geoPath(projection,ctx);
   }
 
   function draw(){
     ctx.clearRect(0,0,W,H);
-
-    // Ocean — bright sky blue
+    // Ocean gradient
     ctx.beginPath(); pathFn({type:'Sphere'});
-    const oceanGrad = ctx.createRadialGradient(W/2-R*.25,H/2-R*.25,4,W/2,H/2,R);
-    oceanGrad.addColorStop(0,'#a8d8f0');
-    oceanGrad.addColorStop(0.6,'#7ec8e3');
-    oceanGrad.addColorStop(1,'#4fa8d5');
-    ctx.fillStyle = oceanGrad; ctx.fill();
-
-    // Land — soft warm green
-    if(land){
-      ctx.beginPath(); pathFn(land);
-      ctx.fillStyle = '#c8ddb0'; ctx.fill();
-    }
-
-    // Hovered country — highlight
-    if(hoveredCountry && countriesGeo){
-      const feat = countriesGeo.features.find(f=>parseInt(f.id)===hoveredCountry);
+    const og=ctx.createRadialGradient(W/2-R*.25,H/2-R*.25,4,W/2,H/2,R);
+    og.addColorStop(0,'#b8e0f7'); og.addColorStop(0.6,'#7ec8e3'); og.addColorStop(1,'#4fa8d5');
+    ctx.fillStyle=og; ctx.fill();
+    // Land
+    if(land){ctx.beginPath();pathFn(land);ctx.fillStyle='#c8ddb0';ctx.fill();}
+    // Hovered country highlight
+    if(hoveredId && countriesGeo){
+      const feat=countriesGeo.features.find(function(f){return parseInt(f.id)===hoveredId;});
       if(feat){
-        ctx.beginPath(); pathFn(feat);
-        ctx.fillStyle = 'rgba(255,200,50,0.75)'; ctx.fill();
-        ctx.strokeStyle = 'rgba(200,140,0,0.9)'; ctx.lineWidth=1.5; ctx.stroke();
+        ctx.beginPath();pathFn(feat);
+        ctx.fillStyle='rgba(255,210,50,0.80)';ctx.fill();
+        ctx.strokeStyle='rgba(180,120,0,0.9)';ctx.lineWidth=1.5;ctx.stroke();
       }
     }
-
-    // Country borders — crisp white
-    if(borders){
-      ctx.beginPath(); pathFn(borders);
-      ctx.strokeStyle = 'rgba(255,255,255,0.85)';
-      ctx.lineWidth = 0.7; ctx.stroke();
-    }
-
-    // Coastline outline
-    if(land){
-      ctx.beginPath(); pathFn(land);
-      ctx.strokeStyle = 'rgba(100,140,80,0.6)';
-      ctx.lineWidth = 0.5; ctx.stroke();
-    }
-
-    // Globe outline
-    ctx.beginPath(); pathFn({type:'Sphere'});
-    ctx.strokeStyle = 'rgba(74,168,213,0.6)'; ctx.lineWidth=1.5; ctx.stroke();
-
+    // Borders
+    if(borders){ctx.beginPath();pathFn(borders);ctx.strokeStyle='rgba(255,255,255,0.9)';ctx.lineWidth=0.65;ctx.stroke();}
+    // Coastline
+    if(land){ctx.beginPath();pathFn(land);ctx.strokeStyle='rgba(90,130,70,0.5)';ctx.lineWidth=0.4;ctx.stroke();}
+    // Outline
+    ctx.beginPath();pathFn({type:'Sphere'});ctx.strokeStyle='rgba(74,168,213,0.5)';ctx.lineWidth=1.4;ctx.stroke();
     // Sheen
-    const sheen=ctx.createRadialGradient(W/2-R*.3,H/2-R*.3,2,W/2,H/2,R);
-    sheen.addColorStop(0,'rgba(255,255,255,0.28)');
-    sheen.addColorStop(0.45,'rgba(255,255,255,0.06)');
-    sheen.addColorStop(1,'rgba(30,80,140,0.12)');
-    ctx.beginPath(); pathFn({type:'Sphere'});
-    ctx.fillStyle=sheen; ctx.fill();
+    const sh=ctx.createRadialGradient(W/2-R*.3,H/2-R*.3,2,W/2,H/2,R);
+    sh.addColorStop(0,'rgba(255,255,255,0.26)');
+    sh.addColorStop(0.45,'rgba(255,255,255,0.05)');
+    sh.addColorStop(1,'rgba(30,80,140,0.10)');
+    ctx.beginPath();pathFn({type:'Sphere'});ctx.fillStyle=sh;ctx.fill();
   }
 
   function tick(){
-    yaw += 0.15;
+    if(!paused) yaw+=0.15;
     projection.rotate([yaw,-20]);
     draw();
     requestAnimationFrame(tick);
   }
 
-  // Hover detection
+  // Get country under cursor
   function getCountryAt(px,py){
     if(!countriesGeo) return null;
-    // px,py are canvas pixel coords
-    const inv = projection.invert([px,py]);
+    const inv=projection.invert([px,py]);
     if(!inv) return null;
     for(const feat of countriesGeo.features){
-      try {
-        if(d3.geoContains(feat, inv)) return parseInt(feat.id);
-      } catch(e){}
+      try{ if(d3.geoContains(feat,inv)) return parseInt(feat.id); }catch(e){}
     }
     return null;
   }
 
-  function handleHover(clientX, clientY){
-    const rect = canvas.getBoundingClientRect();
-    const px = (clientX - rect.left) * (W / rect.width);
-    const py = (clientY - rect.top)  * (H / rect.height);
-    const id = getCountryAt(px, py);
-
-    if(id !== hoveredCountry){
-      hoveredCountry = id;
-      if(id && COUNTRIES[id] && tooltip){
-        const name = COUNTRIES[id][0];
-        const iso  = COUNTRIES[id][1];
-        // Position tooltip
-        const sceneRect = document.getElementById('globe-scene').getBoundingClientRect();
-        const tx = clientX - sceneRect.left;
-        const ty = clientY - sceneRect.top;
-        tooltip.style.left = tx + 'px';
-        tooltip.style.top  = ty + 'px';
-        tooltip.style.display = 'flex';
-        if(tooltipName) tooltipName.textContent = name;
-        if(tooltipFlag){
-          tooltipFlag.src = 'https://flagcdn.com/w40/'+iso+'.png';
-          tooltipFlag.style.display = 'block';
-        }
-      } else if(tooltip){
-        tooltip.style.display = 'none';
-      }
+  function showTooltip(clientX, clientY, id){
+    if(!tooltip) return;
+    const info = CMAP[id];
+    if(!info) { tooltip.style.display='none'; return; }
+    const sr = globeScene ? globeScene.getBoundingClientRect() : {left:0,top:0};
+    tooltip.style.left = (clientX - sr.left) + 'px';
+    tooltip.style.top  = (clientY - sr.top)  + 'px';
+    tooltip.style.display = 'flex';
+    if(tipName) tipName.textContent = info[0];
+    if(tipFlag){
+      tipFlag.src = 'https://flagcdn.com/w40/'+info[1]+'.png';
+      tipFlag.style.display='block';
     }
   }
 
-  canvas.addEventListener('mousemove', function(e){ handleHover(e.clientX, e.clientY); });
-  canvas.addEventListener('mouseleave', function(){
-    hoveredCountry = null;
-    if(tooltip) tooltip.style.display = 'none';
+  canvas.addEventListener('mousemove', function(e){
+    const rect=canvas.getBoundingClientRect();
+    const px=(e.clientX-rect.left)*(W/rect.width);
+    const py=(e.clientY-rect.top)*(H/rect.height);
+    const id=getCountryAt(px,py);
+    if(id !== hoveredId){
+      hoveredId = id;
+      paused = !!id; // pause when over a country
+      if(id) showTooltip(e.clientX, e.clientY, id);
+      else if(tooltip) tooltip.style.display='none';
+    } else if(id && tooltip && tooltip.style.display!=='none'){
+      // Update tooltip position as mouse moves
+      const sr=globeScene?globeScene.getBoundingClientRect():{left:0,top:0};
+      tooltip.style.left=(e.clientX-sr.left)+'px';
+      tooltip.style.top=(e.clientY-sr.top)+'px';
+    }
   });
 
-  initProjection();
+  canvas.addEventListener('mouseleave', function(){
+    hoveredId=null; paused=false;
+    if(tooltip) tooltip.style.display='none';
+  });
+
+  initProj();
 
   fetch('https://cdn.jsdelivr.net/npm/world-atlas@2/countries-110m.json')
-    .then(function(r){ return r.json(); })
+    .then(function(r){return r.json();})
     .then(function(world){
-      land = topojson.feature(world, world.objects.land);
-      countriesGeo = topojson.feature(world, world.objects.countries);
-      borders = topojson.mesh(world, world.objects.countries, function(a,b){ return a!==b; });
+      land=topojson.feature(world,world.objects.land);
+      countriesGeo=topojson.feature(world,world.objects.countries);
+      borders=topojson.mesh(world,world.objects.countries,function(a,b){return a!==b;});
       tick();
     })
-    .catch(function(){
-      // Fallback: draw simple sphere
-      tick();
-    });
+    .catch(function(){ tick(); }); // fallback: empty globe still spins
 })();
 </script>
 </body>
