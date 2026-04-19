@@ -1253,7 +1253,11 @@ const show=id=>{document.querySelectorAll('.screen').forEach(s=>s.classList.remo
 window.showLogin=()=>show('s-login');
 window.showReg=()=>show('s-reg');
 
-onAuthStateChanged(auth,async u=>{
+// Await signOut before registering auth listener
+// This prevents auto-login from stored Firebase tokens
+(async function(){
+  await signOut(auth).catch(function(){});
+  onAuthStateChanged(auth,async u=>{
   if(u){
     cu=u;
     const s=await getDoc(doc(db,'users',u.uid));
@@ -1276,6 +1280,7 @@ onAuthStateChanged(auth,async u=>{
     }
   }else{cu=null;cp=null;show('s-login');}
 });
+})();
 
 window.doLogin=async()=>{
   const e=document.getElementById('l-email').value.trim(),p=document.getElementById('l-pass').value,err=document.getElementById('l-err');
