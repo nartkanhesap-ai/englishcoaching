@@ -269,7 +269,7 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
     <div class="lbl">Şifre</div><input type="password" id="l-pass" placeholder="••••••" style="margin-bottom:14px" onkeydown="if(event.key==='Enter')doLogin()">
     <button class="bp" style="width:100%;margin-bottom:8px" onclick="doLogin()" id="l-btn">Giriş yap</button>
     <button style="width:100%;margin-bottom:8px" onclick="showReg()">Öğrenci hesabı oluştur</button>
-    <button class="bp" style="width:100%;margin-bottom:16px;opacity:0.85" onclick="showForgotPassword()">Şifremi unuttum</button>
+    <button class="bp" style="width:100%;margin-bottom:16px" onclick="showForgotPassword()">Şifremi unuttum</button>
 
     <!-- Globe inside form column -->
     <div id="globe-scene" style="position:relative;width:100%;height:320px;margin:0 auto">
@@ -1258,28 +1258,40 @@ window.showReg=()=>show('s-reg');
 (async function(){
   await signOut(auth).catch(function(){});
   onAuthStateChanged(auth,async u=>{
-  if(u){
-    cu=u;
-    const s=await getDoc(doc(db,'users',u.uid));
-    if(s.exists()){
-      cp=s.data();
-      // Pre-seed localStorage with Firestore data for cross-device consistency
-      if(cp.streak!==undefined) {
-        localStorage.setItem('ec_st_'+(cu.uid), cp.streak);
-        if(cp.streakDate) localStorage.setItem('ec_std_'+(cu.uid), cp.streakDate);
+    if(u){
+      cu=u;
+      try {
+        const s=await getDoc(doc(db,'users',u.uid));
+        if(s.exists()){
+          cp=s.data();
+          if(cp.streak!==undefined){
+            localStorage.setItem('ec_st_'+cu.uid, cp.streak);
+            if(cp.streakDate) localStorage.setItem('ec_std_'+cu.uid, cp.streakDate);
+          }
+          if(cp.role==='teacher') loadTeacher();
+          else if(!cp.onboarded) startOb();
+          else if(!cp.placementDone && cp.name && !cp.name.toLowerCase().includes('nartkan')) startPlacementTest();
+          else if(!cp.placementDone && cp.name && cp.name.toLowerCase().includes('nartkan')){
+            updateDoc(doc(db,'users',cu.uid),{level:'C1',placementDone:true}).catch(()=>{});
+            cp={...cp,level:'C1',placementDone:true};
+            loadStudent();
+          } else loadStudent();
+        } else {
+          // User doc doesn't exist yet - show login with error
+          cu=null;cp=null;show('s-login');
+          const err=document.getElementById('l-err');
+          if(err){err.textContent='Hesap verisi bulunamadı. Lütfen tekrar giriş yapın.';err.style.display='block';}
+        }
+      } catch(authErr) {
+        console.error('Auth error:', authErr);
+        cu=null;cp=null;show('s-login');
+        const err=document.getElementById('l-err');
+        if(err){err.textContent='Bağlantı hatası: '+authErr.message;err.style.display='block';}
       }
-      if(cp.role==='teacher') loadTeacher();
-      else if(!cp.onboarded) startOb();
-      else if(!cp.placementDone && cp.name && !cp.name.toLowerCase().includes('nartkan')) startPlacementTest();
-      else if(!cp.placementDone && cp.name && cp.name.toLowerCase().includes('nartkan')) {
-        // Auto-assign C1 for Nartkan
-        updateDoc(doc(db,'users',cu.uid),{level:'C1',placementDone:true}).catch(()=>{});
-        cp = {...cp, level:'C1', placementDone:true};
-        loadStudent();
-      } else loadStudent();
+    } else {
+      cu=null;cp=null;show('s-login');
     }
-  }else{cu=null;cp=null;show('s-login');}
-});
+  });
 })();
 
 window.doLogin=async()=>{
