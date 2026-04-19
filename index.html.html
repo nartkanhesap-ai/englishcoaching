@@ -260,19 +260,27 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
 
 <!-- LOGIN -->
 <div id="s-login" class="screen active">
-  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;gap:48px;padding:2rem;flex-wrap:wrap;background:transparent">
-  <!-- Globe — right side decoration -->
-  <div style="flex:0 0 300px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:16px;order:2">
-    <div id="globe-scene" style="position:relative;width:300px;height:260px">
-      <svg id="globe-whirl-svg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible" viewBox="0 0 300 260">
+  <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;padding:2rem;background:#F9F7F5">
+  <!-- Login form — single centered column -->
+  <div class="login-wrap" style="width:100%;max-width:420px;margin:0 auto">
+    <div class="login-logo"><h1>English Coach</h1><p>Kişisel İngilizce Koçluk Platformu</p><p style="font-family:'Georgia',serif;font-size:13px;color:rgba(255,255,255,0.75);margin-top:6px;font-style:italic;letter-spacing:0.5px">by Nartkan Teacher</p></div>
+    <div id="l-err" class="alert ae" style="display:none"></div>
+    <div class="lbl">E-posta</div><input type="email" id="l-email" placeholder="ornek@email.com" style="margin-bottom:10px">
+    <div class="lbl">Şifre</div><input type="password" id="l-pass" placeholder="••••••" style="margin-bottom:14px" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="bp" style="width:100%;margin-bottom:8px" onclick="doLogin()" id="l-btn">Giriş yap</button>
+    <button style="width:100%;margin-bottom:8px" onclick="showReg()">Öğrenci hesabı oluştur</button>
+    <button class="bp" style="width:100%;margin-bottom:16px;opacity:0.85" onclick="showForgotPassword()">Şifremi unuttum</button>
+
+    <!-- Globe inside form column -->
+    <div id="globe-scene" style="position:relative;width:100%;height:320px;margin:0 auto">
+      <svg id="globe-whirl-svg" style="position:absolute;inset:0;width:100%;height:100%;pointer-events:none;overflow:visible" viewBox="0 0 420 320">
         <defs>
           <radialGradient id="ecRg" cx="50%" cy="40%" r="28%">
             <stop offset="50%" stop-color="#1a3a5c" stop-opacity="0"/>
-            <stop offset="100%" stop-color="#1a3a5c" stop-opacity="0.5"/>
+            <stop offset="100%" stop-color="#1a3a5c" stop-opacity="0.4"/>
           </radialGradient>
-          <mask id="ecFadeMask"><rect width="300" height="260" fill="url(#ecRg)"/></mask>
+          <mask id="ecFadeMask"><rect width="420" height="320" fill="url(#ecRg)"/></mask>
         </defs>
-        <!-- Whirl rings -->
         <g id="ec-whirl-g" mask="url(#ecFadeMask)">
           <circle id="ec-wr1" fill="none" stroke="rgba(26,58,92,0.20)" stroke-width="0.8" stroke-dasharray="18 8">
             <animateTransform attributeName="transform" type="rotate" from="0" to="360" dur="9s" repeatCount="indefinite"/>
@@ -288,38 +296,25 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
           </circle>
         </g>
         <circle id="ec-globe-ring" fill="none" stroke="rgba(26,58,92,0.15)" stroke-width="0.5"/>
-        <!-- Text arc -->
         <path id="ec-textArcPath" fill="none" stroke="none"/>
-        <text id="ec-arc-text" font-family="Poppins,sans-serif" font-weight="600" fill="#1a3a5c" font-size="8.5" letter-spacing="0.08em" opacity="0.85">
+        <text id="ec-arc-text" font-family="Poppins,sans-serif" font-weight="700" fill="#1a3a5c" font-size="11" letter-spacing="0.06em" opacity="0.9">
           <textPath href="#ec-textArcPath" startOffset="50%" text-anchor="middle">Your Passport is English to Anywhere on Earth</textPath>
         </text>
-        <circle id="ec-dot-l" r="2" fill="#1a3a5c" opacity="0.4"/>
-        <circle id="ec-dot-r" r="2" fill="#1a3a5c" opacity="0.4"/>
+        <circle id="ec-dot-l" r="2.5" fill="#1a3a5c" opacity="0.4"/>
+        <circle id="ec-dot-r" r="2.5" fill="#1a3a5c" opacity="0.4"/>
       </svg>
       <canvas id="ec-globe-canvas" style="position:absolute;border-radius:50%;z-index:2;transform:translate(-50%,-50%);cursor:crosshair"></canvas>
-      <!-- Hover tooltip -->
-      <div id="ec-globe-tooltip" style="display:none;position:absolute;z-index:10;background:rgba(255,255,255,0.95);border-radius:10px;padding:8px 12px;box-shadow:0 4px 20px rgba(0,0,0,.25);pointer-events:none;white-space:nowrap;font-family:Poppins,sans-serif;font-size:12px;font-weight:600;color:#1a3a5c;display:flex;align-items:center;gap:8px;transform:translate(-50%,-120%)">
+      <div id="ec-globe-tooltip" style="display:none;position:absolute;z-index:10;background:rgba(255,255,255,0.97);border-radius:10px;padding:7px 12px;box-shadow:0 4px 20px rgba(0,0,0,.20);pointer-events:none;white-space:nowrap;font-family:Poppins,sans-serif;font-size:12px;font-weight:600;color:#1a3a5c;align-items:center;gap:8px;transform:translate(-50%,-120%)">
         <img id="ec-tooltip-flag" src="" style="width:24px;height:16px;border-radius:3px;object-fit:cover;display:none"/>
         <span id="ec-tooltip-name"></span>
       </div>
     </div>
 
-  </div>
-  <!-- Login form -->
-  <div class="login-wrap" style="order:1;flex:0 0 min(400px,100%);margin:0">
-    <div class="login-logo"><h1>English Coach</h1><p>Kişisel İngilizce Koçluk Platformu</p><p style="font-family:'Georgia',serif;font-size:13px;color:rgba(255,255,255,0.75);margin-top:6px;font-style:italic;letter-spacing:0.5px">by Nartkan Teacher</p></div>
-    <div id="l-err" class="alert ae" style="display:none"></div>
-    <div class="lbl">E-posta</div><input type="email" id="l-email" placeholder="ornek@email.com" style="margin-bottom:10px">
-    <div class="lbl">Şifre</div><input type="password" id="l-pass" placeholder="••••••" style="margin-bottom:14px" onkeydown="if(event.key==='Enter')doLogin()">
-    <button class="bp" style="width:100%;margin-bottom:8px" onclick="doLogin()" id="l-btn">Giriş yap</button>
-    <button style="width:100%;margin-bottom:8px" onclick="showReg()">Öğrenci hesabı oluştur</button>
-    <button style="width:100%;background:transparent;border:none;color:rgba(255,255,255,.65);font-size:12px;cursor:pointer;padding:4px;margin-bottom:4px" onclick="showForgotPassword()">Şifremi unuttum</button>
-    <div style="margin-top:8px;background:#fdf0ee;border:1.5px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:12px;color:#c0392b;line-height:1.6">
+    <!-- Browser warning below globe -->
+    <div style="margin-top:20px;background:#fdf0ee;border:1.5px solid #e74c3c;border-radius:10px;padding:10px 14px;font-size:12px;color:#c0392b;line-height:1.6">
       ⚠️ <strong>Tarayıcı Uyarısı:</strong> Sitenin düzgün çalışabilmesi için lütfen <strong>Google Chrome</strong>, <strong>Microsoft Edge</strong> veya <strong>Yandex</strong> tarayıcısını kullanın.
     </div>
   </div>
-</div>
-</div>
 
 <!-- REGISTER -->
 <div id="s-reg" class="screen">
@@ -738,8 +733,7 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
         <div style="font-size:12px;color:var(--muted-navy);align-self:center">Aksan:</div>
         <button onclick="setAccent('us')" id="vbtn-us" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.2);color:#fff">🇺🇸 Amerikan</button>
         <button onclick="setAccent('uk')" id="vbtn-uk" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--muted-navy)">🇬🇧 İngiliz</button>
-        <button onclick="setAccent('au')" id="vbtn-au" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--muted-navy)">🇦🇺 Avustralya</button>
-        <button onclick="setAccent('in')" id="vbtn-in" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--muted-navy)">🇮🇳 Hint</button>
+
         <button onclick="toggleMute()" id="mute-btn" style="padding:4px 10px;font-size:12px;border-radius:20px;border:1px solid rgba(255,255,255,.15);background:transparent;color:var(--muted-navy);margin-left:auto">🔊 Açık</button>
       </div>
     </div>
@@ -1311,7 +1305,7 @@ window.doReg=async()=>{
   b.innerHTML='Üyeliği Oluştur ve Seviye Tespit Sınavına Başla';b.disabled=false;
 };
 
-window.doLogout=async()=>{if(_studSnapshotUnsub){_studSnapshotUnsub();_studSnapshotUnsub=null;} if(_feedUnsub){_feedUnsub();_feedUnsub=null;} await signOut(auth);show('s-login');};
+window.doLogout=async()=>{if(_studSnapshotUnsub){_studSnapshotUnsub();_studSnapshotUnsub=null;} if(_feedUnsub){_feedUnsub();_feedUnsub=null;} if(window._userDocUnsub){window._userDocUnsub();window._userDocUnsub=null;} await signOut(auth);show('s-login');};
 
 // ONBOARDING
 function startOb(){obStep=0;obA={};show('s-ob');renderOb();}
@@ -1946,6 +1940,33 @@ async function loadStudent(){
   showCounselorBubble();
   setTimeout(requestNotificationPermission, 3000);
   setTimeout(function(){ logActivity('🔑','platforma giriş yaptı','#2a4f7a'); },2000);
+  // ── REAL-TIME SYNC: Own user doc → cross-device live updates ──
+  if(cu && cu.uid && !window._userDocUnsub) {
+    window._userDocUnsub = onSnapshot(doc(db,'users',cu.uid), function(snap) {
+      if(!snap.exists()) return;
+      const fresh = snap.data();
+      const prev = cp ? Object.assign({},cp) : {};
+      cp = Object.assign({},cp,fresh);
+      if(fresh.voiceScore !== prev.voiceScore) {
+        voiceScore = fresh.voiceScore || 0;
+        try { updateBadgeDisplay(); } catch(e){}
+      }
+      if(fresh.streak !== prev.streak || fresh.streakDate !== prev.streakDate) {
+        try { loadStreak(); } catch(e){}
+      }
+      if(fresh.avatarId !== prev.avatarId) {
+        try { renderAvatarGrid(); renderProf(); } catch(e){}
+      }
+      if(fresh.level !== prev.level) {
+        const lbl=document.getElementById('level-badge');
+        if(lbl) lbl.textContent=fresh.level||'B1';
+      }
+      if(fresh.totalAIMinutes !== prev.totalAIMinutes) {
+        chatTotalSecs = (fresh.totalAIMinutes||0)*60;
+        const m=document.getElementById('ai-mins'); if(m) m.textContent=fresh.totalAIMinutes||0;
+      }
+    }, function(e){ console.log('User sync err:', e.message); });
+  }
 }
 
 async function checkPendW(){
@@ -2124,13 +2145,7 @@ function _splitSentences(text, maxLen) {
 }
 
 function _getRVVoice() {
-  // Map accent codes to ResponsiveVoice voice names
-  const map = {
-    'en-US': 'US English Female',
-    'en-GB': 'UK English Female',
-    'en-AU': 'Australian Female',
-    'en-IN': 'Hindi Female'  // closest to Indian English
-  };
+  const map = {'en-US':'US English Female','en-GB':'UK English Female'};
   return map[currentAccent] || 'US English Female';
 }
 
@@ -2162,13 +2177,11 @@ function speak(text) {
 
 
 window.setAccent=function(lang){
-  const accentMap = {us:'en-US', uk:'en-GB', au:'en-AU', 'in':'en-IN'};
+  const accentMap = {us:'en-US', uk:'en-GB'};
   currentAccent = accentMap[lang] || 'en-US';
-  // Refresh voice cache when accent changes
   _loadVoicesNow();
-  // Also update ResponsiveVoice if available
   if(window.responsiveVoice) window.responsiveVoice.cancel();
-  ['us','uk','au','in'].forEach(function(k){
+  ['us','uk'].forEach(function(k){
     const b=document.getElementById('vbtn-'+k);
     if(!b) return;
     if(k===lang){
@@ -3246,6 +3259,16 @@ window.saveRichNote = async () => {
 
 // ======== NEWS ========
 let newsLoaded = {};
+let _newsLoadedDate = '';
+// Clear news cache daily
+(function() {
+  const today = new Date().toISOString().slice(0,10);
+  if(_newsLoadedDate !== today) { newsLoaded = {}; _newsLoadedDate = today; }
+  setInterval(function() {
+    const d = new Date().toISOString().slice(0,10);
+    if(_newsLoadedDate !== d) { newsLoaded = {}; _newsLoadedDate = d; console.log('News cache cleared - new day'); }
+  }, 60*60*1000); // check every hour
+})();
 
 window.loadNews = async (category, btn) => {
   document.querySelectorAll('#sc-news .fb').forEach(b=>b.classList.remove('active'));
@@ -3264,21 +3287,8 @@ window.loadNews = async (category, btn) => {
     kids: 'BBC Newsround, National Geographic Kids, Time for Kids'
   };
   const level = cp ? (cp.level||'B1') : 'B1';
-  const prompt = `You are a news curator for an English learner at level ${level}.
-Create 5 short news summaries in the style of ${sources[category]||'BBC News'} about current ${category} topics.
-Make them educational and at the right difficulty for ${level} level.
-
-For EACH news item use EXACTLY this format:
-###NEWSITEM###
-EMOJI: [one relevant emoji]
-HEADLINE: [engaging headline in English, max 10 words]
-SUMMARY: [2-3 sentences in English, appropriate for ${level} level]
-VOCAB: [3 key vocabulary words from the text: word1=Turkish, word2=Turkish, word3=Turkish]
-SOURCE: [realistic source name like "BBC News" or "Reuters"]
-URL: [use a real, working search URL like https://www.google.com/search?q=headline+words+site:bbc.com or https://news.google.com/search?q=headline]
-###END###
-
-Write all 5 items. Make headlines feel like real current news.`;
+  const _newsToday = new Date().toISOString().slice(0,10);
+  const prompt = 'You are a news curator for an English learner at level ' + level + '. Today is ' + _newsToday + '.\nCreate 5 real current news summaries about ' + category + ' topics in the style of ' + (sources[category]||'BBC News') + '.\nFor EACH item use EXACTLY this format:\n###NEWSITEM###\nEMOJI: [emoji]\nHEADLINE: [real news headline max 12 words]\nSUMMARY: [2-3 sentences at ' + level + ' level about real events]\nVOCAB: [word1=Turkish, word2=Turkish, word3=Turkish]\nSOURCE: [e.g. BBC News, Reuters, CNN, AP News]\nURL: [direct URL to the news site e.g. https://www.bbc.com/news or https://reuters.com or https://apnews.com]\n###END###\nWrite all 5 items with real working URLs.';
 
   try{
     const reply = await callAI([{role:'user',content:prompt}],'',1500);
@@ -3308,7 +3318,7 @@ Write all 5 items. Make headlines feel like real current news.`;
         ${vocabHtml ? '<div style="margin-bottom:8px">'+vocabHtml+'</div>' : ''}
         <div style="display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border-c)">
           <span style="font-size:11px;color:#889">${source}</span>
-          <a href="${url}" target="_blank" style="font-size:11px;color:var(--accent);text-decoration:none">Kaynağa git ></a>
+          <a href="${url}" target="_blank" rel="noopener noreferrer" style="font-size:11px;color:var(--accent);text-decoration:none;font-weight:600">🔗 Kaynağa git</a>
         </div>
       </div>`;
     }).filter(Boolean).join('');
@@ -7265,8 +7275,8 @@ function installPWA() {
 
 
 <!-- ── D3 Real Globe (Login Page) ── -->
-<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js"></script>
-<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js"></script>
+<script src="https://unpkg.com/d3@7.9.0/dist/d3.min.js" defer></script>
+<script src="https://unpkg.com/topojson-client@3.1.0/dist/topojson-client.min.js" defer></script>
 <script>
 (function initGlobe() {
   if(typeof d3 === 'undefined' || typeof topojson === 'undefined') {
@@ -7275,7 +7285,7 @@ function installPWA() {
   const canvas = document.getElementById('ec-globe-canvas');
   if(!canvas) { setTimeout(initGlobe, 200); return; }
 
-  const R = 108, CX = 150, CY = 128;
+  const R = 108, CX = 210, CY = 130;
   const W = R*2+4, H = R*2+4;
   canvas.width = W; canvas.height = H;
   canvas.style.left = CX + 'px';
@@ -7346,8 +7356,8 @@ function installPWA() {
   if(gr){gr.setAttribute('cx',CX);gr.setAttribute('cy',CY);gr.setAttribute('r',R*.86);}
 
   // Text arc
-  const arcR=300, gap=R+22;
-  const arcY=CY+gap, span=Math.min(arcR*1.55,275);
+  const arcR=340, gap=R+28;
+  const arcY=CY+gap, span=Math.min(arcR*1.55,360);
   const x0=CX-span/2, x1=CX+span/2;
   const ap=document.getElementById('ec-textArcPath');
   if(ap) ap.setAttribute('d','M '+x0+','+arcY+' A '+arcR+','+arcR+' 0 0,0 '+x1+','+arcY);
