@@ -319,6 +319,26 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
 /* Enhanced tool cards */
 .tool-card{padding:24px 18px!important;min-height:130px!important;border-radius:16px!important}
 .tool-card:hover{transform:translateY(-3px)!important;box-shadow:0 8px 24px rgba(26,58,92,0.15)!important}
+
+/* ── KELIME DEFTERI ─────────────────────────────────── */
+.vocab-tab{background:transparent;color:var(--navy)!important;border-color:var(--border-c)!important}
+.vocab-tab.active{background:var(--accent)!important;color:#fff!important;border-color:var(--accent)!important}
+.vocab-word-card{display:flex;align-items:center;gap:10px;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border-c);margin-bottom:6px;background:var(--bg);transition:border-color .15s}
+.vocab-word-card:hover{border-color:var(--accent)}
+.vocab-word-card.selected{border-color:var(--accent);background:var(--accent-light)}
+.vocab-word-card input[type=checkbox]{width:16px;height:16px;accent-color:var(--accent);flex-shrink:0;cursor:pointer}
+.vocab-source-badge{font-size:9px;padding:2px 6px;border-radius:8px;font-weight:600}
+.vocab-source-ai{background:rgba(26,58,92,0.1);color:var(--navy)}
+.vocab-source-news{background:rgba(45,138,78,0.1);color:#2d8a4e}
+
+/* ── KELIME DÜNYASI ─────────────────────────────────── */
+.ww-word{position:absolute;cursor:pointer;font-family:Poppins,sans-serif;font-weight:600;transition:transform .2s,opacity .2s;user-select:none;white-space:nowrap}
+.ww-word:hover{transform:scale(1.15)!important;z-index:10}
+.ww-cat-btn{padding:5px 14px;border-radius:20px;border:1.5px solid var(--border-c);background:var(--bg);color:var(--navy);cursor:pointer;font-size:11px;font-family:Poppins,sans-serif;transition:all .2s;font-weight:500}
+.ww-cat-btn.active{background:var(--navy);color:#fff!important;border-color:var(--navy);font-weight:700}
+.ww-cat-btn:hover{border-color:var(--accent);color:var(--accent)}
+@keyframes wwFloat{0%,100%{transform:translateY(0px)}50%{transform:translateY(-6px)}}
+@keyframes wwFadeIn{from{opacity:0;transform:scale(0.5)}to{opacity:1;transform:scale(1)}}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -412,12 +432,93 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
   <span id="wht-tr" style="opacity:0.9;font-size:11px;display:block"></span>
   <button id="wht-hint" onclick="window._addCurrentWordToQuizlet(event)" style="display:none;margin-top:6px;width:100%;font-size:10px;padding:4px 8px;border-radius:5px;border:none;background:rgba(255,255,255,0.2);color:#fff;cursor:pointer;font-family:Poppins,sans-serif">+ Quizlete Ekle</button>
 </div>
+<div id="new-set-name-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100002;align-items:center;justify-content:center">
+  <div style="background:var(--bg);border-radius:14px;padding:24px;min-width:300px;max-width:360px;box-shadow:0 8px 32px rgba(0,0,0,0.25);font-family:Poppins,sans-serif">
+    <div style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:6px">📚 Yeni Set Oluştur</div>
+    <div style="font-size:12px;color:var(--ts);margin-bottom:14px" id="new-set-modal-desc">Seçili kelimeler yeni sete eklenecek.</div>
+    <input id="new-set-name-input" type="text" placeholder="Set adını yazın..." style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border-c);font-size:13px;font-family:Poppins,sans-serif;background:var(--bg);color:var(--tp);margin-bottom:12px">
+    <div style="display:flex;gap:8px">
+      <button id="new-set-modal-cancel" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-c);background:transparent;color:var(--ts);cursor:pointer;font-size:13px;font-family:Poppins,sans-serif">İptal</button>
+      <button id="new-set-modal-confirm" style="flex:1;padding:10px;border-radius:8px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-size:13px;font-family:Poppins,sans-serif;font-weight:600">Oluştur</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══ WW → Quizlet Word Selection Modal ══ -->
+<div id="ww-quizlet-modal" style="display:none;position:fixed;inset:0;background:rgba(10,20,40,0.7);backdrop-filter:blur(4px);z-index:100010;align-items:center;justify-content:center;padding:20px">
+  <div style="background:var(--bg);border-radius:20px;width:100%;max-width:520px;max-height:85vh;display:flex;flex-direction:column;box-shadow:0 20px 60px rgba(0,0,0,0.35);overflow:hidden;font-family:Poppins,sans-serif">
+
+    <!-- Header -->
+    <div style="background:linear-gradient(135deg,#6b46c1,#9333ea);padding:20px 24px;flex-shrink:0">
+      <div style="display:flex;align-items:center;justify-content:space-between">
+        <div>
+          <div style="font-size:15px;font-weight:700;color:#fff">📚 Quizlet Seti Oluştur</div>
+          <div id="wq-cat-label" style="font-size:12px;color:rgba(255,255,255,0.75);margin-top:2px"></div>
+        </div>
+        <button onclick="document.getElementById('ww-quizlet-modal').style.display='none'" style="width:30px;height:30px;border-radius:50%;border:none;background:rgba(255,255,255,0.2);color:#fff;cursor:pointer;font-size:16px;display:flex;align-items:center;justify-content:center;flex-shrink:0">×</button>
+      </div>
+      <!-- Stats bar -->
+      <div style="display:flex;gap:16px;margin-top:12px">
+        <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:11px;color:#fff"><span id="wq-total-count" style="font-weight:700;font-size:14px">0</span> kelime</div>
+        <div style="background:rgba(255,255,255,0.15);border-radius:8px;padding:6px 12px;font-size:11px;color:#fff"><span id="wq-selected-count" style="font-weight:700;font-size:14px">0</span> seçili</div>
+      </div>
+    </div>
+
+    <!-- Controls -->
+    <div style="padding:14px 20px;border-bottom:1px solid var(--border-c);display:flex;align-items:center;gap:8px;flex-shrink:0;flex-wrap:wrap">
+      <button onclick="wqSelectAll()" style="padding:6px 14px;border-radius:8px;border:1.5px solid #9333ea;background:transparent;color:#9333ea;cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;font-weight:600">Tümünü Seç</button>
+      <button onclick="wqClearAll()" style="padding:6px 14px;border-radius:8px;border:1px solid var(--border-c);background:transparent;color:var(--ts);cursor:pointer;font-size:12px;font-family:Poppins,sans-serif">Temizle</button>
+      <input id="wq-search" type="text" placeholder="Kelime ara..." oninput="wqFilterWords(this.value)" style="flex:1;min-width:120px;padding:7px 12px;border-radius:8px;border:1px solid var(--border-c);font-size:12px;font-family:Poppins,sans-serif;background:var(--bg);color:var(--tp)">
+    </div>
+
+    <!-- Word grid (scrollable) -->
+    <div id="wq-word-grid" style="flex:1;overflow-y:auto;padding:16px 20px;display:grid;grid-template-columns:1fr 1fr;gap:8px"></div>
+
+    <!-- Footer -->
+    <div style="padding:14px 20px;border-top:1px solid var(--border-c);flex-shrink:0;background:var(--bg2,#fafafa)">
+      <div style="display:flex;align-items:center;gap:10px">
+        <input id="wq-set-name" type="text" placeholder="Set adı..." style="flex:1;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border-c);font-size:13px;font-family:Poppins,sans-serif;background:var(--bg);color:var(--tp)" oninput="wqCheckReady()">
+        <button id="wq-create-btn" onclick="wqCreateSet()" style="padding:10px 20px;border-radius:10px;border:none;background:linear-gradient(135deg,#6b46c1,#9333ea);color:#fff;cursor:pointer;font-size:13px;font-family:Poppins,sans-serif;font-weight:700;opacity:0.5;pointer-events:none;white-space:nowrap;flex-shrink:0">
+          ✨ Seti Kaydet
+        </button>
+      </div>
+      <div style="font-size:10px;color:var(--tm);margin-top:6px">En az 2 kelime seçin ve set adı girin</div>
+    </div>
+
+  </div>
+</div>
 <div id="wht-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100000;align-items:center;justify-content:center">
   <div style="background:#fff;border-radius:14px;padding:20px;min-width:270px;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.25);font-family:Poppins,sans-serif">
     <div style="font-weight:700;font-size:14px;color:#1a3a5c;margin-bottom:4px">📚 Quizlete Ekle</div>
     <div id="wht-modal-word" style="font-size:12px;color:#555;margin-bottom:14px"></div>
     <div id="wht-modal-body"></div>
     <button onclick="document.getElementById('wht-modal').style.display='none'" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#888;cursor:pointer;font-size:12px;margin-top:8px">İptal</button>
+  </div>
+</div>
+<div id="ww-popup" style="display:none;position:fixed;z-index:99999;background:#fff;border-radius:12px;padding:14px 18px;box-shadow:0 8px 32px rgba(0,0,0,0.2);min-width:200px;max-width:260px;pointer-events:none;font-family:Poppins,sans-serif">
+  <div id="ww-popup-en" style="font-weight:700;font-size:15px;color:#1a3a5c"></div>
+  <div id="ww-popup-tr" style="font-size:12px;color:#666;margin-top:2px"></div>
+  <div id="ww-popup-ex" style="font-size:11px;color:#555;margin-top:6px;line-height:1.5;border-top:1px solid #eee;padding-top:5px;min-height:16px"></div>
+  <div id="ww-popup-date" style="font-size:10px;color:#aaa;margin-top:4px"></div>
+  <div id="ww-popup-cat" style="font-size:10px;margin-top:2px"></div>
+</div>
+<div id="ww-create-cat-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.5);z-index:100003;align-items:center;justify-content:center">
+  <div style="background:var(--bg);border-radius:14px;padding:24px;min-width:320px;max-width:400px;box-shadow:0 8px 32px rgba(0,0,0,0.3);font-family:Poppins,sans-serif">
+    <div style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:6px">🌍 Yeni Kategori Oluştur</div>
+    <div style="font-size:12px;color:var(--ts);margin-bottom:14px">Bir tema yaz, AI 20-25 kelime oluştursun.</div>
+    <input id="ww-cat-theme-input" type="text" placeholder="Örn: summer, school, travel, food..." style="width:100%;box-sizing:border-box;padding:10px 14px;border-radius:10px;border:1.5px solid var(--border-c);font-size:13px;font-family:Poppins,sans-serif;background:var(--bg);color:var(--tp);margin-bottom:12px">
+    <div id="ww-cat-generating" style="display:none;text-align:center;padding:12px;font-size:13px;color:var(--ts)"><span class="spin"></span> AI kelimeler oluşturuyor...</div>
+    <div style="display:flex;gap:8px" id="ww-cat-modal-btns">
+      <button onclick="document.getElementById('ww-create-cat-modal').style.display='none'" style="flex:1;padding:10px;border-radius:8px;border:1px solid var(--border-c);background:transparent;color:var(--ts);cursor:pointer;font-size:13px;font-family:Poppins,sans-serif">İptal</button>
+      <button onclick="createWWCategory()" style="flex:2;padding:10px;border-radius:8px;border:none;background:linear-gradient(135deg,#0f2440,#1a3a5c);color:#fff;cursor:pointer;font-size:13px;font-family:Poppins,sans-serif;font-weight:600">✨ Oluştur</button>
+    </div>
+  </div>
+</div>
+<div id="vocab-set-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100001;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;padding:20px;min-width:280px;max-width:340px;font-family:Poppins,sans-serif;box-shadow:0 8px 32px rgba(0,0,0,0.25)">
+    <div style="font-weight:700;font-size:15px;color:#1a3a5c;margin-bottom:12px">📚 Hangi sete eklensin?</div>
+    <div id="vocab-set-list" style="max-height:200px;overflow-y:auto;margin-bottom:12px"></div>
+    <button onclick="document.getElementById('vocab-set-modal').style.display='none'" style="width:100%;padding:9px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#888;cursor:pointer;font-size:12px">İptal</button>
   </div>
 </div>
 <div id="s-login" class="screen active">
@@ -1279,43 +1380,62 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
   <!-- TOOLS HUB -->
   <div id="sc-tools" class="tc">
     <div style="font-size:16px;font-weight:700;color:var(--navy);margin-bottom:4px">🧰 Araçlar</div>
-    <div style="font-size:12px;color:#889;margin-bottom:1.25rem">Tüm öğrenme araçlarına buradan ulaş</div>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
-      <button onclick="sTab('games')" style="background:#fff;border:1px solid var(--border-c);border-radius:14px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='#fff'">
-        <div style="font-size:32px;margin-bottom:6px">🎮</div>
-        <div style="font-weight:700;font-size:13px;color:var(--navy)">Oyunlar</div>
-        <div style="font-size:11px;color:#889;margin-top:2px">5 oyun + Dedektif</div>
-      </button>
-      <button onclick="sTab('career')" style="background:#fff;border:1px solid var(--border-c);border-radius:14px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='#fff'">
-        <div style="font-size:32px;margin-bottom:6px">💼</div>
-        <div style="font-weight:700;font-size:13px;color:var(--navy)">Kariyer</div>
-        <div style="font-size:11px;color:#889;margin-top:2px">Hedefine özel içerik</div>
-      </button>
-      <button onclick="sTab('community')" style="background:#fff;border:1px solid var(--border-c);border-radius:14px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='#fff'">
-        <div style="font-size:32px;margin-bottom:6px">👥</div>
-        <div style="font-weight:700;font-size:13px;color:var(--navy)">Topluluk</div>
-        <div style="font-size:11px;color:#889;margin-top:2px">Paylaş & etkileş</div>
-      </button>
-      <button onclick="sTab('calendar')" style="background:#fff;border:1px solid var(--border-c);border-radius:14px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='#fff'">
-        <div style="font-size:32px;margin-bottom:6px">📅</div>
-        <div style="font-weight:700;font-size:13px;color:var(--navy)">Takvim</div>
-        <div style="font-size:11px;color:#889;margin-top:2px">Çalışma planla</div>
-      </button>
-      <button onclick="sTab('report')" style="background:#fff;border:1px solid var(--border-c);border-radius:14px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='#fff'">
-        <div style="font-size:32px;margin-bottom:6px">📊</div>
-        <div style="font-weight:700;font-size:13px;color:var(--navy)">Raporum</div>
-        <div style="font-size:11px;color:#889;margin-top:2px">Haftalık gelişim</div>
-      </button>
+    <div style="font-size:12px;color:#889;margin-bottom:1.5rem">Tüm öğrenme araçlarına buradan ulaş</div>
 
-      <button onclick="sTab('notes')" style="background:#fff;border:1px solid var(--border-c);border-radius:14px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='#fff'">
-        <div style="font-size:32px;margin-bottom:6px">🗒️</div>
-        <div style="font-weight:700;font-size:13px;color:var(--navy)">Notlar</div>
-        <div style="font-size:11px;color:#889;margin-top:2px">Ders notlarım</div>
+    <!-- 3-column grid layout -->
+    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px;align-items:start">
+
+      <!-- Column 1: Kelime Dünyası, Topluluk, Notlar -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+      <button onclick="sTab('wordworld')" class="tool-card-btn" style="background:var(--bg);border:1.5px solid var(--border-c);border-radius:16px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='var(--bg)';this.style.transform='translateY(0)'">
+        <div style="font-size:36px;margin-bottom:8px">🌍</div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">Kelime Dünyası</div>
+        <div style="font-size:11px;color:#889;margin-top:3px;line-height:1.4">Kelimelerinin görsel haritası</div>
       </button>
+      <button onclick="sTab('community')" class="tool-card-btn" style="background:var(--bg);border:1.5px solid var(--border-c);border-radius:16px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='var(--bg)';this.style.transform='translateY(0)'">
+        <div style="font-size:36px;margin-bottom:8px">👥</div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">Topluluk</div>
+        <div style="font-size:11px;color:#889;margin-top:3px;line-height:1.4">Paylaş & etkileş</div>
+      </button>
+      <button onclick="sTab('notes')" class="tool-card-btn" style="background:var(--bg);border:1.5px solid var(--border-c);border-radius:16px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='var(--bg)';this.style.transform='translateY(0)'">
+        <div style="font-size:36px;margin-bottom:8px">🗒️</div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">Notlar</div>
+        <div style="font-size:11px;color:#889;margin-top:3px;line-height:1.4">Ders notlarım</div>
+      </button>
+      </div>
+
+      <!-- Column 2: Kelime Defteri, Kariyer -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+      <button onclick="sTab('vocab')" class="tool-card-btn" style="background:var(--bg);border:1.5px solid var(--border-c);border-radius:16px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='var(--bg)';this.style.transform='translateY(0)'">
+        <div style="font-size:36px;margin-bottom:8px">📖</div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">Kelime Defteri</div>
+        <div style="font-size:11px;color:#889;margin-top:3px;line-height:1.4">Tüm kelimelerim</div>
+      </button>
+      <button onclick="sTab('career')" class="tool-card-btn" style="background:var(--bg);border:1.5px solid var(--border-c);border-radius:16px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='var(--bg)';this.style.transform='translateY(0)'">
+        <div style="font-size:36px;margin-bottom:8px">💼</div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">Kariyer</div>
+        <div style="font-size:11px;color:#889;margin-top:3px;line-height:1.4">Hedefine özel içerik</div>
+      </button>
+      </div>
+
+      <!-- Column 3: Raporum, Takvim -->
+      <div style="display:flex;flex-direction:column;gap:14px">
+      <button onclick="sTab('report')" class="tool-card-btn" style="background:var(--bg);border:1.5px solid var(--border-c);border-radius:16px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='var(--bg)';this.style.transform='translateY(0)'">
+        <div style="font-size:36px;margin-bottom:8px">📊</div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">Raporum</div>
+        <div style="font-size:11px;color:#889;margin-top:3px;line-height:1.4">Haftalık gelişim</div>
+      </button>
+      <button onclick="sTab('calendar')" class="tool-card-btn" style="background:var(--bg);border:1.5px solid var(--border-c);border-radius:16px;padding:1.4rem 1rem;text-align:center;cursor:pointer;transition:all .2s;display:flex;flex-direction:column;align-items:center;justify-content:center" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)';this.style.transform='translateY(-2px)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='var(--bg)';this.style.transform='translateY(0)'">
+        <div style="font-size:36px;margin-bottom:8px">📅</div>
+        <div style="font-weight:700;font-size:13px;color:var(--navy)">Takvim</div>
+        <div style="font-size:11px;color:#889;margin-top:3px;line-height:1.4">Çalışma planla</div>
+      </button>
+      </div>
 
     </div>
+
     <!-- Back button shown when inside a tool -->
-    <div id="tools-back" style="display:none;margin-top:1rem">
+    <div id="tools-back" style="display:none;margin-top:1.5rem">
       <button onclick="sTab('tools')" style="width:100%;padding:10px;border-radius:8px;border:1px solid var(--border-c);background:transparent;color:var(--navy-lighter);font-size:13px;cursor:pointer">← Araçlara geri dön</button>
     </div>
   </div>
@@ -1550,7 +1670,9 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
         <div style="font-weight:700;color:var(--navy);font-size:15px" id="qset-detail-title"></div>
         <button onclick="deleteCurrentSet()" style="margin-left:auto;padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--red-light,#fcc);background:transparent;color:var(--red,#c00);cursor:pointer">Sil</button>
       </div>
-      <div style="font-size:12px;color:#889;margin-bottom:12px" id="qset-detail-count"></div>
+      <div style="font-size:12px;color:#889;margin-bottom:10px" id="qset-detail-count"></div>
+      <!-- Complete / Retry button -->
+      <div id="qset-complete-bar" style="margin-bottom:12px"></div>
       <!-- Game cards -->
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:1rem">
         <button onclick="startQGame('flashcard')" style="background:#fff;border:2px solid #e0d4f7;border-radius:12px;padding:1rem;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='#9333ea'" onmouseout="this.style.borderColor='#e0d4f7'">
@@ -1576,7 +1698,10 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
       </div>
       <!-- Word list preview -->
       <div class="card">
-        <div style="font-weight:600;color:var(--navy);font-size:13px;margin-bottom:8px">📋 Kelimeler</div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div style="font-weight:600;color:var(--navy);font-size:13px">📋 Kelimeler</div>
+          <button onclick="addWordToCurrentSet()" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;font-family:Poppins,sans-serif">+ Kelime Ekle</button>
+        </div>
         <div id="qset-words-preview" style="display:flex;flex-direction:column;gap:6px"></div>
       </div>
       <!-- Game arena -->
@@ -3200,7 +3325,7 @@ async function saveWord(word,meaning,sentence){
     var lw = JSON.parse(localStorage.getItem(lk)||'[]');
     if(!lw.some(function(w){return w.word===word;})) {
       isNewWord = true;
-      lw.push({word:word, tr:meaning, date:new Date().toISOString().slice(0,10)});
+      lw.push({word:word, tr:meaning, date:new Date().toISOString().slice(0,10), source:'ai'});
       lw = lw.slice(-50);
       localStorage.setItem(lk, JSON.stringify(lw));
     }
@@ -5614,6 +5739,23 @@ function updateRightPanel(tab) {
     frag.appendChild(calEl);
 
     // Smart daily suggestion (changes when completed)
+    // Kelime Defteri quick widget
+    frag.appendChild(h('📖 Kelime Defterim'));
+    var vocabCount2 = Math.max(typeof cp!=='undefined'&&cp?cp.totalWords||0:0, parseInt(document.getElementById('sp-w')?.textContent||'0')||0);
+    var todayWords2 = (getAllLearnedWords ? getAllLearnedWords() : []).filter(function(w){return w.date===new Date().toISOString().slice(0,10);}).length;
+    var vocabCardEl = document.createElement('div');
+    vocabCardEl.style.cssText = 'background:var(--accent-light);border-radius:10px;padding:12px;margin-bottom:8px';
+    vocabCardEl.innerHTML = '<div style="display:flex;justify-content:space-around;text-align:center;margin-bottom:8px">' +
+      '<div><div style="font-size:22px;font-weight:800;color:var(--accent)">'+vocabCount2+'</div><div style="font-size:10px;color:var(--tm)">Toplam</div></div>' +
+      '<div><div style="font-size:22px;font-weight:800;color:var(--green)">'+todayWords2+'</div><div style="font-size:10px;color:var(--tm)">Bugün</div></div>' +
+    '</div>';
+    var vbBtn2 = document.createElement('button');
+    vbBtn2.style.cssText = 'width:100%;padding:7px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-size:11px;font-family:Poppins,sans-serif;font-weight:600';
+    vbBtn2.textContent = '📖 Kelime Defterini Aç';
+    vbBtn2.onclick = function(){ sTab('vocab'); };
+    vocabCardEl.appendChild(vbBtn2);
+    frag.appendChild(vocabCardEl);
+
     frag.appendChild(h('🚀 Bugünkü Öneri'));
     var suggKey = 'ec_sugg_done_' + new Date().toISOString().slice(0,10) + '_' + ((typeof cu!=='undefined'&&cu)?cu.uid:'');
     var suggDone = parseInt(localStorage.getItem(suggKey)||'0');
@@ -5703,6 +5845,30 @@ function updateRightPanel(tab) {
     return;
 
   // ── PROFILE ───────────────────────────────────────────
+  } else if(tab === 'vocab') {
+    frag.appendChild(h('📖 Kelime Özeti'));
+    var totalW = Math.max(typeof cp!=='undefined'&&cp?cp.totalWords||0:0, parseInt(document.getElementById('sp-w')?.textContent||'0')||0);
+    frag.appendChild(card('<div style="text-align:center"><div style="font-size:32px;font-weight:800;color:var(--accent)">'+totalW+'</div><div style="font-size:11px;color:var(--tm)">Toplam Kelime</div></div>'));
+    frag.appendChild(h('🌍 Kelime Dünyası'));
+    var wwBtn=document.createElement('button');
+    wwBtn.style.cssText='width:100%;padding:9px;border-radius:8px;border:none;background:linear-gradient(135deg,#0f2440,#1a3a5c);color:#fff;cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;font-weight:600';
+    wwBtn.textContent='🌍 Kelime Dünyamı Görüntüle';
+    wwBtn.onclick=function(){sTab('wordworld');};
+    frag.appendChild(wwBtn);
+
+  } else if(tab === 'wordworld') {
+    frag.appendChild(h('🌍 Kelime Dünyası'));
+    var totalW2 = Math.max(typeof cp!=='undefined'&&cp?cp.totalWords||0:0, parseInt(document.getElementById('sp-w')?.textContent||'0')||0);
+    frag.appendChild(card('<div style="text-align:center"><div style="font-size:32px;font-weight:800;color:var(--accent)">'+totalW2+'</div><div style="font-size:11px;color:var(--tm)">Keşfedilen Kelime</div></div>'));
+    frag.appendChild(h('💡 Nasıl Kullanılır'));
+    frag.appendChild(card('<div style="font-size:11px;color:var(--ts);line-height:1.7">Kelimelerin üzerine gel → detay gör<br>Kategoriye tıkla → filtrele<br>Kelimeye tıkla → Quizlete ekle</div>'));
+    frag.appendChild(h('📚 Kelime Defterim'));
+    var vBtn=document.createElement('button');
+    vBtn.style.cssText='width:100%;padding:9px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;font-weight:600';
+    vBtn.textContent='📖 Kelime Defterini Aç';
+    vBtn.onclick=function(){sTab('vocab');};
+    frag.appendChild(vBtn);
+
   } else if(tab === 'prof') {
     if(typeof cp !== 'undefined' && cp) {
       frag.appendChild(h('👤 Profil'));
@@ -5739,6 +5905,929 @@ function updateRightPanel(tab) {
   rp.appendChild(frag);
 }
 
+
+
+
+// ═══════════════════════════════════════════════════════════
+// KELIME DÜNYASI
+// ═══════════════════════════════════════════════════════════
+var _wwWords = [];
+var _wwCurrentCat = 'all';
+var _wwAnimFrame = null;
+var _wwShownIndices = [];   // indices of currently visible words (from the full pool)
+var WW_MAX_DISPLAY = 45;    // max words in "Tümü" view
+
+// Word World category system
+// Categories = "Tümü" + completed Quizlet sets + AI-generated custom categories
+// _wwCustomCats: [{name, words:[{en,tr}], color}]
+var _wwCustomCats = [];
+var _wwSetPalette = ['#FFD700','#00E5FF','#7C4DFF','#00E676','#FF6D00','#FF4081','#F06292','#4FC3F7','#AED581','#FFB74D'];
+
+function getWWColor(idx) {
+  return _wwSetPalette[idx % _wwSetPalette.length];
+}
+
+// Load custom categories from localStorage
+function loadWWCustomCats() {
+  try {
+    var uid = (typeof cu!=='undefined'&&cu)?cu.uid:'';
+    _wwCustomCats = JSON.parse(localStorage.getItem('ec_ww_cats_'+uid)||'[]');
+  } catch(e) { _wwCustomCats = []; }
+}
+
+function saveWWCustomCats() {
+  try {
+    var uid = (typeof cu!=='undefined'&&cu)?cu.uid:'';
+    localStorage.setItem('ec_ww_cats_'+uid, JSON.stringify(_wwCustomCats));
+  } catch(e) {}
+}
+
+window.initWordWorld = function() {
+  loadWWCustomCats();
+  var learnedMap = {};
+  // 1. From localStorage (AI + news + completed sets)
+  getAllLearnedWords().forEach(function(w){
+    learnedMap[w.en.toLowerCase()] = {en:w.en, tr:w.tr||'', date:w.date, source:w.source, setName:w.setName||null};
+  });
+  // 2. From ALL quizlet sets (completed + active)
+  var sets = (cp&&cp.quizletSets)?cp.quizletSets:[];
+  sets.forEach(function(s){
+    (s.words||[]).forEach(function(w){
+      var key = w.en.toLowerCase();
+      if(!learnedMap[key]) {
+        learnedMap[key] = {en:w.en, tr:w.tr||'', date:new Date().toISOString().slice(0,10), source:'quizlet', setName:s.name};
+      } else if(!learnedMap[key].setName) {
+        learnedMap[key].setName = s.name;
+      }
+    });
+  });
+  // 3. From custom categories (AI generated)
+  _wwCustomCats.forEach(function(cat){
+    (cat.words||[]).forEach(function(w){
+      var key = w.en.toLowerCase();
+      if(!learnedMap[key]) {
+        learnedMap[key] = {en:w.en, tr:w.tr||'', date:w.date||new Date().toISOString().slice(0,10), source:'custom', setName:null};
+      }
+    });
+  });
+  // Build _wwWords with category
+  _wwWords = Object.values(learnedMap).map(function(w) {
+    var cat = 'Öğrenilen';
+    // 1. Check custom cats first
+    for(var ci=0; ci<_wwCustomCats.length; ci++){
+      if((_wwCustomCats[ci].words||[]).some(function(cw){return cw.en.toLowerCase()===w.en.toLowerCase();})){
+        cat = _wwCustomCats[ci].name; break;
+      }
+    }
+    // 2. Check quizlet sets by setName
+    if(cat==='Öğrenilen' && w.setName) cat = w.setName;
+    return {en:w.en, tr:w.tr, date:w.date, source:w.source, cat:cat};
+  });
+  _wwCurrentCat = 'all';
+  renderWWCategories();
+  renderWordCloud();
+};
+
+
+// ── Kelime Dünyası → Quizlet Modal ────────────────────────────
+var _wqAllWords = [];   // all custom cat words for current modal
+var _wqFiltered = [];   // filtered by search
+var _wqSelected = new Set();
+
+// Shuffle the word cloud — swap shown words with hidden ones
+function shuffleWordCloud() {
+  if(_wwCurrentCat !== 'all') return;
+
+  var rawFiltered = _wwWords;
+  var seenWords = {};
+  var deduped = rawFiltered.filter(function(w) {
+    var k = w.en.toLowerCase();
+    if(seenWords[k]) return false;
+    seenWords[k] = true;
+    return true;
+  });
+  var sortedAll = deduped.slice().sort(function(a,b){ return (b.date||'') > (a.date||'') ? 1 : -1; });
+  var total = sortedAll.length;
+
+  if(total <= WW_MAX_DISPLAY) return; // nothing to shuffle
+
+  // Find indices NOT currently shown
+  var shownSet = new Set(_wwShownIndices);
+  var hiddenIndices = [];
+  for(var i = 0; i < total; i++) {
+    if(!shownSet.has(i)) hiddenIndices.push(i);
+  }
+
+  if(!hiddenIndices.length) return;
+
+  // Shuffle hidden pool
+  for(var j = hiddenIndices.length - 1; j > 0; j--) {
+    var k2 = Math.floor(Math.random() * (j + 1));
+    var tmp = hiddenIndices[j]; hiddenIndices[j] = hiddenIndices[k2]; hiddenIndices[k2] = tmp;
+  }
+
+  // Replace as many shown words as possible with hidden ones
+  var replaceCount = Math.min(WW_MAX_DISPLAY, hiddenIndices.length);
+  // Pick random shown indices to replace
+  var shownArr = _wwShownIndices.slice();
+  for(var m = shownArr.length - 1; m > 0; m--) {
+    var n = Math.floor(Math.random() * (m + 1));
+    var t2 = shownArr[m]; shownArr[m] = shownArr[n]; shownArr[n] = t2;
+  }
+
+  var newShown = shownArr.slice(); // copy
+  for(var r = 0; r < replaceCount; r++) {
+    newShown[r] = hiddenIndices[r];
+  }
+
+  // Keep WW_MAX_DISPLAY total
+  _wwShownIndices = newShown.slice(0, WW_MAX_DISPLAY);
+
+  // Re-render with new pool (pass true to keep pool)
+  renderWordCloud(true);
+}
+
+function openWWQuizletModal() {
+  // Open with ALL custom category words
+  openWWQuizletModalForCat(null);
+}
+
+function openWWQuizletModalForCat(singleCat) {
+  // Collect words: if singleCat given → only that cat; else → all custom cats
+  var seen = {};
+  _wqAllWords = [];
+  var catsToShow = singleCat ? [singleCat] : _wwCustomCats;
+  catsToShow.forEach(function(cat) {
+    (cat.words||[]).forEach(function(w) {
+      var k = w.en.toLowerCase();
+      if(!seen[k]) {
+        seen[k] = true;
+        _wqAllWords.push({en:w.en, tr:w.tr||'', cat:cat.name});
+      }
+    });
+  });
+
+  if(!_wqAllWords.length) {
+    showToast('Bu kategoride kelime yok');
+    return;
+  }
+
+  _wqSelected.clear();
+  _wqFiltered = _wqAllWords.slice();
+
+  var modal = document.getElementById('ww-quizlet-modal');
+  var catLabel = document.getElementById('wq-cat-label');
+  var nameInput = document.getElementById('wq-set-name');
+  var search = document.getElementById('wq-search');
+
+  if(catLabel) catLabel.textContent = singleCat
+    ? '"' + singleCat.name + '" kategorisi · ' + _wqAllWords.length + ' kelime'
+    : _wwCustomCats.map(function(c){return c.name;}).join(', ');
+  if(nameInput) nameInput.value = singleCat ? singleCat.name : '';
+  if(search) search.value = '';
+
+  wqRenderGrid();
+  wqUpdateCounts();
+  wqCheckReady();
+
+  if(modal) modal.style.display = 'flex';
+}
+
+function wqRenderGrid() {
+  var grid = document.getElementById('wq-word-grid');
+  if(!grid) return;
+  grid.innerHTML = '';
+  _wqFiltered.forEach(function(w) {
+    var card = document.createElement('div');
+    var selected = _wqSelected.has(w.en);
+    card.style.cssText = 'display:flex;align-items:center;gap:8px;padding:10px 12px;border-radius:10px;border:1.5px solid '+(selected?'#9333ea':'var(--border-c)')+';background:'+(selected?'rgba(147,51,234,0.08)':'var(--bg)')+';cursor:pointer;transition:all .15s;user-select:none';
+    card.innerHTML = '<div style="width:18px;height:18px;border-radius:5px;border:2px solid '+(selected?'#9333ea':'var(--border-c)')+';background:'+(selected?'#9333ea':'transparent')+';flex-shrink:0;display:flex;align-items:center;justify-content:center">'+(selected?'<svg width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="#fff" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg>':'')+'</div>'
+      +'<div style="flex:1;min-width:0"><div style="font-weight:600;font-size:12px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+w.en+'</div><div style="font-size:10px;color:#aaa;white-space:nowrap;overflow:hidden;text-overflow:ellipsis">'+w.tr+'</div></div>'
+      +(w.cat?'<div style="font-size:9px;color:#9333ea;background:rgba(147,51,234,0.1);padding:2px 6px;border-radius:8px;flex-shrink:0">'+w.cat+'</div>':'');
+    card.onclick = function() {
+      if(_wqSelected.has(w.en)) _wqSelected.delete(w.en);
+      else _wqSelected.add(w.en);
+      wqRenderGrid();
+      wqUpdateCounts();
+      wqCheckReady();
+    };
+    grid.appendChild(card);
+  });
+}
+
+function wqUpdateCounts() {
+  var tot = document.getElementById('wq-total-count');
+  var sel = document.getElementById('wq-selected-count');
+  if(tot) tot.textContent = _wqFiltered.length;
+  if(sel) sel.textContent = _wqSelected.size;
+}
+
+window.wqCheckReady = function() {
+  var btn = document.getElementById('wq-create-btn');
+  var name = (document.getElementById('wq-set-name')||{}).value || '';
+  var ready = _wqSelected.size >= 2 && name.trim().length > 0;
+  if(btn) { btn.style.opacity = ready?'1':'0.5'; btn.style.pointerEvents = ready?'auto':'none'; }
+};
+
+window.wqSelectAll = function() {
+  _wqFiltered.forEach(function(w){ _wqSelected.add(w.en); });
+  wqRenderGrid(); wqUpdateCounts(); wqCheckReady();
+};
+
+window.wqClearAll = function() {
+  _wqSelected.clear();
+  wqRenderGrid(); wqUpdateCounts(); wqCheckReady();
+};
+
+window.wqFilterWords = function(query) {
+  var q = query.toLowerCase();
+  _wqFiltered = !q ? _wqAllWords.slice() : _wqAllWords.filter(function(w){
+    return w.en.toLowerCase().includes(q) || (w.tr||'').toLowerCase().includes(q);
+  });
+  wqRenderGrid(); wqUpdateCounts();
+};
+
+window.wqCreateSet = async function() {
+  var nameEl = document.getElementById('wq-set-name');
+  var name = nameEl ? nameEl.value.trim() : '';
+  if(!name || _wqSelected.size < 2) return;
+  // Build words list from selected
+  var words = _wqAllWords.filter(function(w){ return _wqSelected.has(w.en); }).map(function(w){ return {en:w.en, tr:w.tr}; });
+  var sets = (cp && cp.quizletSets) ? cp.quizletSets : [];
+  sets.push({name:name, words:words, createdAt:Date.now(), lastStudied:null});
+  try {
+    await saveAllSets(sets);
+    document.getElementById('ww-quizlet-modal').style.display = 'none';
+    showToast('"'+name+'" seti oluşturuldu! ('+words.length+' kelime) ✓');
+  } catch(e) { showToast('Hata: '+e.message); }
+};
+
+// Close WW quizlet modal on backdrop click
+document.addEventListener('click', function(e) {
+  var modal = document.getElementById('ww-quizlet-modal');
+  if(modal && modal.style.display!=='none' && e.target===modal) {
+    modal.style.display='none';
+  }
+});
+function renderWWCategories() {
+  var catsEl = document.getElementById('ww-cats');
+  if(!catsEl) return;
+  catsEl.innerHTML = '';
+
+  // Tümü button
+  var allBtn = document.createElement('button');
+  allBtn.className = 'ww-cat-btn' + (_wwCurrentCat==='all'?' active':'');
+  allBtn.textContent = 'Tümü (' + _wwWords.length + ')';
+  allBtn.onclick = function(){
+    _wwCurrentCat='all';
+    _wwShownIndices = []; // reset so fresh 45 are picked
+    document.querySelectorAll('.ww-cat-btn').forEach(function(b){b.classList.remove('active');});
+    this.classList.add('active');
+    renderWordCloud();
+    var qb = document.getElementById('ww-quizlet-add-btn');
+    if(qb) qb.style.display = 'none';
+  };
+  catsEl.appendChild(allBtn);
+
+  // All Quizlet set buttons (completed + active)
+  var sets = (cp&&cp.quizletSets)?cp.quizletSets:[];
+  var colorIdx = 0;
+  sets.forEach(function(s) {
+    var col = getWWColor(colorIdx++);
+    var cnt = _wwWords.filter(function(w){return w.cat===s.name;}).length;
+    var wrap = document.createElement('span');
+    wrap.style.cssText = 'position:relative;display:inline-flex;align-items:center';
+    var btn = document.createElement('button');
+    btn.className = 'ww-cat-btn' + (_wwCurrentCat===s.name?' active':'');
+    btn.setAttribute('data-cat', s.name);
+    btn.innerHTML = '<span style="color:'+col+'">●</span> '+s.name+' ('+cnt+')';
+    btn.onclick = function(){
+      _wwCurrentCat=s.name;
+      document.querySelectorAll('.ww-cat-btn').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      renderWordCloud();
+      var qb = document.getElementById('ww-quizlet-add-btn');
+      if(qb) qb.style.display = 'none';
+    };
+    wrap.appendChild(btn);
+    catsEl.appendChild(wrap);
+  });
+
+  // Custom category buttons with delete
+  _wwCustomCats.forEach(function(cat, ci) {
+    var col = getWWColor(colorIdx++);
+    var cnt = _wwWords.filter(function(w){return w.cat===cat.name;}).length;
+    var wrap = document.createElement('span');
+    wrap.style.cssText = 'position:relative;display:inline-flex;align-items:center;gap:2px';
+    var btn = document.createElement('button');
+    btn.className = 'ww-cat-btn' + (_wwCurrentCat===cat.name?' active':'');
+    btn.setAttribute('data-cat', cat.name);
+    btn.innerHTML = '<span style="color:'+col+'">●</span> '+cat.name+' ('+cnt+')';
+    btn.onclick = function(){
+      _wwCurrentCat=cat.name;
+      document.querySelectorAll('.ww-cat-btn').forEach(function(b){b.classList.remove('active');});
+      btn.classList.add('active');
+      renderWordCloud();
+      var qb = document.getElementById('ww-quizlet-add-btn');
+      if(qb) qb.style.display = 'flex';
+    };
+    var delBtn = document.createElement('button');
+    delBtn.style.cssText = 'padding:0 4px;border:none;background:transparent;color:rgba(255,255,255,0.5);cursor:pointer;font-size:14px;line-height:1';
+    delBtn.textContent = '×';
+    delBtn.title = 'Kategoriyi sil';
+    (function(idx){
+      delBtn.onclick = function(e){
+        e.stopPropagation();
+        _wwCustomCats.splice(idx,1);
+        saveWWCustomCats();
+        initWordWorld();
+      };
+    })(ci);
+    wrap.appendChild(btn); wrap.appendChild(delBtn);
+    catsEl.appendChild(wrap);
+  });
+
+  // "Kategori Oluştur" button
+  var createBtn = document.createElement('button');
+  createBtn.className = 'ww-cat-btn';
+  createBtn.style.cssText += ';border-style:dashed;opacity:0.8';
+  createBtn.textContent = '+ Kategori Oluştur';
+  createBtn.onclick = function(e) { e.stopPropagation(); openCreateCategoryModal(); };
+  catsEl.appendChild(createBtn);
+
+  // Single "Quizlete Ekle" button at far right — visible only when a custom cat is selected
+  var spacer = document.createElement('div');
+  spacer.style.cssText = 'flex:1;min-width:8px';
+  catsEl.appendChild(spacer);
+
+  // Shuffle button — only for "Tümü" when words > 45
+  var shuffleBtn = document.createElement('button');
+  shuffleBtn.id = 'ww-shuffle-btn';
+  var hasEnoughForShuffle = (_wwCurrentCat === 'all' && _wwWords.length > WW_MAX_DISPLAY);
+  shuffleBtn.style.cssText = 'padding:6px 14px;border-radius:20px;border:1.5px solid var(--border-c);background:var(--bg);color:var(--navy);cursor:pointer;font-size:11px;font-family:Poppins,sans-serif;font-weight:600;white-space:nowrap;flex-shrink:0;display:'+(hasEnoughForShuffle?'flex':'none')+';align-items:center;gap:5px;transition:all .2s';
+  shuffleBtn.innerHTML = '<svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><polyline points="16 3 21 3 21 8"/><line x1="4" y1="20" x2="21" y2="3"/><polyline points="21 16 21 21 16 21"/><line x1="15" y1="15" x2="21" y2="21"/></svg> Karıştır';
+  shuffleBtn.onmouseover = function(){ this.style.borderColor='var(--accent)'; this.style.color='var(--accent)'; };
+  shuffleBtn.onmouseout = function(){ this.style.borderColor='var(--border-c)'; this.style.color='var(--navy)'; };
+  shuffleBtn.onclick = function(e) { e.stopPropagation(); shuffleWordCloud(); };
+  catsEl.appendChild(shuffleBtn);
+
+  var quizBtn = document.createElement('button');
+  var isCustomCatSelected = _wwCustomCats.some(function(c){ return c.name === _wwCurrentCat; });
+  quizBtn.id = 'ww-quizlet-add-btn';
+  quizBtn.style.cssText = 'padding:6px 16px;border-radius:20px;border:none;background:linear-gradient(135deg,#6b46c1,#9333ea);color:#fff;cursor:pointer;font-size:11px;font-family:Poppins,sans-serif;font-weight:700;box-shadow:0 2px 8px rgba(147,51,234,0.35);white-space:nowrap;flex-shrink:0;display:'+(isCustomCatSelected?'flex':'none')+';align-items:center;gap:6px;transition:opacity .2s';
+  quizBtn.innerHTML = '<svg width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg> Quizlete Ekle';
+  quizBtn.title = 'Seçili kategoriyi Quizlete ekle';
+  quizBtn.onclick = function(e) {
+    e.stopPropagation();
+    // Find currently selected custom cat
+    var selCat = _wwCustomCats.find(function(c){ return c.name === _wwCurrentCat; });
+    if(selCat) openWWQuizletModalForCat(selCat);
+    else showToast('Önce bir kategori seçin');
+  };
+  catsEl.appendChild(quizBtn);
+
+  var totalEl = document.getElementById('ww-total');
+  if(totalEl) totalEl.textContent = _wwWords.length + ' kelime';
+}
+
+
+// ── Kelime Dünyası Extra Functions ────────────────────────────
+function openCreateCategoryModal() {
+  var modal = document.getElementById('ww-create-cat-modal');
+  var input = document.getElementById('ww-cat-theme-input');
+  var genEl = document.getElementById('ww-cat-generating');
+  var btnsEl = document.getElementById('ww-cat-modal-btns');
+  if(!modal) return;
+  if(input) input.value = '';
+  if(genEl) genEl.style.display='none';
+  if(btnsEl) btnsEl.style.display='flex';
+  modal.style.display = 'flex';
+  setTimeout(function(){ if(input) input.focus(); }, 100);
+  if(input) input.onkeydown = function(e){ if(e.key==='Enter') createWWCategory(); if(e.key==='Escape') modal.style.display='none'; };
+}
+
+window.createWWCategory = async function() {
+  var input = document.getElementById('ww-cat-theme-input');
+  var theme = input ? input.value.trim() : '';
+  if(!theme) { if(input) input.style.borderColor='#e74c3c'; return; }
+  var genEl = document.getElementById('ww-cat-generating');
+  var btnsEl = document.getElementById('ww-cat-modal-btns');
+  if(genEl) { genEl.style.display='block'; genEl.innerHTML='<span class="spin"></span> AI kelimeler oluşturuyor...'; }
+  if(btnsEl) btnsEl.style.display='none';
+  var level = (cp&&cp.level)||'B1';
+  try {
+    var prompt = 'Create a vocabulary list for the theme "'+theme+'" for an English learner at '+level+' level. Generate exactly 22 words.\n\nRespond ONLY with a JSON array, no other text:\n[{"en":"word1","tr":"turkish1"},{"en":"word2","tr":"turkish2"},...]\n\nMake them common, useful words related to '+theme+'.';
+    var reply = await callAI([{role:'user',content:prompt}],'',800);
+    var clean = reply.replace(/```json|```/g,'').trim();
+    var words = JSON.parse(clean);
+    if(!Array.isArray(words)||!words.length) throw new Error('Geçersiz yanıt');
+    var today = new Date().toISOString().slice(0,10);
+    words = words.map(function(w){return {en:w.en||'',tr:w.tr||'',date:today};}).filter(function(w){return w.en;}).slice(0,25);
+    var catName = theme.charAt(0).toUpperCase()+theme.slice(1);
+    var cat = {name:catName, words:words, createdAt:Date.now()};
+    _wwCustomCats.push(cat);
+    saveWWCustomCats();
+    document.getElementById('ww-create-cat-modal').style.display='none';
+    initWordWorld();
+    showToast('"'+catName+'" kategorisi oluşturuldu! ('+words.length+' kelime) ✓');
+  } catch(e) {
+    if(genEl) { genEl.style.display='block'; genEl.innerHTML='Hata: '+e.message; }
+    if(btnsEl) btnsEl.style.display='flex';
+  }
+};
+
+// Close modals on backdrop click (only when clicking the dark overlay itself)
+document.addEventListener('click', function(e) {
+  ['ww-create-cat-modal','new-set-name-modal'].forEach(function(id) {
+    var modal = document.getElementById(id);
+    if(modal && modal.style.display!=='none' && e.target===modal) {
+      modal.style.display='none';
+    }
+  });
+});
+function renderWordCloud(useExistingPool) {
+  var cloud = document.getElementById('ww-cloud');
+  if(!cloud) return;
+  cloud.innerHTML = '';
+  if(_wwAnimFrame) cancelAnimationFrame(_wwAnimFrame);
+
+  // Deduplicate by English word (case-insensitive)
+  var rawFiltered = _wwCurrentCat === 'all' ? _wwWords : _wwWords.filter(function(w){ return w.cat === _wwCurrentCat; });
+  var seenWords = {};
+  var deduped = rawFiltered.filter(function(w) {
+    var k = w.en.toLowerCase();
+    if(seenWords[k]) return false;
+    seenWords[k] = true;
+    return true;
+  });
+
+  if(!deduped.length) {
+    cloud.innerHTML = '<div style="display:flex;flex-direction:column;align-items:center;justify-content:center;height:100%;color:rgba(255,255,255,0.5);font-family:Poppins,sans-serif">' +
+      '<div style="font-size:40px;margin-bottom:12px">🌱</div>' +
+      '<div style="font-size:14px;font-weight:600">Bu kategoride henüz kelime yok</div>' +
+      '<div style="font-size:12px;margin-top:6px;opacity:.7">AI Coach ile konuş veya haberleri oku!</div>' +
+    '</div>';
+    _wwShownIndices = [];
+    return;
+  }
+
+  // Sort by recency — newer first
+  var sortedAll = deduped.slice().sort(function(a,b){ return (b.date||'') > (a.date||'') ? 1 : -1; });
+
+  // Limit to WW_MAX_DISPLAY in "all" view
+  var filtered;
+  if(_wwCurrentCat === 'all' && sortedAll.length > WW_MAX_DISPLAY) {
+    if(!useExistingPool || !_wwShownIndices.length) {
+      // Fresh selection: take first WW_MAX_DISPLAY (newest)
+      _wwShownIndices = sortedAll.slice(0, WW_MAX_DISPLAY).map(function(_, i){ return i; });
+    }
+    filtered = _wwShownIndices.map(function(i){ return sortedAll[i]; }).filter(Boolean);
+  } else {
+    filtered = sortedAll;
+    _wwShownIndices = sortedAll.map(function(_, i){ return i; });
+  }
+
+  // Update shuffle button visibility
+  var shuffleBtn = document.getElementById('ww-shuffle-btn');
+  if(shuffleBtn) {
+    shuffleBtn.style.display = (_wwCurrentCat === 'all' && sortedAll.length > WW_MAX_DISPLAY) ? 'flex' : 'none';
+  }
+
+  var W = cloud.offsetWidth || 700;
+  var H = cloud.offsetHeight || 420;
+  var placed = [];
+  var sorted = filtered;
+
+  sorted.forEach(function(w, idx) {
+    // Assign color by category
+    var allCats = ['Öğrenilen'].concat(
+      ((cp&&cp.quizletSets)?cp.quizletSets:[]).map(function(s){return s.name;}),
+      _wwCustomCats.map(function(c){return c.name;})
+    );
+    var catIdx = allCats.indexOf(w.cat);
+    var col = catIdx>=0 ? getWWColor(catIdx) : 'rgba(255,255,255,0.75)';
+    // Size based on recency (first = newest = biggest)
+    var maxSize = 28, minSize = 12;
+    var sz = Math.max(minSize, maxSize - Math.floor(idx / sorted.length * (maxSize - minSize)));
+    var opacity = 0.6 + 0.4 * (1 - idx / sorted.length);
+
+    var el = document.createElement('div');
+    el.className = 'ww-word';
+    el.textContent = w.en;
+    el.style.cssText += 'font-size:' + sz + 'px;color:' + col + ';opacity:' + opacity + ';' +
+      'text-shadow:0 2px 8px rgba(0,0,0,0.5);' +
+      'animation:wwFadeIn 0.4s ease ' + (idx * 0.05) + 's both;';
+
+    // Floating animation for larger words
+    if(sz >= 20) {
+      var floatDur = 3 + Math.random() * 3;
+      var floatDelay = Math.random() * 3;
+      el.style.animation += ',wwFloat ' + floatDur + 's ease-in-out ' + floatDelay + 's infinite';
+    }
+
+    // Position with collision avoidance
+    var estW = w.en.length * sz * 0.6;
+    var estH = sz * 1.4;
+    var placed_ok = false;
+    var attempts = 0;
+    var x, y;
+    while(!placed_ok && attempts < 50) {
+      x = Math.random() * (W - estW - 20) + 10;
+      y = Math.random() * (H - estH - 20) + 10;
+      var overlaps = placed.some(function(p) {
+        return !(x + estW < p.x - 4 || x > p.x + p.w + 4 || y + estH < p.y - 4 || y > p.y + p.h + 4);
+      });
+      if(!overlaps) placed_ok = true;
+      attempts++;
+    }
+    placed.push({x:x, y:y, w:estW, h:estH});
+
+    el.style.left = x + 'px';
+    el.style.top = y + 'px';
+
+    // Hover → show popup with example sentence
+    el.addEventListener('mouseenter', function(e) {
+      var popup = document.getElementById('ww-popup');
+      if(!popup) return;
+      var enEl = document.getElementById('ww-popup-en');
+      var trEl = document.getElementById('ww-popup-tr');
+      var dateEl = document.getElementById('ww-popup-date');
+      var catEl = document.getElementById('ww-popup-cat');
+      var exEl = document.getElementById('ww-popup-ex');
+      if(enEl) enEl.textContent = w.en;
+      if(trEl) trEl.textContent = w.tr || '—';
+      if(dateEl) dateEl.textContent = formatVocabDate(w.date);
+      if(catEl) catEl.innerHTML = '<span style="color:'+col+';font-weight:600">● '+w.cat+'</span>';
+      if(exEl) {
+        exEl.innerHTML = '<span style="color:#aaa;font-size:9px">yükleniyor...</span>';
+        // Generate example sentence lazily
+        if(!w._example) {
+          callAI([{role:'user',content:'Write one short example sentence using the word "'+w.en+'". Use the word in bold like **word**. Only the sentence, nothing else.'}],'',60).then(function(r){
+            w._example = r.trim();
+            if(exEl && popup.style.display!=='none') exEl.innerHTML = w._example.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+          }).catch(function(){ if(exEl) exEl.innerHTML=''; });
+        } else {
+          exEl.innerHTML = w._example.replace(/\*\*([^*]+)\*\*/g,'<strong>$1</strong>');
+        }
+      }
+      popup.style.display = 'block';
+      popup.style.pointerEvents = 'auto';
+      var rect = e.target.getBoundingClientRect();
+      var popW = 200;
+      var lft = Math.min(window.innerWidth-popW-10, Math.max(10, rect.left+rect.width/2-popW/2));
+      popup.style.left = lft + 'px';
+      popup.style.top = (rect.top - 10) + 'px';
+      popup.style.transform = 'translateY(-100%)';
+    });
+    el.addEventListener('mouseleave', function() {
+      setTimeout(function(){
+        var popup = document.getElementById('ww-popup');
+        if(popup && !popup.matches(':hover')) popup.style.display='none';
+      }, 200);
+    });
+
+    // Click → open Quizlet add modal
+    el.addEventListener('click', function(e) {
+      e.stopPropagation();
+      if(typeof quickAddToQuizlet === 'function') quickAddToQuizlet(w.en, w.tr);
+    });
+
+    cloud.appendChild(el);
+  });
+}
+
+// ═══════════════════════════════════════════════════════════
+// KELIME DEFTERI
+// ═══════════════════════════════════════════════════════════
+var _vocabAllWords = [];      // all words loaded
+var _vocabFiltered = [];      // currently shown
+var _vocabSelected = new Set(); // selected word indexes (by 'en' key)
+var _vocabCurrentFilter = 'all';
+
+function getAllLearnedWords() {
+  var uid = (typeof cu !== 'undefined' && cu) ? cu.uid : '';
+  var words = [];
+  var seen = new Set();
+  // From localStorage (AI chat + news + completed sets)
+  try {
+    var lw = JSON.parse(localStorage.getItem('ec_learned_' + uid) || '[]');
+    lw.forEach(function(w) {
+      if(!seen.has(w.word)) {
+        seen.add(w.word);
+        words.push({
+          en: w.word,
+          tr: w.tr || '',
+          date: w.date || new Date().toISOString().slice(0,10),
+          source: w.source || 'ai',
+          setName: w.setName || null
+        });
+      }
+    });
+  } catch(e) {}
+  words.sort(function(a,b) { return (b.date||'') > (a.date||'') ? 1 : -1; });
+  return words;
+}
+
+window.initVocabTab = function() {
+  _vocabSelected.clear();
+  _vocabAllWords = getAllLearnedWords();
+  _vocabFiltered = _vocabAllWords.slice();
+  _vocabCurrentFilter = 'all';
+  var searchEl = document.getElementById('vocab-search');
+  if(searchEl) searchEl.value = '';
+  var badge = document.getElementById('vocab-total-badge');
+  if(badge) badge.textContent = _vocabAllWords.length + ' kelime';
+  buildVocabFilterTabs();
+  renderVocabList(_vocabFiltered);
+  updateVocabExportBar();
+};
+
+function buildVocabFilterTabs() {
+  var container = document.getElementById('vocab-filter-tabs');
+  if(!container) return;
+  container.innerHTML = '';
+  // Base time filters
+  var baseFilters = [
+    {id:'all', label:'Tümü'},
+    {id:'today', label:'Bugün'},
+    {id:'week', label:'Bu Hafta'},
+    {id:'month', label:'Bu Ay'},
+  ];
+  // Set-based filters from completed quizlet sets
+  var sets = (cp && cp.quizletSets) ? cp.quizletSets : [];
+  sets.forEach(function(s) {
+    if(s.completed) baseFilters.push({id:'set:'+s.name, label:'📚 '+s.name});
+  });
+  baseFilters.forEach(function(f) {
+    var btn = document.createElement('button');
+    btn.className = 'vocab-tab' + (f.id===_vocabCurrentFilter?' active':'');
+    btn.setAttribute('data-filter', f.id);
+    btn.style.cssText = 'padding:6px 14px;border-radius:20px;border:1.5px solid var(--border-c);cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;transition:all .15s';
+    btn.textContent = f.label;
+    btn.onclick = function() { filterVocab(f.id, this); };
+    container.appendChild(btn);
+  });
+}
+
+function renderVocabList(words) {
+  var el = document.getElementById('vocab-list');
+  if(!el) return;
+  var countEl = document.getElementById('vocab-filter-count');
+  if(countEl) countEl.textContent = words.length + ' kelime gösteriliyor';
+  if(!words.length) {
+    el.innerHTML = '<div style="text-align:center;padding:2rem;color:var(--tm)">' +
+      '<div style="font-size:40px;margin-bottom:8px">📭</div>' +
+      '<div style="font-size:14px;font-weight:600;color:var(--tp)">Henüz kelime yok</div>' +
+      '<div style="font-size:12px;margin-top:6px">AI Coach ile konuş veya haberlerdeki<br>kelimelere hover ederek öğren!</div>' +
+    '</div>';
+    return;
+  }
+  el.innerHTML = '';
+  words.forEach(function(w, i) {
+    var card = document.createElement('div');
+    card.className = 'vocab-word-card' + (_vocabSelected.has(w.en) ? ' selected' : '');
+    card.setAttribute('data-en', w.en);
+    // Checkbox
+    var cb = document.createElement('input');
+    cb.type = 'checkbox';
+    cb.checked = _vocabSelected.has(w.en);
+    cb.onchange = function() { toggleVocabSelect(w.en, cb.checked); card.classList.toggle('selected', cb.checked); };
+    card.appendChild(cb);
+    // Word info
+    var info = document.createElement('div');
+    info.style.cssText = 'flex:1;min-width:0';
+    info.innerHTML =
+      '<div style="display:flex;align-items:center;gap:6px">' +
+        '<span style="font-weight:700;font-size:14px;color:var(--navy)">' + w.en + '</span>' +
+        '<span class="vocab-source-badge vocab-source-' + (w.source||'ai') + '">' + (w.source==='news'?'📰 Haber':'🤖 AI') + '</span>' +
+      '</div>' +
+      '<div style="font-size:12px;color:var(--ts);margin-top:1px">' + (w.tr||'') + '</div>' +
+      '<div style="font-size:10px;color:var(--tm);margin-top:2px">' + formatVocabDate(w.date) + '</div>';
+    card.appendChild(info);
+    // Quick add to Quizlet
+    var qaBtn = document.createElement('button');
+    qaBtn.style.cssText = 'flex-shrink:0;padding:5px 9px;border-radius:7px;border:1.5px solid var(--border-c);background:transparent;color:var(--ts);cursor:pointer;font-size:10px;font-family:Poppins,sans-serif';
+    qaBtn.title = 'Quizlete ekle';
+    qaBtn.textContent = '+Q';
+    (function(word, tr) {
+      qaBtn.onclick = function(e) { e.stopPropagation(); quickAddToQuizlet(word, tr); };
+    })(w.en, w.tr);
+    card.appendChild(qaBtn);
+    el.appendChild(card);
+  });
+  // Update select-all checkbox state
+  var allCb = document.getElementById('vocab-select-all');
+  if(allCb) allCb.checked = words.length > 0 && words.every(function(w){ return _vocabSelected.has(w.en); });
+}
+
+function formatVocabDate(dateStr) {
+  if(!dateStr) return '';
+  var today = new Date().toISOString().slice(0,10);
+  if(dateStr === today) return 'Bugün öğrenildi';
+  var d = new Date(dateStr);
+  var now = new Date();
+  var diff = Math.floor((now - d) / 86400000);
+  if(diff === 1) return 'Dün';
+  if(diff < 7) return diff + ' gün önce';
+  return d.toLocaleDateString('tr-TR', {day:'numeric', month:'long'});
+}
+
+window.filterVocab = function(filter, btn) {
+  _vocabCurrentFilter = filter;
+  // Update tab buttons — class-based, no inline style manipulation
+  document.querySelectorAll('.vocab-tab').forEach(function(b) {
+    b.classList.remove('active');
+  });
+  if(btn) btn.classList.add('active');
+  var today = new Date().toISOString().slice(0,10);
+  var weekAgo = new Date(Date.now() - 7*86400000).toISOString().slice(0,10);
+  var monthAgo = new Date(Date.now() - 30*86400000).toISOString().slice(0,10);
+  var search = (document.getElementById('vocab-search')||{}).value || '';
+  _vocabFiltered = _vocabAllWords.filter(function(w) {
+    var matchFilter = true;
+    if(filter === 'today') matchFilter = w.date === today;
+    else if(filter === 'week') matchFilter = w.date >= weekAgo;
+    else if(filter === 'month') matchFilter = w.date >= monthAgo;
+    else if(filter.startsWith('set:')) {
+      var setName = filter.slice(4);
+      matchFilter = w.setName === setName;
+    }
+    var matchSearch = !search || w.en.toLowerCase().includes(search.toLowerCase()) || (w.tr||'').toLowerCase().includes(search.toLowerCase());
+    return matchFilter && matchSearch;
+  });
+  renderVocabList(_vocabFiltered);
+};
+
+window.searchVocab = function(query) {
+  var today = new Date().toISOString().slice(0,10);
+  var weekAgo = new Date(Date.now() - 7*86400000).toISOString().slice(0,10);
+  var monthAgo = new Date(Date.now() - 30*86400000).toISOString().slice(0,10);
+  var f = _vocabCurrentFilter;
+  _vocabFiltered = _vocabAllWords.filter(function(w) {
+    var mf = true;
+    if(f==='today') mf=w.date===today;
+    else if(f==='week') mf=w.date>=weekAgo;
+    else if(f==='month') mf=w.date>=monthAgo;
+    else if(f.startsWith('set:')) mf=w.setName===f.slice(4);
+    var q=query.toLowerCase();
+    return mf && (!q||w.en.toLowerCase().includes(q)||(w.tr||'').toLowerCase().includes(q));
+  });
+  renderVocabList(_vocabFiltered);
+};
+
+function toggleVocabSelect(en, selected) {
+  if(selected) _vocabSelected.add(en);
+  else _vocabSelected.delete(en);
+  updateVocabExportBar();
+}
+
+window.toggleSelectAllVocab = function(checked) {
+  if(checked) _vocabFiltered.forEach(function(w){ _vocabSelected.add(w.en); });
+  else _vocabSelected.clear();
+  renderVocabList(_vocabFiltered);
+  updateVocabExportBar();
+};
+
+function updateVocabExportBar() {
+  var bar = document.getElementById('vocab-export-bar');
+  var countEl = document.getElementById('vocab-selected-count');
+  var n = _vocabSelected.size;
+  if(bar) bar.style.display = n > 0 ? 'flex' : 'none';
+  if(countEl) countEl.textContent = n + ' kelime seçili';
+}
+
+function getSelectedWords() {
+  return _vocabAllWords.filter(function(w){ return _vocabSelected.has(w.en); });
+}
+
+// Quick add single word to Quizlet (opens modal)
+function quickAddToQuizlet(en, tr) {
+  if(typeof buildModal === 'function') { buildModal(en, tr); return; }
+  // Fallback: use word hover modal
+  var modal = document.getElementById('wht-modal');
+  var mWord = document.getElementById('wht-modal-word');
+  var mBody = document.getElementById('wht-modal-body');
+  if(!modal) return;
+  if(mWord) mWord.textContent = en + ' = ' + tr;
+  if(typeof _buildPickerBody === 'function') { _buildPickerBody(en, tr, modal, mBody); }
+  modal.style.display = 'flex';
+}
+
+// Export selected to existing set
+window.exportVocabToExistingSet = function() {
+  var words = getSelectedWords();
+  if(!words.length) return;
+  var sets = (cp && cp.quizletSets) ? cp.quizletSets : [];
+  var modal = document.getElementById('vocab-set-modal');
+  var listEl = document.getElementById('vocab-set-list');
+  if(!modal || !listEl) return;
+  listEl.innerHTML = '';
+  if(!sets.length) {
+    listEl.innerHTML = '<div style="font-size:12px;color:#666;padding:8px">Henüz Quizlet setin yok.<br>Önce bir set oluştur.</div>';
+  } else {
+    sets.forEach(function(s, i) {
+      var btn = document.createElement('button');
+      btn.style.cssText = 'width:100%;padding:9px 12px;border-radius:8px;border:1px solid #ddd;background:#f8f9fa;color:#1a3a5c;cursor:pointer;font-family:Poppins,sans-serif;font-size:12px;margin-bottom:6px;text-align:left;font-weight:600';
+      btn.innerHTML = s.name + ' <span style="color:#888;font-weight:400">(' + (s.words||[]).length + ' kelime)</span>';
+      btn.onclick = async function() {
+        var sets2 = (cp && cp.quizletSets) ? cp.quizletSets : [];
+        var added = 0;
+        words.forEach(function(w) {
+          sets2[i].words = sets2[i].words || [];
+          if(!sets2[i].words.some(function(c){ return c.en === w.en; })) {
+            sets2[i].words.push({en: w.en, tr: w.tr});
+            added++;
+          }
+        });
+        try {
+          await saveAllSets(sets2);
+          modal.style.display = 'none';
+          _vocabSelected.clear();
+          updateVocabExportBar();
+          renderVocabList(_vocabFiltered);
+          showToast(added + ' kelime "' + s.name + '" setine eklendi! ✓');
+        } catch(e) { alert('Hata: ' + e.message); }
+      };
+      listEl.appendChild(btn);
+    });
+  }
+  modal.style.display = 'flex';
+};
+
+// Export selected as new set — uses site modal
+window.exportVocabAsNewSet = function() {
+  var words = getSelectedWords();
+  if(!words.length) { showToast('Önce kelime seçin'); return; }
+  openNewSetNameModal('Seçili '+words.length+' kelime yeni sete eklenecek.', async function(name) {
+    var sets = (cp && cp.quizletSets) ? cp.quizletSets : [];
+    var newSet = { name:name, words:words.map(function(w){return {en:w.en,tr:w.tr};}), createdAt:Date.now(), lastStudied:null };
+    sets.push(newSet);
+    try {
+      await saveAllSets(sets);
+      _vocabSelected.clear();
+      buildVocabFilterTabs();
+      updateVocabExportBar();
+      renderVocabList(_vocabFiltered);
+      showToast('"'+name+'" seti oluşturuldu! ('+words.length+' kelime) ✓');
+    } catch(e) { showToast('Hata: '+e.message); }
+  });
+};
+
+// Reusable new set name modal
+function openNewSetNameModal(desc, onConfirm) {
+  var modal = document.getElementById('new-set-name-modal');
+  var input = document.getElementById('new-set-name-input');
+  var descEl = document.getElementById('new-set-modal-desc');
+  var confirmBtn = document.getElementById('new-set-modal-confirm');
+  var cancelBtn = document.getElementById('new-set-modal-cancel');
+  if(!modal || !input) return;
+  if(descEl) descEl.textContent = desc;
+  input.value = '';
+  modal.style.display = 'flex';
+  setTimeout(function(){ input.focus(); }, 100);
+  // Remove old listeners
+  var newConfirm = confirmBtn.cloneNode(true);
+  confirmBtn.parentNode.replaceChild(newConfirm, confirmBtn);
+  var newCancel = cancelBtn.cloneNode(true);
+  cancelBtn.parentNode.replaceChild(newCancel, cancelBtn);
+  document.getElementById('new-set-modal-confirm').onclick = function() {
+    var name = input.value.trim();
+    if(!name) { input.style.borderColor='#e74c3c'; return; }
+    modal.style.display = 'none';
+    onConfirm(name);
+  };
+  document.getElementById('new-set-modal-cancel').onclick = function() {
+    modal.style.display = 'none';
+  };
+  input.onkeydown = function(e) {
+    if(e.key==='Enter') document.getElementById('new-set-modal-confirm').click();
+    if(e.key==='Escape') modal.style.display='none';
+  };
+}
+
+// Toast notification helper
+function showToast(msg) {
+  var t = document.getElementById('site-toast');
+  if(!t) {
+    t = document.createElement('div');
+    t.id = 'site-toast';
+    t.style.cssText = 'position:fixed;bottom:24px;left:50%;transform:translateX(-50%);background:#1a3a5c;color:#fff;padding:10px 20px;border-radius:10px;font-size:13px;font-family:Poppins,sans-serif;z-index:999999;box-shadow:0 4px 16px rgba(0,0,0,.25);transition:opacity .3s;pointer-events:none';
+    document.body.appendChild(t);
+  }
+  t.textContent = msg;
+  t.style.opacity = '1';
+  clearTimeout(t._timer);
+  t._timer = setTimeout(function(){ t.style.opacity='0'; }, 3000);
+}
+
+// Close vocab-set-modal on backdrop click
+document.addEventListener('click', function(e) {
+  var modal = document.getElementById('vocab-set-modal');
+  if(modal && modal.style.display !== 'none') {
+    var inner = modal.querySelector('div');
+    if(inner && !inner.contains(e.target)) modal.style.display = 'none';
+  }
+});
 
 (function(){
   var tip=null, trEl=null, hintEl=null, cache={}, pending=null, curWord='', curTr='';
@@ -5794,6 +6883,17 @@ function updateRightPanel(tab) {
           }
           sets2[i].words=sets2[i].words||[];
           sets2[i].words.push({en:word, tr:tr||''});
+          // Also save to vocab localStorage as 'news' source
+          try {
+            var uid2 = (typeof cu!=='undefined'&&cu)?cu.uid:'';
+            var lk2 = 'ec_learned_'+uid2;
+            var lw2 = JSON.parse(localStorage.getItem(lk2)||'[]');
+            if(!lw2.some(function(x){return x.word===word;})) {
+              lw2.push({word:word, tr:tr||'', date:new Date().toISOString().slice(0,10), source:'news'});
+              lw2 = lw2.slice(-100);
+              localStorage.setItem(lk2, JSON.stringify(lw2));
+            }
+          } catch(e3) {}
           mBody.innerHTML='<div style="color:#888;font-size:12px;padding:8px;text-align:center">Kaydediliyor...</div>';
           try{
             if(typeof saveAllSets==='undefined') throw new Error('saveAllSets not defined');
@@ -5913,6 +7013,7 @@ function updateRightPanel(tab) {
     quizlet:'snav-games', games:'snav-games', tools:'snav-tools', teacher:'snav-teacher', prof:'snav-prof',
     career:'snav-tools', community:'snav-tools',
     notes:'snav-tools', report:'snav-tools', calendar:'snav-teacher', hw:'snav-teacher',
+    vocab:'snav-tools', wordworld:'snav-tools',
     schedule:'snav-teacher', feedback:'snav-teacher'
   };
   const navId=navMap[tab]; if(navId){const nb=document.getElementById(navId);if(nb)nb.classList.add('active');}
@@ -5931,6 +7032,8 @@ function updateRightPanel(tab) {
   if(tab==='notes')   loadStNotes();
   if(tab==='quizlet') initQuizlet();
   if(tab==='prof')    loadAIMinutes().then(function(){renderProf();});
+  if(tab==='vocab')   initVocabTab();
+  if(tab==='wordworld') initWordWorld();
   if(tab==='teacher') initTeacherTab();
   try{
     var _rp=document.getElementById('student-right-panel');
@@ -7798,11 +8901,14 @@ function renderQuizletSets() {
   sets.forEach(function(s, i) {
     var lastStudied = s.lastStudied ? new Date(s.lastStudied).toLocaleDateString('tr-TR') : 'Hiç çalışılmadı';
     var daysAgo = s.lastStudied ? Math.floor((Date.now()-s.lastStudied)/86400000) : 999;
-    var badge = (daysAgo>=7) ? '<span style="background:var(--amber-light);color:var(--amber);padding:1px 6px;border-radius:8px;font-size:10px;margin-left:4px">⏰ Tekrar et</span>' : '';
+    var completed = !!s.completed;
+    var badge = completed
+      ? '<span style="background:#e8f5e9;color:#2d8a4e;padding:1px 6px;border-radius:8px;font-size:10px;margin-left:4px">✅ Tamamlandı</span>'
+      : (daysAgo>=7 ? '<span style="background:var(--amber-light);color:var(--amber);padding:1px 6px;border-radius:8px;font-size:10px;margin-left:4px">⏰ Tekrar et</span>' : '');
     var card = document.createElement('div');
     card.className = 'card';
-    card.style.cssText = 'margin-bottom:8px;cursor:pointer;border:1.5px solid var(--border-c);transition:border-color .15s';
-    card.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:700;color:var(--navy);font-size:14px">'+s.name+badge+'</div><div style="font-size:11px;color:#889;margin-top:3px">'+((s.words&&s.words.length)||0)+' kelime · Son çalışma: '+lastStudied+'</div></div><div style="font-size:22px">📚</div></div>';
+    card.style.cssText = 'margin-bottom:8px;cursor:pointer;border:1.5px solid var(--border-c);transition:border-color .15s'+(completed?';opacity:0.55':'');
+    card.innerHTML = '<div style="display:flex;align-items:center;justify-content:space-between"><div><div style="font-weight:700;color:var(--navy);font-size:14px">'+s.name+badge+'</div><div style="font-size:11px;color:#889;margin-top:3px">'+((s.words&&s.words.length)||0)+' kelime · Son çalışma: '+lastStudied+'</div></div><div style="font-size:22px">'+(completed?'📗':'📚')+'</div></div>';
     card.addEventListener('mouseover', function(){ this.style.borderColor='#9333ea'; });
     card.addEventListener('mouseout', function(){ this.style.borderColor='var(--border-c)'; });
     card.addEventListener('click', (function(idx){ return function(){ openQuizletSet(idx); }; })(i));
@@ -7861,7 +8967,6 @@ window.openQuizletSet = function(idx) {
   if(idx < 0 || idx >= sets.length) return;
   qCurrentSet = sets[idx];
   qCurrentSetIdx = idx;
-  // Update lastStudied
   sets[idx].lastStudied = Date.now();
   saveAllSets(sets).catch(function(){});
 
@@ -7871,11 +8976,178 @@ window.openQuizletSet = function(idx) {
   document.getElementById('qset-detail-count').textContent = (qCurrentSet.words||[]).length + ' kelime';
   document.getElementById('qgame-arena').innerHTML = '';
 
-  var preview = document.getElementById('qset-words-preview');
+  // Show complete/retry button
+  renderSetCompleteBar();
+  // Show editable word list
+  renderSetWordList();
   showQWordList();
-  preview.innerHTML = (qCurrentSet.words||[]).map(function(w) {
-    return '<div style="display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-c);font-size:13px"><span style="color:var(--navy);font-weight:600">'+w.en+'</span><span style="color:#889">'+w.tr+'</span></div>';
-  }).join('');
+};
+
+function renderSetCompleteBar() {
+  var bar = document.getElementById('qset-complete-bar');
+  if(!bar || !qCurrentSet) return;
+  bar.innerHTML = '';
+  var completed = !!qCurrentSet.completed;
+  if(!completed) {
+    var btn = document.createElement('button');
+    btn.style.cssText = 'width:100%;padding:10px;border-radius:10px;border:none;background:linear-gradient(135deg,#2d8a4e,#38a169);color:#fff;cursor:pointer;font-size:13px;font-family:Poppins,sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px';
+    btn.innerHTML = '✅ Bu Seti Tamamladım';
+    btn.onclick = completeCurrentSet;
+    bar.appendChild(btn);
+  } else {
+    var retryBtn = document.createElement('button');
+    retryBtn.style.cssText = 'width:100%;padding:10px;border-radius:10px;border:2px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;font-size:13px;font-family:Poppins,sans-serif;font-weight:700;display:flex;align-items:center;justify-content:center;gap:8px';
+    retryBtn.innerHTML = '🔄 Seti Tekrar Et';
+    retryBtn.onclick = retryCurrentSet;
+    bar.appendChild(retryBtn);
+    var doneLabel = document.createElement('div');
+    doneLabel.style.cssText = 'text-align:center;font-size:11px;color:var(--green);margin-top:4px;font-weight:600';
+    doneLabel.textContent = '✓ Tamamlandı — Kelimeler Kelime Defterine eklendi';
+    bar.appendChild(doneLabel);
+  }
+}
+
+window.completeCurrentSet = async function() {
+  if(!qCurrentSet) return;
+  var sets = getQuizletSets();
+  sets[qCurrentSetIdx].completed = true;
+  await saveAllSets(sets);
+  qCurrentSet = sets[qCurrentSetIdx];
+  // Add words to vocab localStorage
+  addSetWordsToVocab(qCurrentSet, true);
+  // Dim card in list
+  renderQuizletSets();
+  renderSetCompleteBar();
+  showToast('Set tamamlandı! Kelimeler Kelime Defterine eklendi ✓');
+};
+
+window.retryCurrentSet = async function() {
+  if(!qCurrentSet) return;
+  var sets = getQuizletSets();
+  sets[qCurrentSetIdx].completed = false;
+  await saveAllSets(sets);
+  qCurrentSet = sets[qCurrentSetIdx];
+  // Remove words from vocab localStorage
+  addSetWordsToVocab(qCurrentSet, false);
+  renderQuizletSets();
+  renderSetCompleteBar();
+  showToast('Set aktifleştirildi! Kelimeler Kelime Defterinden kaldırıldı.');
+};
+
+function addSetWordsToVocab(set, add) {
+  try {
+    var uid = (typeof cu!=='undefined'&&cu)?cu.uid:'';
+    var key = 'ec_learned_'+uid;
+    var lw = JSON.parse(localStorage.getItem(key)||'[]');
+    var setName = set.name;
+    if(add) {
+      // Add words from this set
+      (set.words||[]).forEach(function(w) {
+        if(!lw.some(function(x){return x.word===w.en;})) {
+          lw.push({word:w.en, tr:w.tr||'', date:new Date().toISOString().slice(0,10), source:'quizlet', setName:setName});
+        }
+      });
+    } else {
+      // Remove words that came from this set
+      lw = lw.filter(function(x){ return !(x.source==='quizlet' && x.setName===setName); });
+    }
+    lw = lw.slice(-200);
+    localStorage.setItem(key, JSON.stringify(lw));
+  } catch(e) {}
+}
+
+function renderSetWordList() {
+  var preview = document.getElementById('qset-words-preview');
+  if(!preview || !qCurrentSet) return;
+  preview.innerHTML = '';
+  (qCurrentSet.words||[]).forEach(function(w, i) {
+    var row = document.createElement('div');
+    row.style.cssText = 'display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid var(--border-c)';
+    // Word display or edit mode
+    var wordSpan = document.createElement('div');
+    wordSpan.style.cssText = 'flex:1;display:flex;gap:8px;align-items:center';
+    wordSpan.innerHTML = '<span style="color:var(--navy);font-weight:600;font-size:13px">'+w.en+'</span><span style="color:#aaa;font-size:12px">—</span><span style="color:#889;font-size:13px">'+w.tr+'</span>';
+    row.appendChild(wordSpan);
+    // Edit button
+    var editBtn = document.createElement('button');
+    editBtn.style.cssText = 'padding:3px 8px;border-radius:5px;border:1px solid var(--border-c);background:transparent;color:var(--ts);cursor:pointer;font-size:11px;flex-shrink:0';
+    editBtn.textContent = '✏️';
+    editBtn.title = 'Düzenle';
+    (function(idx2, word) {
+      editBtn.onclick = function() { editWordInSet(idx2, word); };
+    })(i, w);
+    row.appendChild(editBtn);
+    // Delete button
+    var delBtn = document.createElement('button');
+    delBtn.style.cssText = 'padding:3px 8px;border-radius:5px;border:1px solid #fcc;background:transparent;color:#c00;cursor:pointer;font-size:11px;flex-shrink:0';
+    delBtn.textContent = '🗑️';
+    delBtn.title = 'Sil';
+    (function(idx2) {
+      delBtn.onclick = async function() {
+        if(!confirm('"'+qCurrentSet.words[idx2].en+'" kelimesini silmek istiyor musun?')) return;
+        var sets = getQuizletSets();
+        sets[qCurrentSetIdx].words.splice(idx2, 1);
+        await saveAllSets(sets);
+        qCurrentSet = sets[qCurrentSetIdx];
+        document.getElementById('qset-detail-count').textContent = (qCurrentSet.words||[]).length + ' kelime';
+        renderSetWordList();
+      };
+    })(i);
+    row.appendChild(delBtn);
+    preview.appendChild(row);
+  });
+}
+
+// Edit a word inline
+function editWordInSet(idx, word) {
+  var preview = document.getElementById('qset-words-preview');
+  if(!preview) return;
+  var rows = preview.children;
+  if(!rows[idx]) return;
+  var row = rows[idx];
+  row.innerHTML = '';
+  row.style.flexWrap = 'wrap';
+  var enInput = document.createElement('input');
+  enInput.type='text'; enInput.value=word.en;
+  enInput.style.cssText='flex:1;min-width:80px;padding:4px 8px;border-radius:6px;border:1.5px solid var(--accent);font-size:12px;font-family:Poppins,sans-serif';
+  var trInput = document.createElement('input');
+  trInput.type='text'; trInput.value=word.tr||'';
+  trInput.style.cssText='flex:1;min-width:80px;padding:4px 8px;border-radius:6px;border:1.5px solid var(--accent);font-size:12px;font-family:Poppins,sans-serif';
+  var saveBtn = document.createElement('button');
+  saveBtn.style.cssText='padding:4px 10px;border-radius:6px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;flex-shrink:0';
+  saveBtn.textContent='Kaydet';
+  saveBtn.onclick = async function() {
+    var newEn = enInput.value.trim();
+    var newTr = trInput.value.trim();
+    if(!newEn) return;
+    var sets = getQuizletSets();
+    sets[qCurrentSetIdx].words[idx] = {en:newEn, tr:newTr};
+    await saveAllSets(sets);
+    qCurrentSet = sets[qCurrentSetIdx];
+    renderSetWordList();
+  };
+  var cancelBtn = document.createElement('button');
+  cancelBtn.style.cssText='padding:4px 8px;border-radius:6px;border:1px solid var(--border-c);background:transparent;color:#889;cursor:pointer;font-size:12px;flex-shrink:0';
+  cancelBtn.textContent='İptal';
+  cancelBtn.onclick = function() { renderSetWordList(); };
+  row.appendChild(enInput); row.appendChild(trInput);
+  row.appendChild(saveBtn); row.appendChild(cancelBtn);
+}
+
+// Add new word to current set
+window.addWordToCurrentSet = async function() {
+  var en = prompt('İngilizce kelime:');
+  if(!en || !en.trim()) return;
+  var tr = prompt('Türkçe anlamı:');
+  if(!tr || !tr.trim()) return;
+  var sets = getQuizletSets();
+  sets[qCurrentSetIdx].words = sets[qCurrentSetIdx].words || [];
+  sets[qCurrentSetIdx].words.push({en:en.trim(), tr:tr.trim()});
+  await saveAllSets(sets);
+  qCurrentSet = sets[qCurrentSetIdx];
+  document.getElementById('qset-detail-count').textContent = (qCurrentSet.words||[]).length + ' kelime';
+  renderSetWordList();
+  showToast('"'+en.trim()+'" eklendi ✓');
 };
 
 window.deleteCurrentSet = async function() {
@@ -8768,12 +10040,72 @@ window.readingNav = function(delta) { readingCurrentText += delta; renderReading
 </div>
     </div><!-- /sc-content -->
   </div><!-- /main-col -->
-    </div><!-- /content-col -->
+    
+  <!-- ═══════════════ KELIME DEFTERI ═══════════════ -->
+  <div id="sc-vocab" class="tc">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;margin-top:-8px">
+      <div style="font-size:16px;font-weight:700;color:var(--navy)">📖 Kelime Defterim</div>
+      <div id="vocab-total-badge" style="background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px">0 kelime</div>
+    </div>
+    <div style="font-size:12px;color:#889;margin-bottom:14px">AI sohbet ve haberlerden öğrendiğin tüm kelimeler</div>
+
+    <!-- Filter tabs — dynamically populated -->
+    <div id="vocab-filter-tabs" style="display:flex;gap:6px;margin-bottom:14px;flex-wrap:wrap"></div>
+
+    <!-- Search -->
+    <div style="position:relative;margin-bottom:14px">
+      <input id="vocab-search" type="text" placeholder="Kelime ara..." oninput="searchVocab(this.value)" style="width:100%;box-sizing:border-box;padding:10px 14px 10px 36px;border-radius:10px;border:1.5px solid var(--border-c);font-size:13px;font-family:Poppins,sans-serif;background:var(--bg)">
+      <span style="position:absolute;left:12px;top:50%;transform:translateY(-50%);color:#aaa;font-size:14px">🔍</span>
+    </div>
+
+    <!-- Quizlet export bar -->
+    <div id="vocab-export-bar" style="display:none;background:var(--accent-light);border-radius:10px;padding:10px 14px;margin-bottom:12px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+      <span id="vocab-selected-count" style="font-size:12px;font-weight:600;color:var(--accent)">0 kelime seçili</span>
+      <div style="display:flex;gap:6px">
+        <button onclick="exportVocabToExistingSet()" style="padding:6px 12px;border-radius:7px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);cursor:pointer;font-size:11px;font-family:Poppins,sans-serif;font-weight:600">Mevcut Sete Ekle</button>
+        <button onclick="exportVocabAsNewSet()" style="padding:6px 12px;border-radius:7px;border:none;background:var(--accent);color:#fff;cursor:pointer;font-size:11px;font-family:Poppins,sans-serif;font-weight:600">Yeni Set Oluştur</button>
+      </div>
+    </div>
+
+    <!-- Select all -->
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+      <label style="display:flex;align-items:center;gap:6px;cursor:pointer;font-size:12px;color:var(--ts)">
+        <input type="checkbox" id="vocab-select-all" onchange="toggleSelectAllVocab(this.checked)" style="width:15px;height:15px;accent-color:var(--accent)">
+        Tümünü seç
+      </label>
+      <span id="vocab-filter-count" style="font-size:11px;color:var(--tm)"></span>
+    </div>
+
+    <!-- Word list -->
+    <div id="vocab-list" style="max-height:60vh;overflow-y:auto"></div>
+
+  </div>
+
+  <!-- ═══════════════ KELIME DÜNYASI ═══════════════ -->
+  <div id="sc-wordworld" class="tc" style="min-height:70vh">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;padding:0 12px">
+      <div style="font-size:16px;font-weight:700;color:var(--navy)">🌍 Kelime Dünyam</div>
+      <div id="ww-total" style="background:var(--accent-light);color:var(--accent);font-size:11px;font-weight:700;padding:3px 10px;border-radius:12px">0 kelime</div>
+    </div>
+    <div style="font-size:12px;color:#889;margin-bottom:16px;padding:0 12px">Öğrendiğin kelimelerin görsel haritası — kategoriye göre keşfet</div>
+
+    <!-- Category filter -->
+    <div id="ww-cats" style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap;padding:0 12px"></div>
+
+    <!-- Word cloud canvas area -->
+    <div id="ww-cloud" style="position:relative;min-height:420px;background:linear-gradient(135deg,#0f1f38 0%,#1a3a5c 50%,#0f2440 100%);border-radius:16px;overflow:hidden;cursor:default;margin:0 12px"></div>
+
+
+
+  </div>
+
+</div><!-- /content-col -->
     <!-- RIGHT PANEL -->
     <div class="right-panel" id="student-right-panel">
       <div id="right-panel-content"></div>
     </div>
     </div><!-- /main-row -->
+
 </div><!-- /s-student -->
 
 
