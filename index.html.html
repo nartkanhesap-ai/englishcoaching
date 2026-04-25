@@ -238,14 +238,14 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
 .sl-shield{width:46px;height:42px;flex-shrink:0;display:flex;align-items:center;justify-content:center}
 .sl-text{overflow:hidden;min-width:0}
 .sl-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:12.5px;color:#fff;letter-spacing:0.5px;line-height:1.2;white-space:nowrap}
-.sl-sub{font-size:7.5px;color:rgba(255,255,255,0.45);letter-spacing:1.8px;text-transform:uppercase;white-space:nowrap}
+.sl-sub{font-size:7.5px;color:rgba(255,255,255,0.45);letter-spacing:1.8px;text-transform:uppercase;white-space:nowrap;display:block;padding-left:3px}
 .sl-copy{font-family:'Poppins',sans-serif;font-size:8px;color:rgba(255,255,255,0.38);margin-top:2px;letter-spacing:0.2px;line-height:1.3}
 .sidebar.collapsed{width:64px}
 .sidebar-logo{display:flex;align-items:center;gap:10px;padding:16px 14px 12px;border-bottom:1px solid rgba(255,255,255,0.08);flex-shrink:0}
 .sl-shield{width:40px;height:44px;flex-shrink:0;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .sl-text{overflow:hidden}
 .sl-title{font-family:'Poppins',sans-serif;font-weight:800;font-size:12.5px;color:#fff;letter-spacing:0.5px;line-height:1.2;white-space:nowrap}
-.sl-sub{font-size:7.5px;color:rgba(255,255,255,0.45);letter-spacing:1.8px;text-transform:uppercase;white-space:nowrap}
+.sl-sub{font-size:7.5px;color:rgba(255,255,255,0.45);letter-spacing:1.8px;text-transform:uppercase;white-space:nowrap;display:block;padding-left:3px}
 .sidebar-nav{flex:1;overflow-y:auto;padding:6px 0}
 .sidebar-nav::-webkit-scrollbar{width:2px}
 .sidebar-nav::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.12);border-radius:2px}
@@ -308,12 +308,17 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
 .tc.active{display:block}
 .tt-section{display:none}.tt-section:first-of-type,.tt-section.active{display:block}
 
-#word-hover-tooltip{position:fixed;z-index:99999;background:#1a3a5c;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-family:Poppins,sans-serif;pointer-events:none;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3);max-width:200px;text-align:center;line-height:1.4;transform:translate(-50%,-100%)}
+#word-hover-tooltip{position:fixed;z-index:99999;background:#1a3a5c;color:#fff;padding:6px 12px;border-radius:8px;font-size:12px;font-family:Poppins,sans-serif;pointer-events:auto;display:none;box-shadow:0 4px 16px rgba(0,0,0,.3);max-width:200px;text-align:center;line-height:1.4;transform:translate(-50%,-100%)}
 .hw{cursor:pointer;border-bottom:1px dotted rgba(26,58,92,0.3)}
 .hw:hover{background:rgba(26,58,92,0.08);border-radius:3px}
 
 .news-img { display:block }
 .news-img[src=""] { display:none }
+.tools-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(170px,1fr));gap:20px}
+
+/* Enhanced tool cards */
+.tool-card{padding:24px 18px!important;min-height:130px!important;border-radius:16px!important}
+.tool-card:hover{transform:translateY(-3px)!important;box-shadow:0 8px 24px rgba(26,58,92,0.15)!important}
 </style>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -402,7 +407,19 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
 </div>
 
 <!-- LOGIN -->
-<div id="word-hover-tooltip"><span id="wht-word" style="font-weight:600"></span><br><span id="wht-tr" style="opacity:0.85;font-size:11px"></span></div>
+<div id="word-hover-tooltip">
+  <span id="wht-word" style="font-weight:700;font-size:13px;display:block;margin-bottom:3px"></span>
+  <span id="wht-tr" style="opacity:0.9;font-size:11px;display:block"></span>
+  <button id="wht-hint" onclick="window._addCurrentWordToQuizlet(event)" style="display:none;margin-top:6px;width:100%;font-size:10px;padding:4px 8px;border-radius:5px;border:none;background:rgba(255,255,255,0.2);color:#fff;cursor:pointer;font-family:Poppins,sans-serif">+ Quizlete Ekle</button>
+</div>
+<div id="wht-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,0.45);z-index:100000;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:14px;padding:20px;min-width:270px;max-width:320px;box-shadow:0 8px 32px rgba(0,0,0,0.25);font-family:Poppins,sans-serif">
+    <div style="font-weight:700;font-size:14px;color:#1a3a5c;margin-bottom:4px">📚 Quizlete Ekle</div>
+    <div id="wht-modal-word" style="font-size:12px;color:#555;margin-bottom:14px"></div>
+    <div id="wht-modal-body"></div>
+    <button onclick="document.getElementById('wht-modal').style.display='none'" style="width:100%;padding:8px;border-radius:8px;border:1px solid #ddd;background:transparent;color:#888;cursor:pointer;font-size:12px;margin-top:8px">İptal</button>
+  </div>
+</div>
 <div id="s-login" class="screen active">
   <div style="min-height:100vh;display:flex;align-items:center;justify-content:center;gap:48px;padding:2rem;flex-wrap:wrap;background:transparent">
   <!-- Globe — right side decoration -->
@@ -579,7 +596,7 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
   <div id="tc-dash" class="tc active">
     <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-bottom:1.25rem">
       <div class="stat"><div class="sn" id="d-s">0</div><div class="sl">Aktif Öğrenci</div></div>
-      <div class="stat"><div class="sn" id="d-ai-mins">0</div><div class="sl">Toplam AI Dk</div></div>
+      <div class="stat"><div class="sn" id="d-ai-mins">0</div><div class="sl">AI Mesajlar</div></div>
       <div class="stat"><div class="sn" id="d-words">0</div><div class="sl">Öğrenilen Kelime</div></div>
       <div class="stat"><div class="sn" id="d-posts">0</div><div class="sl">Topluluk Gönderisi</div></div>
     </div>
@@ -950,6 +967,7 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
           </div>
         </div>
         <div style="font-size:11px;color:var(--tm);margin-top:10px;text-align:center" id="dash-level-lbl">-</div>
+        <div id="dash-badge-hint" style="font-size:10px;color:var(--tm);text-align:center;margin-top:3px;font-style:italic;min-height:14px;padding:0 8px"></div>
       </div>
 
       <!-- Recent activity -->
@@ -995,7 +1013,7 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
     <div style="display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:1.25rem">
       <div class="stat" onclick="showAIStats()" style="cursor:pointer;transition:opacity .15s;padding:1.25rem" onmouseover="this.style.opacity='.85'" onmouseout="this.style.opacity='1'">
         <div class="sn" id="sp-c">0</div>
-        <div class="sl">AI konuşma dakikası — detaylar için tıkla</div>
+        <div class="sl">AI mesajlar — detaylar için tıkla</div>
       </div>
     </div>
     <!-- Streak visual -->
@@ -1083,23 +1101,23 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
       <div class="card" style="border-left:3px solid var(--accent)">
         <div style="font-weight:700;color:var(--navy);font-size:14px;margin-bottom:12px">🎯 Bu Haftanın Hedefleri</div>
 
-        <!-- Goal 1: Scenario 30 min -->
+        <!-- Goal 1: Scenario 50 messages -->
         <div style="margin-bottom:14px">
           <div class="flex" style="margin-bottom:4px">
-            <div style="font-size:13px;color:var(--navy-dark);flex:1">🎭 Bir senaryoda 30 dakika pratik yap</div>
+            <div style="font-size:13px;color:var(--navy-dark);flex:1">🎭 Senaryo modunda 50 mesaj at</div>
             <div id="scenario-goal-tick" style="display:none;color:var(--green);font-size:16px;font-weight:700">✓</div>
           </div>
-          <div style="font-size:11px;color:#889">Mevcut süre: <span id="scenario-mins">0</span> / 30 dakika</div>
+          <div style="font-size:11px;color:#889">Mevcut: <span id="scenario-mins">0</span> / 50 mesaj</div>
           <div class="pb" style="margin-top:4px"><div id="scenario-bar" class="pf" style="width:0%;background:var(--accent)"></div></div>
         </div>
 
-        <!-- Goal 2: 60 min total chat -->
+        <!-- Goal 2: 100 messages -->
         <div style="margin-bottom:10px">
           <div class="flex" style="margin-bottom:4px">
-            <div style="font-size:13px;color:var(--navy-dark);flex:1">💬 Bu hafta 60 dakika sohbet et</div>
+            <div style="font-size:13px;color:var(--navy-dark);flex:1">💬 Bu hafta 100 mesaj at</div>
             <div id="chat-goal-tick" style="display:none;color:var(--green);font-size:16px;font-weight:700">✓</div>
           </div>
-          <div style="font-size:11px;color:#889">Mevcut süre: <span id="chat-mins">0</span> / 60 dakika</div>
+          <div style="font-size:11px;color:#889">Mevcut: <span id="chat-mins">0</span> / 100 mesaj</div>
           <div class="pb" style="margin-top:4px"><div id="chat-bar" class="pf" style="width:0%;background:#2d8a4e;transition:width .5s"></div></div>
         </div>
       </div>
@@ -1125,10 +1143,7 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
     <div id="score-popup" style="display:none;position:fixed;top:40%;left:50%;transform:translate(-50%,-50%);background:var(--navy);color:#fff;padding:1rem 2rem;border-radius:14px;font-size:22px;font-weight:700;z-index:9997;text-align:center;pointer-events:none"></div>
   </div>
 
-  <div id="sc-cont" class="tc">
-    <div class="st">Öğretmenimden gelen içerikler</div>
-    <div id="st-cont-list"><div class="muted">Yükleniyor...</div></div>
-  </div>
+
 
   <div id="sc-hw" class="tc">
     <div class="st">Ödevlerim</div>
@@ -1180,7 +1195,6 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
     <!-- Tabs inside My Teacher -->
     <div style="display:flex;gap:6px;margin-bottom:16px;flex-wrap:wrap">
       <button class="fb active" onclick="teacherSubTab('calendar')" id="ttab-calendar">📅 Takvim</button>
-      <button class="fb" onclick="teacherSubTab('schedule')" id="ttab-schedule">🕐 Ders Programı</button>
       <button class="fb" onclick="teacherSubTab('feedback')" id="ttab-feedback">💬 Geri Bildirim</button>
     </div>
 
@@ -1193,12 +1207,16 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
     <!-- Calendar Sub-tab (moved from tools) -->
     <div id="tt-calendar" class="tt-section" style="display:none">
       <div style="font-size:14px;font-weight:700;color:var(--tp);margin-bottom:4px">📅 Çalışma Takvimim</div>
-      <div style="font-size:11px;color:var(--tm);margin-bottom:12px">Planlarını ekle, notlarını kaydet</div>
+      <div style="font-size:11px;color:var(--tm);margin-bottom:8px">Planlarını ekle, notlarını kaydet</div>
+      <div style="display:flex;gap:12px;margin-bottom:10px;font-size:10px;flex-wrap:wrap">
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#8B1A1A;margin-right:4px;vertical-align:middle"></span>Ders günü (öğretmen)</span>
+        <span><span style="display:inline-block;width:10px;height:10px;border-radius:3px;background:#155724;margin-right:4px;vertical-align:middle"></span>Etkinliğin</span>
+      </div>
       <div class="card" style="margin-bottom:12px">
         <div class="flex" style="margin-bottom:10px">
-          <button onclick="calPrev()" style="padding:4px 12px;border-radius:8px">‹</button>
+          <button onclick="cal2Prev()" style="padding:4px 12px;border-radius:8px">‹</button>
           <div style="flex:1;text-align:center;font-weight:700;color:var(--tp);font-size:14px" id="cal-title2"></div>
-          <button onclick="calNext()" style="padding:4px 12px;border-radius:8px">›</button>
+          <button onclick="cal2Next()" style="padding:4px 12px;border-radius:8px">›</button>
         </div>
         <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px">
           <div style="text-align:center;font-size:10px;color:var(--tm);padding:4px">Pt</div>
@@ -1222,10 +1240,9 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
       </div>
     </div>
 
-    <!-- Schedule Sub-tab -->
+    <!-- Schedule Sub-tab (hidden - teacher sets lesson days in calendar) -->
     <div id="tt-schedule" class="tt-section" style="display:none">
-      <div style="font-size:14px;font-weight:700;color:var(--tp);margin-bottom:12px">🕐 Ders Programı</div>
-      <div id="my-schedule-list"><div class="muted">Yükleniyor...</div></div>
+      <div id="my-schedule-list"></div>
     </div>
 
     <!-- Feedback Sub-tab -->
@@ -1289,11 +1306,7 @@ button,input,select,a,.card,.tab { transition:all .18s ease; }
         <div style="font-weight:700;font-size:13px;color:var(--navy)">Raporum</div>
         <div style="font-size:11px;color:#889;margin-top:2px">Haftalık gelişim</div>
       </button>
-      <button onclick="sTab('cont')" style="background:#fff;border:1px solid var(--border-c);border-radius:14px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='#fff'">
-        <div style="font-size:32px;margin-bottom:6px">📬</div>
-        <div style="font-weight:700;font-size:13px;color:var(--navy)">İçerikler</div>
-        <div style="font-size:11px;color:#889;margin-top:2px">Öğretmenden gelenler</div>
-      </button>
+
       <button onclick="sTab('notes')" style="background:#fff;border:1px solid var(--border-c);border-radius:14px;padding:1.25rem 1rem;text-align:center;cursor:pointer;transition:all .2s" onmouseover="this.style.borderColor='var(--navy)';this.style.background='var(--accent-light)'" onmouseout="this.style.borderColor='var(--border-c)';this.style.background='#fff'">
         <div style="font-size:32px;margin-bottom:6px">🗒️</div>
         <div style="font-weight:700;font-size:13px;color:var(--navy)">Notlar</div>
@@ -1768,7 +1781,18 @@ onAuthStateChanged(auth,async u=>{
       const s=await getDoc(doc(db,'users',u.uid));
       if(_ex(s)){
         cp=s.data();
-        if(cp.streak!==undefined){
+        // Sync message count and word count from Firestore
+  if(cp.totalMessages) {
+    msgCount = Math.max(msgCount||0, cp.totalMessages||0);
+    var spEl=document.getElementById('sp-c'); if(spEl) spEl.textContent=msgCount;
+    var daMins=document.getElementById('d-ai-mins'); if(daMins) daMins.textContent=msgCount;
+  }
+  if(cp.totalWords) {
+    var spw=document.getElementById('sp-w'); if(spw) spw.textContent=cp.totalWords;
+    var dw=document.getElementById('d-words'); if(dw) dw.textContent=cp.totalWords;
+  }
+  if(!cp.quizletSets) cp.quizletSets=[];
+  if(cp.streak!==undefined){
           localStorage.setItem('ec_st_'+cu.uid, cp.streak);
           if(cp.streakDate) localStorage.setItem('ec_std_'+cu.uid, cp.streakDate);
         }
@@ -1915,8 +1939,8 @@ function loadAllStudents() {
             addLiveFeedEvent('💬', s.name||'?', 'AI sohbet: ' + s.totalAIMinutes + ' dk', '#60a5fa', s.activityAt||evTs);
           }
           // Detect badge change
-          const prevBadge = getBadgeForStudent(prev.voiceScore||0, prev.totalAIMinutes||0);
-          const newBadge = getBadgeForStudent(s.voiceScore||0, s.totalAIMinutes||0);
+          const prevBadge = getBadgeForStudent(prev.voiceScore||0, prev.totalMessages||prev.totalAIMinutes||0);
+          const newBadge = getBadgeForStudent(s.voiceScore||0, s.totalMessages||s.totalAIMinutes||0);
           if(newBadge.name !== prevBadge.name && Object.keys(prev).length > 0) {
             addLiveFeedEvent(newBadge.emoji, s.name||'?', newBadge.name + ' rozetine yükseldi! 🎉', '#a78bfa', evTs);
           }
@@ -1960,10 +1984,10 @@ function loadAllStudents() {
   );
 }
 
-function getBadgeForStudent(pts, mins) {
+function getBadgeForStudent(pts, msgs) {
   let badge = BADGES[0];
   for(let i=0;i<BADGES.length;i++){
-    if(pts >= BADGES[i].pts && mins >= BADGES[i].mins) badge = BADGES[i];
+    if(pts >= BADGES[i].pts && (msgs||0) >= (BADGES[i].msgs||0)) badge = BADGES[i];
     else break;
   }
   return badge;
@@ -2205,7 +2229,7 @@ window.deleteStudent = async function(uid) {
   if(!confirm('Bu öğrenciyi silmek istediğinizden emin misiniz? Bu işlem öğrencinin tüm verilerini siler.')) return;
   try {
     await deleteDoc(doc(db,'studentDirectory',uid));
-    // Also delete from users collection (will fail if already gone, that's ok)
+    // Also delete from users collection (will fail if already gone, that is ok)
     deleteDoc(doc(db,'users',uid)).catch(function(){});
     await loadAllStudents();
   } catch(ex) { alert('Hata (sil): ' + ex.message); }
@@ -2468,7 +2492,23 @@ async function loadStudent(){
   chatInitialized=false;
   showCounselorBubble();
   setTimeout(requestNotificationPermission, 3000);
-  setTimeout(function(){ logActivity('🔑','platforma giriş yaptı','#2a4f7a'); },2000);
+  setTimeout(function(){
+    logActivity('🔑','platforma giriş yaptı','#2a4f7a');
+    // Save today as an active day for the 7-day tracker
+    if(cu && cu.uid) {
+      var today = new Date().toISOString().slice(0,10);
+      var key = 'ec_active_days_' + cu.uid;
+      try {
+        var activeDays = JSON.parse(localStorage.getItem(key)||'[]');
+        if(!activeDays.includes(today)) {
+          activeDays.push(today);
+          // Keep only last 30 days
+          activeDays = activeDays.slice(-30);
+          localStorage.setItem(key, JSON.stringify(activeDays));
+        }
+      } catch(e) {}
+    }
+  },2000);
   // Real-time cross-device sync
   if(cu && cu.uid && !window._userDocUnsub) {
     window._userDocUnsub = onSnapshot(doc(db,'users',cu.uid), function(snap) {
@@ -2849,6 +2889,17 @@ function getDevicePlatform() {
 
 async function logActivity(emoji, action, color) {
   if(!cu || !cu.uid || !cp) return;
+  // Save today as active day for 7-day tracker
+  try {
+    var today = new Date().toISOString().slice(0,10);
+    var key = 'ec_active_days_' + cu.uid;
+    var activeDays = JSON.parse(localStorage.getItem(key)||'[]');
+    if(!activeDays.includes(today)) {
+      activeDays.push(today);
+      activeDays = activeDays.slice(-30);
+      localStorage.setItem(key, JSON.stringify(activeDays));
+    }
+  } catch(e2) {}
   try {
     const av = getMyAvatar();
     await addDoc(collection(db,'activityFeed'), {
@@ -3121,13 +3172,59 @@ function appendMsg(role,text,isAI){
   }
   wrap.appendChild(div);wrap.scrollTop=wrap.scrollHeight;
   if(isAI)makeWordHoverable(div);
-  if(role==='usr'){msgCount=(msgCount||0)+1;if(msgCount%3===0)addScore(1,'Her 3 mesaj');}
+  if(role==='usr'){
+    msgCount=(msgCount||0)+1;
+    // 1 puan her mesaj için
+    addScore(1,'Mesaj gönderildi');
+    // Track scenario messages
+    if(currentMode==='scenario') window._scenarioMsgCount=(window._scenarioMsgCount||0)+1;
+    // Update message display
+    const spEl=document.getElementById('sp-c'); if(spEl) spEl.textContent=msgCount;
+    const daMins=document.getElementById('d-ai-mins'); if(daMins) daMins.textContent=msgCount;
+    updateGoalBars();
+    // Save to Firestore every 5 messages
+    if(msgCount%5===0) {
+      try{updateDoc(doc(db,'users',cu.uid),{totalMessages:msgCount,voiceScore:voiceScore}).catch(function(){});}catch(ex){}
+      try{updateDoc(doc(db,'studentDirectory',cu.uid),{totalMessages:msgCount}).catch(function(){});}catch(ex){}
+    }
+  }
 }
 
 
 
 async function saveWord(word,meaning,sentence){
+  // 1. Save to localStorage for right panel display
+  var isNewWord = false;
+  try {
+    var lk = 'ec_learned_' + (cu&&cu.uid||'');
+    var lw = JSON.parse(localStorage.getItem(lk)||'[]');
+    if(!lw.some(function(w){return w.word===word;})) {
+      isNewWord = true;
+      lw.push({word:word, tr:meaning, date:new Date().toISOString().slice(0,10)});
+      lw = lw.slice(-50);
+      localStorage.setItem(lk, JSON.stringify(lw));
+    }
+  } catch(e2) {}
+
+  if(!isNewWord) return; // skip if word already known
+
+  // 2. Save to Firestore pendingWords
   try{await addDoc(collection(db,'users',cu.uid,'pendingWords'),{word,meaning,sentence,addedAt:serverTimestamp()});}catch(ex){}
+
+  // 3. Update totalWords count in Firestore + cp
+  try {
+    var newCount = (cp.totalWords||0) + 1;
+    cp.totalWords = newCount;
+    await updateDoc(doc(db,'users',cu.uid),{totalWords: newCount});
+    await updateDoc(doc(db,'studentDirectory',cu.uid),{totalWords: newCount}).catch(function(){});
+    // Update display
+    var spw = document.getElementById('sp-w');
+    if(spw) spw.textContent = newCount;
+    var dw = document.getElementById('d-words');
+    if(dw) dw.textContent = newCount;
+    // Check badge
+    updateBadgeDisplay();
+  } catch(ex2) {}
 }
 
 async function logChat(topic){
@@ -3139,16 +3236,28 @@ async function logChat(topic){
 async function syncAIMinutes(){
   const prevMins=Math.floor((chatTotalSecs-60)/60);
   const mins=Math.floor(chatTotalSecs/60);
-  if(mins>0 && mins%5===0 && mins!==prevMins)
-    logActivity('💬',mins+' dk AI sohbet tamamladı','#60a5fa');
-  try{await updateDoc(doc(db,'users',cu.uid),{totalAIMinutes:mins});}catch(ex){}
-  const el=document.getElementById('sp-c');if(el)el.textContent=mins;
+  const msgs=msgCount||0;
+  if(msgs>0 && msgs%10===0)
+    logActivity('💬',msgs+' AI mesajı gönderdim','#60a5fa');
+  try{
+    await updateDoc(doc(db,'users',cu.uid),{
+      totalAIMinutes:mins,
+      totalMessages:msgs,
+      voiceScore:voiceScore||0
+    });
+    await updateDoc(doc(db,'studentDirectory',cu.uid),{
+      totalMessages:msgs,
+      voiceScore:voiceScore||0
+    }).catch(function(){});
+  }catch(ex){}
+  const el=document.getElementById('sp-c');if(el)el.textContent=msgs;
   cp.totalAIMinutes = mins;
+  cp.totalMessages = msgs;
   updateBadgeDisplay();
   checkAutoPost(prevMins,mins);
-  // Check if weekly goals completed (60 min chat + 30 min scenario)
-  const chatDone = mins >= 60;
-  const scenDone = Math.floor(scenarioSecs/60) >= 30;
+  // Check weekly goals (100 chat messages + 50 scenario messages)
+  const chatDone=(msgs)>=100;
+  const scenDone=(window._scenarioMsgCount||0)>=50;
   if(chatDone && scenDone) {
     saveWeeklyGoalDone();
   }
@@ -3318,21 +3427,17 @@ function updateDashboard() {
   const mins = Math.floor(chatTotalSecs/60) || cp.totalAIMinutes || 0;
   const el_mins=document.getElementById('dash-mins'); if(el_mins) el_mins.textContent=mins;
   // Words
-  const wcount = parseInt(document.getElementById('sp-w')?.textContent||'0') || 0;
+  const wcount = Math.max(parseInt(document.getElementById('sp-w')?.textContent||'0')||0, cp&&cp.totalWords||0);
   const el_words=document.getElementById('dash-words'); if(el_words) el_words.textContent=wcount;
   // Badge icon
   const bi=document.getElementById('dash-badge-icon'); if(bi) bi.textContent=document.getElementById('badge-icon')?.textContent||'🌱';
   // Progress ring
   const level = cp.level||'B1';
   // Progress to NEXT badge
-  const BADGES=[
-    {emoji:'🌱',name:'Beginner',pts:0},{emoji:'🔍',name:'Explorer',pts:250},
-    {emoji:'⚡',name:'Practitioner',pts:1000},{emoji:'🎯',name:'Fluent',pts:2500},
-    {emoji:'🚀',name:'Advanced',pts:5000},{emoji:'🏆',name:'Expert',pts:9000},
-    {emoji:'👑',name:'Master',pts:15000}
-  ];
+  // Use global BADGES array
+  const _msgs = Math.max(msgCount||0, cp.totalMessages||0);
   let curBadgeIdx=0;
-  for(let i=BADGES.length-1;i>=0;i--){if(score>=BADGES[i].pts){curBadgeIdx=i;break;}}
+  for(let i=BADGES.length-1;i>=0;i--){if(score>=BADGES[i].pts && _msgs>=(BADGES[i].msgs||0)){curBadgeIdx=i;break;}}
   const nextBadge=BADGES[Math.min(curBadgeIdx+1,BADGES.length-1)];
   const curBadge=BADGES[curBadgeIdx];
   const ptsNeeded=nextBadge.pts-curBadge.pts;
@@ -3342,7 +3447,24 @@ function updateDashboard() {
   if(ring){const circ=314.2;ring.style.strokeDashoffset=circ-(circ*(pct/100));}
   const pctEl=document.getElementById('dash-pct'); if(pctEl) pctEl.textContent=pct+'%';
   const lvlEl=document.getElementById('dash-level-lbl');
-  if(lvlEl) lvlEl.textContent=(curBadgeIdx===BADGES.length-1?'🏆 Max rozet!':'→ '+nextBadge.emoji+' '+nextBadge.name+' ('+nextBadge.pts+'p)');
+  if(lvlEl) lvlEl.textContent=(curBadgeIdx===BADGES.length-1?'👑 Max rozet! Efsane!':'→ '+nextBadge.emoji+' '+nextBadge.name+' ('+nextBadge.pts+'p)');
+  // Show what is needed for next badge
+  const hintEl = document.getElementById('dash-badge-hint');
+  if(hintEl && curBadgeIdx < BADGES.length-1) {
+    const nb = BADGES[curBadgeIdx+1];
+    const totalWordsNow = Math.max(cp&&cp.totalWords||0, parseInt(document.getElementById('sp-w')?.textContent||'0')||0);
+    const ptsLeft = Math.max(0, (nb.pts||0) - score);
+    const msgsLeft = Math.max(0, (nb.msgs||0) - _msgs);
+    const wordsLeft = Math.max(0, (nb.words||0) - totalWordsNow);
+    const rows = [];
+    if(ptsLeft>0) rows.push('<div style="display:flex;justify-content:space-between;padding:3px 0"><span>⭐ Puan</span><span style="font-weight:600;color:var(--amber)">'+score+' / '+(nb.pts||0)+'</span></div>');
+    else rows.push('<div style="display:flex;justify-content:space-between;padding:3px 0"><span>⭐ Puan</span><span style="color:var(--green);font-weight:600">✓ Tamam</span></div>');
+    if(msgsLeft>0) rows.push('<div style="display:flex;justify-content:space-between;padding:3px 0"><span>💬 Mesaj</span><span style="font-weight:600;color:var(--accent)">'+_msgs+' / '+(nb.msgs||0)+'</span></div>');
+    else rows.push('<div style="display:flex;justify-content:space-between;padding:3px 0"><span>💬 Mesaj</span><span style="color:var(--green);font-weight:600">✓ Tamam</span></div>');
+    if(wordsLeft>0) rows.push('<div style="display:flex;justify-content:space-between;padding:3px 0"><span>📚 Kelime</span><span style="font-weight:600;color:var(--green-dark,#155724)">'+totalWordsNow+' / '+(nb.words||0)+'</span></div>');
+    else rows.push('<div style="display:flex;justify-content:space-between;padding:3px 0"><span>📚 Kelime</span><span style="color:var(--green);font-weight:600">✓ Tamam</span></div>');
+    hintEl.innerHTML = '<div style="font-size:10px;color:var(--tp);font-style:normal;text-align:left">'+rows.join('')+'</div>';
+  } else if(hintEl) { hintEl.innerHTML = '<div style="font-size:10px;color:var(--green);font-style:normal;font-weight:600;text-align:center">👑 Tüm rozetleri tamamladın!</div>'; }
   // Recent activity
   const actEl=document.getElementById('dash-activity');
   if(actEl) {
@@ -3380,8 +3502,7 @@ window.teacherSubTab = function(sub) {
   });
   const el=document.getElementById('tt-'+sub); if(el) el.style.display='block';
   const btn=document.getElementById('ttab-'+sub); if(btn) btn.classList.add('active');
-  if(sub==='calendar') initTeacherCalendar();
-  if(sub==='schedule') loadMySchedule();
+  if(sub==='calendar') { initTeacherCalendar(); loadLessonDays(); }
 };
 
 let teacherTabInited=false;
@@ -3453,11 +3574,46 @@ window.uploadHWFile = async function(hwId, input) {
 
 // My Teacher - Calendar (mirrors main calendar)
 let cal2Month=new Date().getMonth(), cal2Year=new Date().getFullYear(), cal2Sel=null;
+window.cal2Prev=function(){cal2Month--;if(cal2Month<0){cal2Month=11;cal2Year--;}cal2Sel=null;loadLessonDays();};
+window.cal2Next=function(){cal2Month++;if(cal2Month>11){cal2Month=0;cal2Year++;}cal2Sel=null;loadLessonDays();};
 function initTeacherCalendar() {
   if(!document.getElementById('cal-title2')) return;
-  renderCal2();
-  loadCalEvents(); // reuse existing calendar events
+  loadLessonDays();
 }
+// Lesson days set by teacher (stored in schedules collection)
+var _lessonDays = {}; // {dateStr: {time, topic}}
+// Student events (stored in calEvents)
+var _studentEvents = {}; // {dateStr: [{text, time}]}
+
+async function loadLessonDays() {
+  if(!cu||!cu.uid) return;
+  try {
+    // Load teacher-set lesson days from schedules
+    const snap = await getDocs(query(collection(db,'schedules'), where('studentId','==',cu.uid)));
+    _lessonDays = {};
+    snap.docs.forEach(function(d) {
+      const data = d.data();
+      if(data.lessonDate) {
+        _lessonDays[data.lessonDate] = {time: data.time||'', topic: data.topic||data.day||''};
+      }
+    });
+  } catch(e) {}
+  try {
+    // Load student's own calendar events
+    const snap2 = await getDocs(collection(db,'users',cu.uid,'calEvents'));
+    _studentEvents = {};
+    snap2.docs.forEach(function(d) {
+      const data = d.data();
+      if(data.date) {
+        if(!_studentEvents[data.date]) _studentEvents[data.date]=[];
+        _studentEvents[data.date].push({text:data.text||'', time:data.time||''});
+      }
+    });
+    window._calEvents = Object.entries(_studentEvents).flatMap(function(e){ return e[1].map(function(ev){ return {date:e[0], text:ev.text, time:ev.time}; }); });
+  } catch(e) {}
+  renderCal2();
+}
+
 function renderCal2() {
   const months=['Ocak','Şubat','Mart','Nisan','Mayıs','Haziran','Temmuz','Ağustos','Eylül','Ekim','Kasım','Aralık'];
   const el=document.getElementById('cal-title2'); if(el) el.textContent=months[cal2Month]+' '+cal2Year;
@@ -3472,27 +3628,77 @@ function renderCal2() {
     const dateStr=cal2Year+'-'+String(cal2Month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     const isToday=today.getDate()===d&&today.getMonth()===cal2Month&&today.getFullYear()===cal2Year;
     const isSel=cal2Sel===dateStr;
-    html+='<div onclick="selectCal2Date(this.dataset.d)" data-d="'+dateStr+'" style="text-align:center;padding:5px 2px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:'+(isToday?'700':'400')+';background:'+(isSel?'var(--navy)':isToday?'var(--accent-light)':'transparent')+';color:'+(isSel?'#fff':isToday?'var(--accent)':'var(--tp)')+'">'+d+'</div>';
+    const isLesson=!!_lessonDays[dateStr];
+    const hasStudentEvent=!!(_studentEvents[dateStr]&&_studentEvents[dateStr].length);
+
+    let bg='transparent', color='var(--tp)', fw='400', title='';
+    if(isSel){ bg='var(--navy)'; color='#fff'; }
+    else if(isLesson){ bg='#8B1A1A'; color='#fff'; fw='700'; title=_lessonDays[dateStr].time?'Ders: '+_lessonDays[dateStr].time:'Ders Günü'; }
+    else if(hasStudentEvent){ bg='#155724'; color='#fff'; fw='600'; title=_studentEvents[dateStr][0].time?'Etkinlik: '+_studentEvents[dateStr][0].time:'Etkinlik'; }
+    else if(isToday){ bg='var(--accent-light)'; color='var(--accent)'; }
+
+    html+='<div onclick="selectCal2Date(this.dataset.d)" data-d="'+dateStr+'"'+(title?' title="'+title+'"':'')+' style="text-align:center;padding:5px 2px;border-radius:8px;cursor:pointer;font-size:12px;font-weight:'+fw+';background:'+bg+';color:'+color+';position:relative"'+(isLesson||hasStudentEvent?' title="'+title+'"':'')+'>'+d+'</div>';
   }
   grid.innerHTML=html;
 }
 window.selectCal2Date=function(dateStr){
   cal2Sel=dateStr; renderCal2();
-  const el=document.getElementById('cal-sel-date2'); if(el) el.textContent=dateStr;
-  // Show events for this date (reuse calEvents from main calendar)
+  const elDate=document.getElementById('cal-sel-date2');
+  if(elDate){const dObj=new Date(dateStr);elDate.textContent=dObj.toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'});}
   const ev=document.getElementById('cal-events2'); if(!ev) return;
-  const evts=(window._calEvents||[]).filter(function(e){return e.date===dateStr;});
-  if(evts.length===0){ev.innerHTML='<div class="muted">Bu tarihte etkinlik yok</div>';}
-  else{ev.innerHTML=evts.map(function(e){return '<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-c)"><span style="font-size:13px">🗓</span><span style="font-size:12px;color:var(--ts)">'+(e.time?e.time+' – ':'')+e.text+'</span></div>';}).join('');}
+  let html='';
+  // Teacher lesson day
+  if(_lessonDays[dateStr]){
+    const ld=_lessonDays[dateStr];
+    html+='<div style="background:rgba(139,26,26,0.08);border-radius:8px;padding:8px 10px;margin-bottom:6px">'+
+      '<div style="font-size:12px;font-weight:700;color:#8B1A1A">🔴 Ders Günü</div>'+
+      (ld.time?'<div style="font-size:11px;color:var(--ts);margin-top:2px">⏰ Saat: '+ld.time+'</div>':'')+
+      (ld.topic?'<div style="font-size:11px;color:var(--ts)">📖 '+ld.topic+'</div>':'')+
+    '</div>';
+  }
+  // Student events with delete
+  const stuEvs=_studentEvents[dateStr]||[];
+  stuEvs.forEach(function(e,i){
+    html+='<div style="display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-c)">'+
+      '<span style="font-size:13px">🟢</span>'+
+      '<span style="font-size:12px;color:var(--ts);flex:1">'+(e.time?e.time+' – ':'')+e.text+'</span>'+
+      '<button class="del-cal-btn" data-date="'+dateStr+'" data-idx="'+i+'" data-id="'+e.id+'" style="font-size:10px;padding:2px 7px;border-radius:5px;border:1px solid #e74c3c;color:#e74c3c;background:transparent;cursor:pointer;flex-shrink:0">Sil</button>'+
+    '</div>';
+  });
+  ev.innerHTML=html||(stuEvs.length===0&&!_lessonDays[dateStr]?'<div class="muted" style="font-size:12px">Bu tarihte etkinlik yok</div>':'');
 };
+
+// Delete student event
+document.addEventListener('click',function(e){
+  var btn=e.target;
+  if(!btn||!btn.classList||!btn.classList.contains('del-cal-btn')) return;
+  if(!confirm('Bu etkinliği silmek istiyor musunuz?')) return;
+  var dateStr=btn.getAttribute('data-date');
+  var idx=parseInt(btn.getAttribute('data-idx'));
+  var id=btn.getAttribute('data-id');
+  deleteDoc(doc(db,'users',cu.uid,'calEvents',id)).then(function(){
+    if(_studentEvents[dateStr]){
+      _studentEvents[dateStr].splice(idx,1);
+      if(!_studentEvents[dateStr].length) delete _studentEvents[dateStr];
+    }
+    if(window._calEvents) window._calEvents=window._calEvents.filter(function(ev){return !(ev.date===dateStr&&ev.text===btn.closest('div').querySelector('span.flex-1')?.textContent);});
+    renderCal2();
+    selectCal2Date(dateStr);
+  }).catch(function(err){alert('Silme hatası: '+err.message);});
+});
 window.calAddEvent2=function(){
   const text=document.getElementById('cal-new-text2')?.value.trim();
   const time=document.getElementById('cal-new-time2')?.value||'';
-  if(!text||!cal2Sel) return;
-  // Use existing addCalEvent logic
+  if(!text||!cal2Sel){alert('Lütfen bir gün seçin ve etkinlik adı girin.');return;}
   addDoc(collection(db,'users',cu.uid,'calEvents'),{date:cal2Sel,text,time,createdAt:serverTimestamp()})
-    .then(function(){
+    .then(function(docRef){
       document.getElementById('cal-new-text2').value='';
+      document.getElementById('cal-new-time2').value='';
+      if(!_studentEvents[cal2Sel]) _studentEvents[cal2Sel]=[];
+      _studentEvents[cal2Sel].push({text,time,id:docRef.id});
+      if(!window._calEvents) window._calEvents=[];
+      window._calEvents.push({date:cal2Sel,text,time});
+      renderCal2();
       selectCal2Date(cal2Sel);
     }).catch(function(e){alert('Hata: '+e.message);});
 };
@@ -3692,27 +3898,31 @@ function loadWeeklyGoals(){
   const saved=JSON.parse(localStorage.getItem(('ec_g_'+(cu&&cu.uid||'x')+'_'+key))||'{}');
   chatTotalSecs=saved.chatSecs||0;
   scenarioSecs=saved.scenSecs||0;
+  msgCount=saved.msgCount||0;
+  // Also load from Firestore for accurate count
+  if(cp && cp.totalMessages) msgCount=Math.max(msgCount, cp.totalMessages||0);
   updateGoalBars();
+  // Update message displays
+  const spEl=document.getElementById('sp-c'); if(spEl) spEl.textContent=msgCount;
+  const daMins=document.getElementById('d-ai-mins'); if(daMins) daMins.textContent=msgCount;
 }
 
 function saveWeeklyGoals(){
   const key=getWeekKey();
-  localStorage.setItem(('ec_g_'+(cu&&cu.uid||'x')+'_'+key),JSON.stringify({chatSecs:chatTotalSecs,scenSecs:scenarioSecs}));
+  localStorage.setItem(('ec_g_'+(cu&&cu.uid||'x')+'_'+key),JSON.stringify({chatSecs:chatTotalSecs,scenSecs:scenarioSecs,msgCount:msgCount}));
 }
 
 function updateGoalBars(){
-  const chatMins=Math.floor(chatTotalSecs/60);
-  const scenMins=Math.floor(scenarioSecs/60);
-  const chatPct=Math.min(100,Math.round(chatMins/60*100));
-  const scenPct=Math.min(100,Math.round(scenMins/30*100));
-
-  const cm=document.getElementById('chat-mins');if(cm)cm.textContent=chatMins;
+  const totalMsg=msgCount||0;
+  const chatPct=Math.min(100,Math.round(totalMsg/100*100));
+  const cm=document.getElementById('chat-mins');if(cm)cm.textContent=totalMsg+' mesaj';
   const cb=document.getElementById('chat-bar');if(cb)cb.style.width=chatPct+'%';
-  const ct=document.getElementById('chat-goal-tick');if(ct)ct.style.display=chatMins>=60?'block':'none';
-
-  const sm=document.getElementById('scenario-mins');if(sm)sm.textContent=scenMins;
+  const ct=document.getElementById('chat-goal-tick');if(ct)ct.style.display=totalMsg>=100?'block':'none';
+  const scenMsg=window._scenarioMsgCount||0;
+  const scenPct=Math.min(100,Math.round(scenMsg/50*100));
+  const sm=document.getElementById('scenario-mins');if(sm)sm.textContent=scenMsg+' mesaj';
   const sb=document.getElementById('scenario-bar');if(sb)sb.style.width=scenPct+'%';
-  const st=document.getElementById('scenario-goal-tick');if(st)st.style.display=scenMins>=30?'block':'none';
+  const st=document.getElementById('scenario-goal-tick');if(st)st.style.display=scenMsg>=50?'block':'none';
 }
 
 function startChatTimer(isScenario){
@@ -3861,7 +4071,7 @@ window.showAIStats=async()=>{
     document.getElementById('asm-words').textContent=ws.size;
   }catch(ex){document.getElementById('asm-words').textContent='?';}
   // Goals completed this week
-  const chatDone=Math.floor(chatTotalSecs/60)>=60?1:0;
+  const chatDone=(msgCount||0)>=100?1:0;
   const scenDone=Math.floor(scenarioSecs/60)>=30?1:0;
   document.getElementById('asm-goals').textContent=(chatDone+scenDone)+' / 2';
 };
@@ -3871,38 +4081,39 @@ window.showAIStats=async()=>{
 const BADGES = [
   {
     emoji:'🌱', name:'Beginner',
-    mins:0,   pts:0,    words:0,  weeks:0,
-    desc:'Hoş geldin! Öğrenme yolculuğun başlıyor.'
+    msgs:0,   pts:0,    words:0,  weeks:0,
+    desc:'Hoş geldin! Öğrenme yolculuğun başlıyor.',
+    hint:'İlk mesajını gönder ve yolculuğuna başla!'
   },
   {
     emoji:'🔍', name:'Explorer',
-    mins:90,  pts:250,  words:15, weeks:1,
-    desc:'90 dk AI sohbeti · 250 puan · 15 kelime · 1 haftalık görev'
+    msgs:30,  pts:200,  words:25, weeks:1,
+    desc:'30 mesaj · 200 puan · 25 kelime',
+    hint:'AI Coach ile 30 mesaj at ve 10 kelime ogren.'
   },
   {
-    emoji:'⚡', name:'Practitioner',
-    mins:400, pts:1000, words:50, weeks:4,
-    desc:'400 dk sohbet · 1000 puan · 50 kelime · 4 haftalık görev'
+    emoji:'💬', name:'Communicator',
+    msgs:100, pts:500,  words:75, weeks:2,
+    desc:'100 mesaj · 500 puan · 75 kelime',
+    hint:'100 mesaja ulaş ve 30 kelime öğren.'
   },
   {
-    emoji:'🎯', name:'Fluent',
-    mins:900, pts:2500, words:120, weeks:10,
-    desc:'900 dk sohbet · 2500 puan · 120 kelime · 10 haftalık görev'
+    emoji:'⭐', name:'Achiever',
+    msgs:250, pts:1000, words:150, weeks:5,
+    desc:'250 mesaj · 1000 puan · 150 kelime',
+    hint:'250 mesaj at, 1000 puana ulaş, 75 kelime öğren.'
   },
   {
-    emoji:'🚀', name:'Advanced',
-    mins:1800, pts:5000, words:250, weeks:20,
-    desc:'1800 dk sohbet · 5000 puan · 250 kelime · 20 haftalık görev'
+    emoji:'🏆', name:'Master',
+    msgs:600, pts:2000, words:300, weeks:12,
+    desc:'600 mesaj · 2000 puan · 300 kelime',
+    hint:'600 mesaj at ve 150 kelime öğren.'
   },
   {
-    emoji:'🏆', name:'Expert',
-    mins:3000, pts:9000, words:500, weeks:36,
-    desc:'3000 dk sohbet · 9000 puan · 500 kelime · 36 haftalık görev'
-  },
-  {
-    emoji:'👑', name:'Master',
-    mins:5000, pts:15000, words:1000, weeks:60,
-    desc:'5000 dk sohbet · 15000 puan · 1000 kelime · 60 haftalık görev'
+    emoji:'👑', name:'Legend',
+    msgs:1500, pts:5000, words:600, weeks:30,
+    desc:'1500 mesaj · 5000 puan · 600 kelime',
+    hint:'1500 mesaja ulaş, 5000 puan topla, 400 kelime öğren.'
   },
 ];
 
@@ -3928,40 +4139,39 @@ async function saveWeeklyGoalDone() {
   } catch(e) {}
 }
 
-function getCurrentBadge(mins, pts){
-  // Quick version using only mins+pts (for real-time display)
+function getCurrentBadge(msgs, pts){
+  // Uses message count and pts
   let badge = BADGES[0];
   for(const b of BADGES){
-    if(mins >= b.mins && pts >= b.pts) badge = b;
+    if((msgs||0) >= (b.msgs||0) && pts >= b.pts) badge = b;
     else break;
   }
   return badge;
 }
 
-function getCurrentBadgeFull(mins, pts, words, weeks){
+function getCurrentBadgeFull(msgs, pts, words, weeks){
   // Full version checking all requirements
   let badge = BADGES[0];
   for(const b of BADGES){
-    if(mins >= b.mins && pts >= b.pts && words >= b.words && weeks >= b.weeks) badge = b;
+    if((msgs||0) >= (b.msgs||0) && pts >= b.pts && words >= (b.words||0)) badge = b;
     else break;
   }
   return badge;
 }
 
-function getNextBadge(mins, pts){
+function getNextBadge(msgs, pts){
   for(const b of BADGES){
-    if(mins < b.mins || pts < b.pts) return b;
+    if((msgs||0) < (b.msgs||0) || pts < b.pts) return b;
   }
   return null;
 }
 
 
 window.showBadgeInfo = () => {
-  const mins = Math.max(Math.floor(chatTotalSecs/60), cp.totalAIMinutes||0);
+  const msgs = Math.max(msgCount||0, cp.totalMessages||0);
   const pts = Math.max(voiceScore, cp.voiceScore||0);
   const words = cp.totalWords || 0;
-  const weeks = cp.weeklyGoalsDone || 0;
-  const cur = getCurrentBadgeFull(mins, pts, words, weeks);
+  const cur = getCurrentBadgeFull(msgs, pts, words, 0);
   const curIdx = BADGES.indexOf(cur);
   const nxt = BADGES[curIdx+1];
   let msg = cur.emoji + ' ' + cur.name + ' rozetindesin!\n\n';
@@ -3970,9 +4180,9 @@ window.showBadgeInfo = () => {
     msg += '━━━━━━━━━━━━━━━━\n';
     if(pts < nxt.pts) msg += '⭐ Puan: ' + pts + ' / ' + nxt.pts + ' (' + Math.max(0,nxt.pts-pts) + ' daha)\n';
     else msg += '✅ Puan: Tamam!\n';
-    if(mins < nxt.mins) msg += '💬 AI Sohbet: ' + mins + ' / ' + nxt.mins + ' dk (' + Math.max(0,nxt.mins-mins) + ' dk daha)\n';
-    else msg += '✅ AI Sohbet: Tamam!\n';
-    if(words < nxt.words) msg += '📚 Kelime: ' + words + ' / ' + nxt.words + ' (' + Math.max(0,nxt.words-words) + ' daha)\n';
+    if(msgs < (nxt.msgs||0)) msg += '💬 AI Mesaj: ' + msgs + ' / ' + nxt.msgs + ' (' + Math.max(0,(nxt.msgs||0)-msgs) + ' daha)\n';
+    else msg += '✅ AI Mesaj: Tamam!\n';
+    if(words < (nxt.words||0)) msg += '📚 Kelime: ' + words + ' / ' + nxt.words + ' (' + Math.max(0,(nxt.words||0)-words) + ' daha)\n';
     else msg += '✅ Kelime: Tamam!\n';
     if(weeks < nxt.weeks) msg += '🎯 Haftalık Görev: ' + weeks + ' / ' + nxt.weeks + ' (' + Math.max(0,nxt.weeks-weeks) + ' daha)\n';
     else msg += '✅ Haftalık Görev: Tamam!';
@@ -4127,100 +4337,62 @@ window.loadNews = async (category, btn) => {
   if(newsLoaded[category]){ el.innerHTML = newsLoaded[category]; applyWordHover(el); return; }
   el.innerHTML = '<div class="muted"><span class="spin spd"></span> Haberler yükleniyor...</div>';
 
-  // RSS feeds - works from file://, no API key needed, real news sources
-  const RSS = {
-    general:    'https://feeds.bbci.co.uk/news/world/rss.xml',
-    technology: 'https://feeds.bbci.co.uk/news/technology/rss.xml',
-    sports:     'https://feeds.bbci.co.uk/sport/rss.xml',
-    science:    'https://feeds.bbci.co.uk/news/science_and_environment/rss.xml',
-    business:   'https://feeds.bbci.co.uk/news/business/rss.xml',
-    finance:    'https://feeds.bbci.co.uk/news/business/rss.xml',
-    kids:       'https://feeds.bbci.co.uk/news/education/rss.xml'
-  };
+  const level = cp ? (cp.level||'B1') : 'B1';
+  const catLabels = {general:'World',technology:'Technology',sports:'Sports',science:'Science',business:'Business',finance:'Finance',kids:'Education & Kids'};
+  const catLabel = catLabels[category] || 'World';
 
-  const newsApiKey = '0baf71d798bc4918b49fac5d85245a86';
-  const catQuery = {
-    general:'world',technology:'technology',sports:'sports',
-    science:'science',business:'business',finance:'finance',kids:'education children'
-  };
+  const prompt = 'You are a news editor. Create 5 realistic English news articles about current ' + catLabel + ' topics for a ' + level + ' English learner.\n\nFor each article output EXACTLY this format with no extra text:\n===ARTICLE===\nHEADLINE: [headline max 12 words]\nSOURCE: [one of: BBC News, Reuters, The Guardian, AP News, CNN, TechCrunch, ESPN]\nDATE: [recent date like "April 2025"]\nBODY: [Write 4-6 sentences. Cover: what happened, who is involved, why it matters. Level: ' + level + '.]\nURL: https://news.google.com/search?q=' + encodeURIComponent(catLabel) + '+news&hl=en&gl=US\n===END===\n\nWrite all 5 articles now.';
 
-  // Try NewsAPI first via allorigins proxy (handles CORS for file://)
   try {
-    const q = encodeURIComponent(catQuery[category]||'world');
-    const newsUrl = 'https://newsapi.org/v2/everything?q='+q+'&language=en&sortBy=publishedAt&pageSize=8&apiKey='+newsApiKey;
-    const proxyUrl = 'https://api.allorigins.win/get?url=' + encodeURIComponent(newsUrl);
-    const res = await fetch(proxyUrl, {signal: AbortSignal.timeout(8000)});
-    if(res.ok) {
-      const outer = await res.json();
-      const data = JSON.parse(outer.contents);
-      if(data.articles && data.articles.length > 0) {
-        const html = buildNewsHtml(data.articles.filter(a=>a.title&&a.title!=='[Removed]').slice(0,6));
-        newsLoaded[category] = html;
-        el.innerHTML = html;
-        applyWordHover(el);
-        return;
+    const raw = await callAI([{role:'user',content:prompt}],'',2000);
+    const blocks = raw.split('===ARTICLE===').filter(b => b.includes('HEADLINE:'));
+    if(!blocks.length) throw new Error('Haber ayrıştırılamadı');
+
+    const html = blocks.slice(0,5).map(function(block) {
+      function get(key) {
+        const m = block.match(new RegExp(key+':\\s*(.+)'));
+        return m ? m[1].trim() : '';
       }
-    }
-  } catch(e) { /* fallback to RSS */ }
+      const headline = get('HEADLINE');
+      const source   = get('SOURCE') || 'News';
+      const date     = get('DATE') || '';
+      const body     = get('BODY') || '';
+      const url      = 'https://news.google.com/search?q=' + encodeURIComponent(headline.split(' ').slice(0,4).join('+')) + '&hl=en&gl=US&ceid=US:en';
+      if(!headline) return '';
 
-  // Fallback: RSS via rss2json.com
-  try {
-    const rssUrl = RSS[category] || RSS.general;
-    const jsonUrl = 'https://api.rss2json.com/v1/api.json?rss_url=' + encodeURIComponent(rssUrl) + '&api_key=free&count=8';
-    const res2 = await fetch(jsonUrl, {signal: AbortSignal.timeout(8000)});
-    if(!res2.ok) throw new Error('RSS fetch failed');
-    const data2 = await res2.json();
-    if(!data2.items || !data2.items.length) throw new Error('No items');
-    const articles = data2.items.map(item => ({
-      title: item.title,
-      description: item.description ? item.description.replace(/<[^>]+>/g,'').substring(0,300) : '',
-      url: item.link,
-      urlToImage: item.enclosure && item.enclosure.link ? item.enclosure.link : (item.thumbnail||''),
-      source: {name: data2.feed && data2.feed.title ? data2.feed.title : 'BBC News'},
-      publishedAt: item.pubDate
-    }));
-    const html = buildNewsHtml(articles);
-    newsLoaded[category] = html;
-    el.innerHTML = html;
+      const wrappedBody = body.split(' ').map(function(w){
+        const clean = w.replace(/[^a-zA-Z'-]/g,'').toLowerCase();
+        return clean.length>3 ? '<span class="hw" data-w="'+clean+'">'+w+'</span>' : w;
+      }).join(' ');
+
+      return '<div class="card" style="margin-bottom:14px">'
+        +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">'
+          +'<span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-light);padding:2px 8px;border-radius:12px">'+source+'</span>'
+          +(date?'<span style="font-size:11px;color:var(--tm)">'+date+'</span>':'')
+        +'</div>'
+        +'<div style="font-weight:700;font-size:15px;color:var(--navy);margin-bottom:10px;line-height:1.4">'+headline+'</div>'
+        +'<div style="font-size:13px;color:var(--navy-dark);line-height:1.8;margin-bottom:12px">'+wrappedBody+'</div>'
+        +'<div style="display:flex;align-items:center;justify-content:space-between;padding-top:10px;border-top:1px solid var(--border-c);gap:6px">'
+          +'<button onclick="translateNewsCard(this)" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border-c);background:transparent;color:#889;cursor:pointer">🇹🇷 Çevir</button>'
+                    +'<button class="news-save-btn" data-title="'+encodeURIComponent(headline.substring(0,80))+'" data-url="'+encodeURIComponent(url)+'" style="padding:5px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border-c);background:transparent;color:#889;cursor:pointer">🔖 Kaydet</button>'
+          +'<a href="'+url+'" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:var(--accent);text-decoration:none;font-weight:600;margin-left:auto">Habere Git →</a>'
+        +'</div>'
+        +'<div class="news-tr-result" style="display:none;font-size:12px;color:var(--ts);font-style:italic;margin-top:8px;line-height:1.6;padding:8px;background:var(--accent-light);border-radius:8px"></div>'
+      +'</div>';
+    }).filter(Boolean).join('');
+
+    newsLoaded[category] = html || '<div class="muted">Haber üretilemedi, tekrar deneyin.</div>';
+    el.innerHTML = newsLoaded[category];
     applyWordHover(el);
-    el.querySelectorAll('.news-img').forEach(function(img){img.onerror=function(){this.style.display='none';};});
+    // Track news read count
+    try {
+      var nk = 'ec_news_read_' + (cu&&cu.uid||'');
+      localStorage.setItem(nk, (parseInt(localStorage.getItem(nk)||'0')+1)+'');
+    } catch(e6) {}
   } catch(ex) {
-    el.innerHTML = '<div class="alert ae">⚠️ Haberler yüklenemedi: '+ex.message+'<br><small>İnternet bağlantınızı kontrol edin.</small></div>';
+    el.innerHTML = '<div class="alert ae">⚠️ Haberler yüklenemedi: '+ex.message+'</div>';
   }
 };
-
-function buildNewsHtml(articles) {
-  return articles.slice(0,6).map(function(article) {
-    const title = article.title || '';
-    const description = article.description || '';
-    const source = (article.source && article.source.name) ? article.source.name : 'Haber';
-    const url = article.url || '#';
-    const image = article.urlToImage || '';
-    const date = article.publishedAt ? new Date(article.publishedAt).toLocaleDateString('tr-TR',{day:'numeric',month:'long',year:'numeric'}) : '';
-    const wrappedDesc = description.split(' ').map(function(w){
-      const clean = w.replace(/[^a-zA-Z'-]/g,'').toLowerCase();
-      return clean.length>3 ? '<span class="hw" data-w="'+clean+'">'+w+'</span>' : w;
-    }).join(' ');
-    var imgHtml = '';
-    if(image) {
-      imgHtml = '<img src="'+image+'" alt="" style="width:100%;height:160px;object-fit:cover;border-radius:8px;margin-bottom:10px" class="news-img">';
-    }
-    return '<div class="card" style="margin-bottom:14px;overflow:hidden">'
-      +imgHtml
-      +'<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">'
-        +'<span style="font-size:11px;font-weight:600;color:var(--accent);background:var(--accent-light);padding:2px 8px;border-radius:12px">'+source+'</span>'
-        +(date?'<span style="font-size:11px;color:var(--tm)">'+date+'</span>':'')
-      +'</div>'
-      +'<div style="font-weight:700;font-size:14px;color:var(--navy);margin-bottom:8px;line-height:1.4">'+title+'</div>'
-      +(description?'<div style="font-size:13px;color:var(--navy-dark);line-height:1.7;margin-bottom:10px">'+wrappedDesc+'</div>':'')
-      +'<div style="display:flex;align-items:center;justify-content:space-between;padding-top:8px;border-top:1px solid var(--border-c)">'
-        +'<button onclick="translateNewsCard(this)" style="padding:4px 10px;font-size:11px;border-radius:6px;border:1px solid var(--border-c);background:transparent;color:#889;cursor:pointer">🇹🇷 Türkçeye Çevir</button>'
-        +'<a href="'+url+'" target="_blank" rel="noopener noreferrer" style="font-size:12px;color:var(--accent);text-decoration:none;font-weight:600">Habere Git →</a>'
-      +'</div>'
-      +'<div class="news-tr-result" style="display:none;font-size:12px;color:var(--ts);font-style:italic;margin-top:8px;line-height:1.6;padding:8px;background:var(--cream-dark);border-radius:8px"></div>'
-    +'</div>';
-  }).join('');
-}
 
 
 let flashCards = [], flashIdx = 0, flashCorrect = 0, flashWrong = 0, flashPtsSession = 0;
@@ -5217,7 +5389,7 @@ SPECIAL MODE: Career Practice for "${moduleLabel}". Student's goal: "${goal}". F
 };
 
 let chatInitialized=false, newsInitialized=false, calInitialized=false, communityInitialized=false;
-const TOOL_TABS=['games','career','community','calendar','report','cont','notes','hw'];
+const TOOL_TABS=['games','career','community','calendar','report','notes','hw'];
 
 // ── RIGHT PANEL ──────────────────────────────────────────────
 function updateRightPanel(tab) {
@@ -5225,126 +5397,312 @@ function updateRightPanel(tab) {
   if(!rp) return;
   rp.innerHTML = '';
   var frag = document.createDocumentFragment();
+
+  // Helper: section header
   function h(txt) {
     var el = document.createElement('div');
     el.style.cssText = 'font-size:11px;font-weight:700;color:var(--tp);margin:14px 0 8px;text-transform:uppercase;letter-spacing:.8px;opacity:.7';
     el.textContent = txt; return el;
   }
+  // Helper: card
   function card(html, css) {
     var el = document.createElement('div');
     el.style.cssText = 'background:var(--accent-light);border-radius:10px;padding:12px;margin-bottom:8px;'+(css||'');
     el.innerHTML = html; return el;
   }
-  function btn(label, fn, css) {
-    var el = document.createElement('button');
-    el.style.cssText = 'width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border-c);background:var(--bg);color:var(--tp);cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;margin-bottom:6px;display:block;text-align:left;'+(css||'');
-    el.textContent = label; el.onclick = fn; return el;
-  }
+  // Helper: stat row
   function row(l, v, vc) {
     var el = document.createElement('div');
     el.style.cssText = 'display:flex;justify-content:space-between;padding:6px 0;border-bottom:1px solid var(--border-c)';
     el.innerHTML = '<span style="font-size:11px;color:var(--ts)">'+l+'</span><span style="font-size:11px;font-weight:700;color:'+(vc||'var(--accent)')+'">'+v+'</span>';
     return el;
   }
+  // Helper: collapsible section
+  function collapsible(title, contentEl) {
+    var wrap = document.createElement('div');
+    wrap.style.cssText = 'border:1px solid var(--border-c);border-radius:10px;margin-bottom:8px;overflow:hidden';
+    var hdr = document.createElement('div');
+    hdr.style.cssText = 'padding:9px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center;background:var(--bg);font-size:12px;font-weight:600;color:var(--tp);user-select:none';
+    hdr.innerHTML = '<span>'+title+'</span><span class="caret" style="font-size:10px;transition:transform .2s">▼</span>';
+    var body = document.createElement('div');
+    body.style.cssText = 'padding:10px 12px;display:none;background:var(--bg)';
+    body.appendChild(contentEl);
+    hdr.onclick = function() {
+      var open = body.style.display !== 'none';
+      body.style.display = open ? 'none' : 'block';
+      hdr.querySelector('.caret').style.transform = open ? '' : 'rotate(180deg)';
+    };
+    wrap.appendChild(hdr); wrap.appendChild(body);
+    return wrap;
+  }
 
   var score = (typeof voiceScore !== 'undefined' ? voiceScore : 0) || 0;
   var mins = typeof chatTotalSecs !== 'undefined' ? Math.floor(chatTotalSecs/60) : 0;
   var streak = (typeof cp !== 'undefined' && cp && cp.streak) ? parseInt(cp.streak)||0 : 0;
+  var dayOfYear = Math.floor((new Date() - new Date(new Date().getFullYear(),0,0)) / 86400000);
+  var dayOfWeek = new Date().getDay(); // 0=Sun
 
+  // ── DASHBOARD ─────────────────────────────────────────
   if(tab === 'dash') {
-    var quotes = ['"The limits of my language are the limits of my world." — Wittgenstein','"One language sets you in a corridor for life. Two languages open every door." — Applewhite','"To have another language is to possess a second soul." — Charlemagne'];
+    var quotes = [
+      '"The limits of my language are the limits of my world." — Wittgenstein',
+      '"One language sets you in a corridor for life. Two languages open every door." — Applewhite',
+      '"To have another language is to possess a second soul." — Charlemagne',
+      '"Language is the road map of a culture." — Rita Mae Brown',
+      '"Learn everything you can, anytime you can." — Sarah Caldwell',
+      '"The more that you read, the more things you will know." — Dr. Seuss',
+      '"A reader lives a thousand lives before he dies." — George R.R. Martin'
+    ];
     frag.appendChild(h('💬 Günün Sözü'));
-    frag.appendChild(card('<div style="font-size:11px;color:var(--ts);line-height:1.7;font-style:italic">'+quotes[new Date().getDate()%quotes.length]+'</div>'));
-    frag.appendChild(h('🔥 Serim'));
-    frag.appendChild(card('<div style="text-align:center"><div style="font-size:28px;font-weight:800;color:var(--amber)">'+streak+'</div><div style="font-size:11px;color:var(--tm)">Günlük Seri</div></div>'));
-    var badgeLevels=[{s:0,n:'Beginner'},{s:100,n:'Explorer'},{s:250,n:'Communicator'},{s:500,n:'Achiever'},{s:1000,n:'Master'},{s:2500,n:'Legend'}];
-    var nb=badgeLevels.find(function(b){return b.s>score;})||badgeLevels[badgeLevels.length-1];
-    var pb=badgeLevels.slice().reverse().find(function(b){return b.s<=score;})||badgeLevels[0];
-    var pct=nb.s>pb.s?Math.round((score-pb.s)/(nb.s-pb.s)*100):100;
-    frag.appendChild(h('🏅 Sonraki Rozet'));
-    frag.appendChild(card('<div style="font-size:11px;color:var(--ts);margin-bottom:6px">'+nb.n+': '+score+'/'+nb.s+'</div><div style="background:rgba(255,255,255,.3);border-radius:4px;height:6px"><div style="background:var(--accent);height:100%;border-radius:4px;width:'+pct+'%;transition:width .5s"></div></div>'));
+    frag.appendChild(card('<div style="font-size:11px;color:var(--ts);line-height:1.7;font-style:italic">'+quotes[dayOfYear%quotes.length]+'</div>'));
 
-  } else if(tab === 'news') {
-    var kat = document.createElement('div');
-    kat.style.cssText = 'font-size:11px;font-weight:700;color:var(--tp);margin-bottom:8px;display:flex;align-items:center;gap:6px';
-    kat.innerHTML = '<img src="data:image/png;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/4gHYSUNDX1BST0ZJTEUAAQ..." style="width:14px;height:14px;filter:invert(1) sepia(1) saturate(3) hue-rotate(180deg)"> Kategoriler';
-    var kat2 = document.createElement('div');
-    kat2.style.cssText = 'font-size:11px;font-weight:700;color:var(--tp);margin-bottom:8px;display:flex;align-items:center;gap:6px';
-    kat2.innerHTML = 'Kategoriler';
-    frag.appendChild(kat2);
-    [['general','🌍 Genel'],['technology','💻 Teknoloji'],['sports','⚽ Spor'],['science','🔬 Bilim'],['business','💼 İş'],['finance','💰 Finans'],['kids','🧒 Çocuk']].forEach(function(c){
-      var b = document.createElement('button');
-      b.style.cssText = 'text-align:left;width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border-c);background:var(--bg);color:var(--tp);cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;margin-bottom:5px;display:block';
-      b.textContent = c[1]; b.setAttribute('data-cat',c[0]);
-      b.onclick = function(){ loadNews(this.getAttribute('data-cat'),this); };
-      frag.appendChild(b);
-    });
-    frag.appendChild(h('💡 İpucu'));
-    frag.appendChild(card('<div style="font-size:11px;color:var(--ts);line-height:1.6">Kelimelerin üzerine gelerek Türkçe anlamlarını öğren.</div>'));
+    // ── Daily English Tip (NEW - between quote and streak) ──
+    var tips = [
+      {t:'🌟 Present Perfect', b:'"Have you ever...?" sorusu için Present Perfect kullan: "Have you ever been to London?"'},
+      {t:'💡 False Friends', b:'"Actually" Türkçede "aslında" demek, "aktüel" değil! Bu tür kelimelere dikkat et.'},
+      {t:'🔤 Phrasal Verbs', b:'"Give up" = vazgeçmek. "Give in" = teslim olmak. "Give out" = dağıtmak. Hepsi farklı anlam!'},
+      {t:'🗣️ Konuşma İpucu', b:'"Um" ve "uh" yerine "Well..." veya "Let me think..." de. Daha doğal ve profesyonel görünür.'},
+      {t:'📝 Articles', b:'"a" belirsiz, "the" belirli. "I saw A dog" (herhangi bir köpek) vs "I saw THE dog" (o köpek).'},
+      {t:'⚡ Common Error', b:'"I am agree" YANLIŞ → "I agree" DOĞRU. "Be" + agree kullanılmaz!'},
+      {t:'🎯 Pronunciation', b:'"Comfortable" → "CUMF-ter-bul" (3 hece). Çoğu kişi "com-FOR-ta-bul" der, yanlış!'}
+    ];
+    var tip = tips[dayOfYear % tips.length];
+    var tipEl = document.createElement('div');
+    tipEl.innerHTML = '<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px">'+tip.t+'</div><div style="font-size:11px;color:var(--ts);line-height:1.6">'+tip.b+'</div>';
+    frag.appendChild(collapsible('💡 Günün İngilizce İpucu', tipEl));
 
+
+
+  // ── AI COACH ─────────────────────────────────────────
   } else if(tab === 'ai') {
     frag.appendChild(h('🎙️ İstatistikler'));
     frag.appendChild(row('Toplam dk', mins, 'var(--accent)'));
     frag.appendChild(row('Puan', score, 'var(--amber)'));
-    var gp=Math.min(100,Math.round(mins/60*100));
-    frag.appendChild(h('🎯 Hedef'));
-    frag.appendChild(card('<div style="font-size:11px;color:var(--ts);margin-bottom:6px">60 dk/hafta: '+mins+'/60 dk</div><div style="background:rgba(255,255,255,.3);border-radius:4px;height:6px"><div style="background:var(--green);height:100%;border-radius:4px;width:'+gp+'%"></div></div>'));
-    frag.appendChild(h('📝 Faydalı İfadeler'));
-    [['Could you repeat that?','Tekrar eder misiniz?'],['I am not sure I understand','Anlayamadım sanırım'],['How do you say it in English?','İngilizcesi ne?'],['That is a good point','Güzel nokta']].forEach(function(p){
-      frag.appendChild(card('<div style="font-size:11px;font-weight:600;color:var(--navy)">'+p[0]+'</div><div style="font-size:10px;color:var(--ts);margin-top:2px">'+p[1]+'</div>','padding:8px 10px;margin-bottom:5px'));
+
+
+    // Useful phrases — collapsible, rotate daily
+    var phraseSets = [
+      [['Could you repeat that?','Tekrar eder misiniz?'],['I am not sure I understand','Anlayamadım sanırım'],['How do you say it in English?','İngilizcesi ne?'],['That is a good point','Güzel bir nokta']],
+      [['Can you give me an example?','Bir örnek verir misiniz?'],['I agree with you','Seninle aynı fikirdeyim'],['What does that mean?','Bu ne anlama geliyor?'],['Let me think about it','Düşünmem gerekiyor']],
+      [['I am looking forward to it','Dört gözle bekliyorum'],['It depends on the situation','Duruma göre değişir'],['To be honest with you','Açıkçası'],['Could you speak more slowly?','Daha yavaş konuşabilir misiniz?']],
+      [['I see what you mean','Ne demek istediğini anlıyorum'],['That makes sense','Mantıklı'],['I would like to add that','Şunu da eklemek isterim ki'],['On the other hand','Öte yandan']],
+      [['I am afraid I cannot','Korkarım yapamam'],['Would you mind if I...','...yapabilir miyim?'],['That is exactly right','Kesinlikle doğru'],['I have no idea','Hiçbir fikrim yok']],
+      [['As far as I know','Bildiğim kadarıyla'],['In my opinion','Benim görüşüme göre'],['I was wondering if','Merak ediyordum, acaba'],['It is worth trying','Denemek değer']],
+      [['You have a point','Haklısın'],['I am running late','Gecikeceğim'],['Can we reschedule?','Erteleyebilir miyiz?'],['I will get back to you','Size geri döneceğim']]
+    ];
+    var phrases = phraseSets[dayOfWeek % phraseSets.length];
+    var phrasesEl = document.createElement('div');
+    phrases.forEach(function(p) {
+      var item = document.createElement('div');
+      item.style.cssText = 'background:var(--accent-light);border-radius:8px;padding:8px 10px;margin-bottom:5px';
+      item.innerHTML = '<div style="font-size:11px;font-weight:600;color:var(--navy)">'+p[0]+'</div><div style="font-size:10px;color:var(--ts);margin-top:2px">'+p[1]+'</div>';
+      phrasesEl.appendChild(item);
+    });
+    frag.appendChild(collapsible('📝 Günün Faydalı İfadeleri', phrasesEl));
+
+    // Sık hatalar (collapsible)
+    var errorsEl = document.createElement('div');
+    var commonErrors = [
+      ['I am boring','I am bored — "boring" sıkıcı şey, "bored" sıkılmış kişi'],
+      ['She is married with him','She is married to him'],
+      ['I have 20 years','I am 20 years old — yaş için "be" kullan'],
+      ['I did not went','I did not go — "did" sonrasi base form']
+    ];
+    commonErrors.forEach(function(e) {
+      var item = document.createElement('div');
+      item.style.cssText = 'padding:6px 0;border-bottom:1px solid var(--border-c);font-size:11px;color:var(--ts);line-height:1.5';
+      item.innerHTML = '<span style="color:#e74c3c;text-decoration:line-through">'+e[0]+'</span><br>→ '+e[1];
+      errorsEl.appendChild(item);
+    });
+    frag.appendChild(collapsible('❌ Sık Yapılan Hatalar', errorsEl));
+
+    // Son öğrenilen kelimeler (collapsible)
+    var learnedEl = document.createElement('div');
+    var learnedId = 'rp-learned-words';
+    learnedEl.id = learnedId;
+    learnedEl.innerHTML = '<div style="font-size:11px;color:var(--ts)">AI sohbette öğrenilen kelimeler burada görünür.</div>';
+    // Populate from localStorage
+    try {
+      var lw = JSON.parse(localStorage.getItem('ec_learned_'+((typeof cu!=='undefined'&&cu)?cu.uid:''))||'[]');
+      if(lw.length) {
+        learnedEl.innerHTML = lw.slice(-8).reverse().map(function(w){
+          return '<div style="display:flex;justify-content:space-between;padding:4px 0;border-bottom:1px solid var(--border-c);font-size:11px"><span style="color:var(--navy);font-weight:600">'+w.word+'</span><span style="color:var(--ts)">'+w.tr+'</span></div>';
+        }).join('');
+      }
+    } catch(e2){}
+    frag.appendChild(collapsible('📚 Son Öğrenilen Kelimeler', learnedEl));
+
+    // Senaryo önerisi (collapsible)
+    var scenEl = document.createElement('div');
+    var scenSuggestions = ['💼 İş Görüşmesi — Bu hafta dene','✈️ Havalimanı — Seyahat İngilizcesi','🏥 Doktor — Sağlık dili','🛍️ Alışveriş — Günlük konuşma','🎓 Akademik — Üniversite İngilizcesi'];
+    var scenSug = scenSuggestions[dayOfYear % scenSuggestions.length];
+    var scenBtn = document.createElement('button');
+    scenBtn.style.cssText = 'font-size:11px;padding:5px 10px;border-radius:6px;border:none;background:var(--navy);color:#fff;cursor:pointer;font-family:Poppins,sans-serif';
+    scenBtn.textContent = 'Senaryolara Git';
+    scenBtn.onclick = function(){ sTab('ai'); };
+    var scenDiv2 = document.createElement('div');
+    scenDiv2.style.cssText = 'font-size:12px;color:var(--ts);margin-bottom:8px';
+    scenDiv2.textContent = scenSug;
+    scenEl.appendChild(scenDiv2);
+    scenEl.appendChild(scenBtn);
+    frag.appendChild(collapsible('🎭 Senaryo Önerisi', scenEl));
+
+  // ── NEWS ─────────────────────────────────────────────
+  } else if(tab === 'news') {
+    frag.appendChild(h('📂 Kategoriler'));
+    [['general','🌍 Genel'],['technology','💻 Teknoloji'],['sports','⚽ Spor'],['science','🔬 Bilim'],['business','💼 İş'],['finance','💰 Finans'],['kids','🧒 Çocuk']].forEach(function(c) {
+      var b = document.createElement('button');
+      b.style.cssText = 'text-align:left;width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border-c);background:var(--bg);color:var(--tp);cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;margin-bottom:5px;display:block';
+      b.textContent = c[1]; b.setAttribute('data-cat', c[0]);
+      b.onclick = function(){ loadNews(this.getAttribute('data-cat'), this); };
+      frag.appendChild(b);
     });
 
-  } else if(tab === 'prog') {
-    frag.appendChild(h('📊 Aktivite'));
-    frag.appendChild(row('AI Sohbet', mins+' dk'));
-    frag.appendChild(row('Puan', score, 'var(--amber)'));
-    var days2=['Pt','Sa','Ca','Pe','Cu','Ct','Pz'];
-    var today2=new Date().getDay();
-    frag.appendChild(h('📅 Son 7 Gün'));
-    var cal=document.createElement('div');
-    cal.style.cssText='display:flex;gap:4px;justify-content:center;margin-bottom:8px';
-    for(var i=6;i>=0;i--){
-      var di=(today2-i+7)%7;
-      var box=document.createElement('div');
-      box.style.cssText='width:30px;height:30px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;'+(i<3?'background:var(--accent);color:#fff':'background:var(--border-c);color:var(--tm)');
-      box.textContent=days2[di]; cal.appendChild(box);
+    // Saved articles (collapsible)
+    var savedEl = document.createElement('div');
+    var savedKey = 'ec_saved_news_' + ((typeof cu!=='undefined'&&cu)?cu.uid:'');
+    var savedNews = [];
+    try { savedNews = JSON.parse(localStorage.getItem(savedKey)||'[]'); } catch(e3){}
+    if(!savedNews.length) {
+      savedEl.innerHTML = '<div style="font-size:11px;color:var(--ts)">Henüz kayıtlı haber yok.<br>Haberlerdeki 🔖 butona tıkla.</div>';
+    } else {
+      savedEl.innerHTML = savedNews.slice(-5).reverse().map(function(n){
+        return '<div style="padding:6px 0;border-bottom:1px solid var(--border-c)"><a href="'+n.url+'" target="_blank" style="font-size:11px;color:var(--accent);text-decoration:none;line-height:1.5;display:block">'+n.title+'</a></div>';
+      }).join('');
     }
-    frag.appendChild(cal);
-    frag.appendChild(h('🚀 Öneri'));
-    var sug = score<100?'AI Coach ile 10 dk konuş':score<250?'Senaryo dene':score<500?'Bilim haberi oku':'Quizlet kelime yarışması';
-    frag.appendChild(card('<div style="font-size:12px;color:var(--ts)">'+sug+'</div>'));
+    frag.appendChild(collapsible('🔖 Kaydedilen Haberler', savedEl));
 
+    // Reading stats (collapsible)
+    var statsEl = document.createElement('div');
+    var readCount = parseInt(localStorage.getItem('ec_news_read_'+((typeof cu!=='undefined'&&cu)?cu.uid:''))||'0');
+    var wordCount = parseInt(localStorage.getItem('ec_news_words_'+((typeof cu!=='undefined'&&cu)?cu.uid:''))||'0');
+    statsEl.innerHTML = '<div style="display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--border-c)"><span style="font-size:11px;color:var(--ts)">Okunan haber</span><span style="font-size:11px;font-weight:700;color:var(--accent)">'+readCount+'</span></div><div style="display:flex;justify-content:space-between;padding:5px 0"><span style="font-size:11px;color:var(--ts)">Taranan kelime</span><span style="font-size:11px;font-weight:700;color:var(--green)">'+wordCount+'</span></div>';
+    frag.appendChild(collapsible('📊 Okuma İstatistikleri', statsEl));
+
+  // ── PROGRESS ─────────────────────────────────────────
+  } else if(tab === 'prog') {
+    frag.appendChild(h('📊 Aktivite Dağılımı'));
+    var totalWordsNow2 = Math.max(typeof cp!=='undefined'&&cp?cp.totalWords||0:0, parseInt(document.getElementById('sp-w')?.textContent||'0')||0);
+    var totalMsgsNow = Math.max(msgCount||0, typeof cp!=='undefined'&&cp?cp.totalMessages||0:0);
+    frag.appendChild(row('💬 AI Mesajları', totalMsgsNow+' mesaj'));
+    frag.appendChild(row('⭐ Puan', score, 'var(--amber)'));
+    frag.appendChild(row('📚 Öğrenilen Kelime', totalWordsNow2+' kelime', 'var(--green)'));
+
+    // Real 7-day activity calendar
+    frag.appendChild(h('📅 Son 7 Gün'));
+    var calEl = document.createElement('div');
+    calEl.style.cssText = 'display:flex;gap:4px;justify-content:center;margin-bottom:8px';
+    var activeDays = [];
+    try {
+      var adKey = 'ec_active_days_' + ((typeof cu!=='undefined'&&cu)?cu.uid:'');
+      activeDays = JSON.parse(localStorage.getItem(adKey)||'[]');
+    } catch(e4){}
+    var dayNames = ['Pz','Pt','Sa','Ça','Pe','Cu','Ct'];
+    for(var di=6; di>=0; di--) {
+      var d = new Date();
+      d.setDate(d.getDate() - di);
+      var dateStr = d.toISOString().slice(0,10);
+      var dayName = dayNames[d.getDay()];
+      var isActive = activeDays.includes(dateStr);
+      var box = document.createElement('div');
+      box.title = dateStr;
+      box.style.cssText = 'width:32px;height:32px;border-radius:6px;display:flex;align-items:center;justify-content:center;font-size:9px;font-weight:600;'
+        + (isActive ? 'background:var(--accent);color:#fff' : 'background:var(--border-c);color:var(--tm)');
+      box.textContent = dayName;
+      calEl.appendChild(box);
+    }
+    frag.appendChild(calEl);
+
+    // Smart daily suggestion (changes when completed)
+    frag.appendChild(h('🚀 Bugünkü Öneri'));
+    var suggKey = 'ec_sugg_done_' + new Date().toISOString().slice(0,10) + '_' + ((typeof cu!=='undefined'&&cu)?cu.uid:'');
+    var suggDone = parseInt(localStorage.getItem(suggKey)||'0');
+    var suggestions = [
+      {icon:'🤖', text:'AI Coach ile 15 dk konuş', action:"sTab('ai')", pts:15},
+      {icon:'📰', text:'3 farklı kategoride haber oku', action:"sTab('news')", pts:10},
+      {icon:'🎮', text:'Quizlet ile 10 kelime calis', action:"sTab('quizlet')", pts:10},
+      {icon:'🎭', text:'Bir senaryo tamamla', action:"sTab('ai')", pts:20},
+      {icon:'📖', text:'Haberlerden 5 kelime öğren', action:"sTab('news')", pts:5}
+    ];
+    var suggIdx = (dayOfYear + suggDone) % suggestions.length;
+    var sugg = suggestions[suggIdx];
+    var suggEl = document.createElement('div');
+    suggEl.style.cssText = 'background:var(--accent-light);border-radius:10px;padding:12px;margin-bottom:8px';
+    var suggTextEl = document.createElement('div');
+    suggTextEl.style.cssText = 'font-size:13px;margin-bottom:8px';
+    suggTextEl.textContent = sugg.icon + ' ' + sugg.text;
+    var suggBtnRow = document.createElement('div');
+    suggBtnRow.style.cssText = 'display:flex;gap:6px;align-items:center';
+    var suggStartBtn = document.createElement('button');
+    suggStartBtn.style.cssText = 'font-size:11px;padding:4px 10px;border-radius:6px;border:none;background:var(--navy);color:#fff;cursor:pointer;font-family:Poppins,sans-serif';
+    suggStartBtn.textContent = 'Basla';
+    (function(action){ suggStartBtn.onclick = function(){ eval(action); }; })(sugg.action);
+    var suggDoneBtn = document.createElement('button');
+    suggDoneBtn.style.cssText = 'font-size:11px;padding:4px 10px;border-radius:6px;border:1px solid var(--border-c);background:transparent;color:var(--ts);cursor:pointer;font-family:Poppins,sans-serif';
+    suggDoneBtn.textContent = 'Yaptim ✓';
+    suggDoneBtn.onclick = function() {
+      var k = 'ec_sugg_done_' + new Date().toISOString().slice(0,10) + '_' + (typeof cu!=='undefined'&&cu?cu.uid:'');
+      localStorage.setItem(k, String(parseInt(localStorage.getItem(k)||'0')+1));
+      updateRightPanel('prog');
+    };
+    var suggPtsEl = document.createElement('span');
+    suggPtsEl.style.cssText = 'font-size:10px;color:var(--tm)';
+    suggPtsEl.textContent = '+' + sugg.pts + ' puan';
+    suggBtnRow.appendChild(suggStartBtn);
+    suggBtnRow.appendChild(suggDoneBtn);
+    suggBtnRow.appendChild(suggPtsEl);
+    suggEl.appendChild(suggTextEl);
+    suggEl.appendChild(suggBtnRow);
+    frag.appendChild(suggEl);
+
+  // ── GAMES ─────────────────────────────────────────────
   } else if(tab === 'games') {
     frag.appendChild(h('🏆 Skorun'));
     frag.appendChild(card('<div style="text-align:center"><div style="font-size:28px;font-weight:800;color:var(--amber)">'+score+'</div><div style="font-size:11px;color:var(--tm)">toplam puan</div></div>'));
-    var wotd=[{w:'Persevere',t:'Sebat etmek'},{w:'Eloquent',t:'Belagatlı'},{w:'Resilient',t:'Dayanıklı'}];
-    var ww=wotd[new Date().getDate()%wotd.length];
+
     frag.appendChild(h('📖 Günün Kelimesi'));
-    frag.appendChild(card('<div style="font-size:16px;font-weight:700;color:var(--navy)">'+ww.w+'</div><div style="font-size:12px;color:var(--ts);margin-top:2px">'+ww.t+'</div>'));
-    frag.appendChild(h('🎮 Rehber'));
-    [['Quizlet','Kelime seti oluştur ve oyna'],['Idiom Dedektifi','Deyimleri keşfet'],['Dedektif Modu','Hikaye macerası']].forEach(function(g){
-      frag.appendChild(card('<div style="font-size:11px;font-weight:600;color:var(--tp)">'+g[0]+'</div><div style="font-size:11px;color:var(--ts)">'+g[1]+'</div>','padding:8px 10px;margin-bottom:5px'));
-    });
+    var wotd = [{w:'Persevere',t:'Sebat etmek',ex:'She persevered through difficulties.'},{w:'Eloquent',t:'Belagatlı',ex:'He gave an eloquent speech.'},{w:'Resilient',t:'Dayanıklı',ex:'Children are very resilient.'},{w:'Tenacious',t:'Azimli',ex:'She was tenacious in her goals.'},{w:'Diligent',t:'Çalışkan',ex:'He is a diligent student.'},{w:'Astute',t:'Zeki/Kurnaz',ex:'An astute business decision.'},{w:'Candid',t:'Açık sözlü',ex:'A candid conversation.'}];
+    var ww = wotd[dayOfYear % wotd.length];
+    frag.appendChild(card('<div style="font-size:16px;font-weight:700;color:var(--navy)">'+ww.w+'</div><div style="font-size:12px;color:var(--ts);margin-top:2px">'+ww.t+'</div><div style="font-size:11px;color:var(--tm);margin-top:4px;font-style:italic">'+ww.ex+'</div>'));
 
+    frag.appendChild(h('⚡ Günlük Görev'));
+    var gameTasks = ['🃏 Quizlette 10 kart çalış','🕵️ Bir İdiom dedektif sorusu çöz','🔍 Dedektif modunda 1 bölüm tamamla','🎯 Kelime yarışmasında 50 puan kazan','📚 Yeni bir kelime seti oluştur'];
+    var gameTask = gameTasks[dayOfYear % gameTasks.length];
+    frag.appendChild(card('<div style="font-size:12px;color:var(--ts)">'+gameTask+'</div>'));
+
+  // ── MY TEACHER ───────────────────────────────────────
   } else if(tab === 'teacher') {
-    frag.appendChild(h('⚡ Hızlı İşlemler'));
-    [['📅 Takvim','calendar'],['🕐 Ders Programı','schedule'],['💬 Geri Bildirim','feedback']].forEach(function(item){
-      var b=document.createElement('button');
-      b.style.cssText='width:100%;padding:9px 12px;border-radius:8px;border:1px solid var(--border-c);background:var(--bg);color:var(--tp);cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;margin-bottom:6px;display:block;text-align:left';
-      b.textContent=item[0]; b.setAttribute('data-s',item[1]);
-      b.onclick=function(){teacherSubTab(this.getAttribute('data-s'));};
-      frag.appendChild(b);
-    });
-    frag.appendChild(h('📝 Ders Hazırlığı'));
-    ['AI Coach ile tekrar et','Haber oku','Soru hazırla'].forEach(function(tip){
-      frag.appendChild(document.createTextNode(''));
-      var el=document.createElement('div');
-      el.style.cssText='font-size:11px;color:var(--ts);padding:5px 0;border-bottom:1px solid var(--border-c);line-height:1.5';
-      el.textContent=tip; frag.appendChild(el);
-    });
-    frag.appendChild(h('📊 Bu Hafta'));
-    frag.appendChild(card('<div style="font-size:11px;color:var(--ts)">💬 '+mins+' dk AI sohbet</div><div style="font-size:11px;color:var(--ts);margin-top:4px">⭐ '+score+' puan</div>'));
+    // Send weekly progress to teacher
+    frag.appendChild(h('📊 Öğretmene Haftalık Rapor'));
+    var reportEl = document.createElement('div');
+    reportEl.style.cssText = 'background:var(--accent-light);border-radius:10px;padding:12px;margin-bottom:8px';
+    reportEl.innerHTML = '<div style="font-size:11px;color:var(--ts);line-height:1.6;margin-bottom:8px">'
+      +'Bu hafta: <strong>'+mins+' dk</strong> AI sohbet, <strong>'+score+'</strong> puan</div>'
+      +'<button id="rp-send-report-btn" style="width:100%;padding:8px;border-radius:8px;border:none;background:var(--navy);color:#fff;cursor:pointer;font-size:12px;font-family:Poppins,sans-serif;font-weight:600">📤 Öğretmene Gönder</button>'
+      +'<div id="rp-report-sent" style="display:none;font-size:11px;color:var(--green);margin-top:6px;text-align:center">✓ Rapor gönderildi!</div>';
+    frag.appendChild(reportEl);
+    setTimeout(function(){
+      var btn2 = document.getElementById('rp-send-report-btn');
+      if(btn2) btn2.onclick = async function() {
+        btn2.disabled=true; btn2.textContent='Gönderiliyor...';
+        try {
+          var msg = 'Haftalık İlerleme Raporum:\n- AI Sohbet: '+mins+' dk\n- Toplam Puan: '+score+'\n- Günlük Seri: '+streak+' gün\n\nİyi çalışmalar!';
+          await addDoc(collection(db,'studentFeedbacks'),{
+            studentId:cu.uid, studentName:cp.name||'', message:msg,
+            type:'weekly_report', ts:serverTimestamp()
+          });
+          document.getElementById('rp-report-sent').style.display='block';
+          btn2.style.display='none';
+        } catch(e5) { btn2.disabled=false; btn2.textContent='📤 Öğretmene Gönder'; alert('Hata: '+e5.message); }
+      };
+    }, 100);
 
+  // ── TOOLS ─────────────────────────────────────────────
+  } else if(tab === 'tools') {
+    rp.innerHTML = '';
+    return;
+
+  // ── PROFILE ───────────────────────────────────────────
   } else if(tab === 'prof') {
     if(typeof cp !== 'undefined' && cp) {
       frag.appendChild(h('👤 Profil'));
@@ -5353,11 +5711,27 @@ function updateRightPanel(tab) {
     frag.appendChild(h('📈 İstatistikler'));
     frag.appendChild(row('AI Sohbet', mins+' dk'));
     frag.appendChild(row('Puan', score, 'var(--amber)'));
+
+    // All badges (collapsible)
+    var badgesEl = document.createElement('div');
+    // Use global BADGES array
+    var allBadges = BADGES.map(function(b){ return {s:b.pts, emoji:b.emoji, name:b.name, desc:b.desc||''}; });
+    badgesEl.innerHTML = allBadges.map(function(b2){
+      var earned = score >= b2.s;
+      return '<div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-bottom:1px solid var(--border-c)'+(earned?'':';opacity:.4')+'">'
+        +'<span style="font-size:18px">'+b2.emoji+'</span>'
+        +'<div><div style="font-size:11px;font-weight:600;color:var(--tp)">'+b2.name+'</div><div style="font-size:10px;color:var(--tm)">'+b2.desc+'</div></div>'
+        +(earned?'<span style="margin-left:auto;font-size:12px">✅</span>':'')
+        +'</div>';
+    }).join('');
+    frag.appendChild(collapsible('🏅 Tüm Rozetler', badgesEl));
+
+    // Goals
     frag.appendChild(h('🎯 Hedefler'));
-    [{l:'İlk 100 puan',d:score>=100},{l:'7 günlük seri',d:streak>=7},{l:'60 dk sohbet',d:mins>=60}].forEach(function(g){
-      var el=document.createElement('div');
-      el.style.cssText='display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-c)';
-      el.innerHTML='<span style="font-size:11px;color:var(--'+(g.d?'green':'tm')+');flex:1">'+g.l+'</span><span>'+(g.d?'✅':'⏳')+'</span>';
+    [{l:'İlk 100 puan',d:score>=100},{l:'7 günlük seri',d:streak>=7},{l:'100 mesaj at',d:(msgCount||0)>=100}].forEach(function(g){
+      var el = document.createElement('div');
+      el.style.cssText = 'display:flex;align-items:center;gap:8px;padding:6px 0;border-bottom:1px solid var(--border-c)';
+      el.innerHTML = '<span style="font-size:11px;color:var('+(g.d?'--green':'--tm')+');flex:1">'+g.l+'</span><span>'+(g.d?'✅':'⏳')+'</span>';
       frag.appendChild(el);
     });
   }
@@ -5365,41 +5739,160 @@ function updateRightPanel(tab) {
   rp.appendChild(frag);
 }
 
-// Word hover tooltip system
+
 (function(){
-  var tip=null, cache={}, pending=null;
+  var tip=null, trEl=null, hintEl=null, cache={}, pending=null, curWord='', curTr='';
+
+  // Called when user clicks "+ Quizlete Ekle" button in tooltip
+  window._addCurrentWordToQuizlet = function(e) {
+    if(e && e.stopPropagation) e.stopPropagation(); // prevent modal from closing immediately
+    if(tip) tip.style.display='none';
+    if(curWord) buildModal(curWord, curTr);
+  };
+
+  function buildModal(word, tr){
+    var modal=document.getElementById('wht-modal');
+    var mWord=document.getElementById('wht-modal-word');
+    var mBody=document.getElementById('wht-modal-body');
+    if(!modal||!mBody) return;
+    mWord.textContent=word+' = '+(tr||'...');
+    mBody.innerHTML='';
+    // Ensure cp.quizletSets exists
+    if(typeof cp!=='undefined'&&cp&&!cp.quizletSets) cp.quizletSets=[];
+    var sets=(typeof cp!=='undefined'&&cp&&cp.quizletSets)?cp.quizletSets:[];
+    if(!sets.length){
+      var msg=document.createElement('div');
+      msg.style.cssText='font-size:12px;color:#666;margin-bottom:10px';
+      msg.textContent='Henüz kelime setin yok.';
+      mBody.appendChild(msg);
+      var nb=document.createElement('button');
+      nb.style.cssText='width:100%;padding:9px;border-radius:8px;border:none;background:#1a3a5c;color:#fff;cursor:pointer;font-family:Poppins,sans-serif;font-size:12px';
+      nb.textContent='+ Yeni Set Oluştur';
+      nb.onclick=function(){modal.style.display='none';if(typeof sTab==='function')sTab('quizlet');};
+      mBody.appendChild(nb);
+    } else {
+      var lbl=document.createElement('div');
+      lbl.style.cssText='font-size:11px;color:#888;margin-bottom:8px';
+      lbl.textContent='Hangi sete eklensin?';
+      mBody.appendChild(lbl);
+      sets.forEach(function(s,i){
+        var btn=document.createElement('button');
+        btn.style.cssText='width:100%;padding:9px 12px;border-radius:8px;border:1px solid #ddd;background:#f8f9fa;color:#1a3a5c;cursor:pointer;font-family:Poppins,sans-serif;font-size:12px;margin-bottom:6px;text-align:left;font-weight:600';
+        btn.innerHTML=s.name+' <span style="color:#888;font-weight:400">('+(s.words?s.words.length:0)+' kelime)</span>';
+        btn.onclick=async function(){
+          var sets2=(cp&&cp.quizletSets)?cp.quizletSets:[];
+          if(!sets2[i]) return;
+          // Use the SAME format as Quizlet tab: {en, tr} in .words array
+          sets2[i].words=sets2[i].words||[];
+          // Check both formats for duplicates
+          var alreadyIn = sets2[i].words.some(function(c){return c.en===word;}) ||
+                          (sets2[i].cards||[]).some(function(c){return c.term===word;});
+          if(alreadyIn){
+            mBody.innerHTML='<div style="color:#e74c3c;font-size:12px;padding:8px;text-align:center">Bu kelime zaten sette var!</div>';
+            setTimeout(function(){modal.style.display='none';},1500);
+            return;
+          }
+          sets2[i].words=sets2[i].words||[];
+          sets2[i].words.push({en:word, tr:tr||''});
+          mBody.innerHTML='<div style="color:#888;font-size:12px;padding:8px;text-align:center">Kaydediliyor...</div>';
+          try{
+            if(typeof saveAllSets==='undefined') throw new Error('saveAllSets not defined');
+            await saveAllSets(sets2);
+            mBody.innerHTML='<div style="color:#2d8a4e;font-size:12px;padding:8px;text-align:center;font-weight:600">✓ "'+word+'" sete eklendi!</div>';
+            // Refresh Quizlet UI if open
+            try{ if(typeof renderQuizletSets==='function') renderQuizletSets(); }catch(e){}
+            setTimeout(function(){modal.style.display='none';},1500);
+          }catch(ex){
+            mBody.innerHTML='<div style="color:#e74c3c;font-size:12px;padding:8px;">Kayıt hatası: '+ex.message+'</div>';
+          }
+        };
+        mBody.appendChild(btn);
+      });
+      var nb2=document.createElement('button');
+      nb2.style.cssText='width:100%;padding:7px;border-radius:8px;border:1px dashed #aaa;background:transparent;color:#888;cursor:pointer;font-family:Poppins,sans-serif;font-size:11px;margin-top:2px';
+      nb2.textContent='+ Yeni Set Oluştur';
+      nb2.onclick=function(){modal.style.display='none';if(typeof sTab==='function')sTab('quizlet');};
+      mBody.appendChild(nb2);
+    }
+    modal.style.display='flex';
+  }
+
+  // Click to close modal when clicking outside
+  document.addEventListener('click',function(e){
+    // Modal close
+    var modal=document.getElementById('wht-modal');
+    if(modal&&modal.style.display!=='none'){
+      var inner=modal.querySelector('div');
+      if(inner&&!inner.contains(e.target)) modal.style.display='none';
+    }
+    // Hide tooltip only if clicking outside both tooltip and .hw words
+    if(tip&&tip.style.display!=='none'){
+      if(!tip.contains(e.target)&&(!e.target.classList||!e.target.classList.contains('hw'))){
+        tip.style.display='none';
+      }
+    }
+  });
+
+  // Hover → simple translation bubble
   document.addEventListener('mouseover',function(e){
-    if(!e.target||!e.target.classList||!e.target.classList.contains('hw')) return;
-    var word=e.target.getAttribute('data-w'); if(!word) return;
-    if(!tip){tip=document.getElementById('word-hover-tooltip');}
+    var el=e.target;
+    if(!el||!el.classList||!el.classList.contains('hw')) return;
+    var word=el.getAttribute('data-w'); if(!word) return;
+    if(!tip){
+      tip=document.getElementById('word-hover-tooltip');
+      trEl=document.getElementById('wht-tr');
+      hintEl=document.getElementById('wht-hint');
+    }
     if(!tip) return;
-    var rect=e.target.getBoundingClientRect();
+    var rect=el.getBoundingClientRect();
     tip.style.left=(rect.left+rect.width/2)+'px';
     tip.style.top=(rect.top-8)+'px';
     tip.style.display='block';
-    document.getElementById('wht-word').textContent=word;
-    document.getElementById('wht-tr').textContent=cache[word]||'...';
-    if(!cache[word]){
+    curWord=word;
+    var wEl=document.getElementById('wht-word');
+    if(wEl) wEl.textContent=word;
+    var inNews=!!el.closest('#sc-news');
+    if(cache[word]){
+      curTr=cache[word];
+      if(trEl) trEl.textContent=cache[word];
+      if(hintEl) hintEl.style.display=inNews?'block':'none';
+    } else {
+      if(trEl) trEl.textContent='...';
+      if(hintEl) hintEl.style.display='none';
       if(pending) clearTimeout(pending);
       pending=setTimeout(function(){
         if(typeof callAI==='undefined') return;
         callAI([{role:'user',content:'Translate to Turkish in one word: '+word}],'',20).then(function(r){
           var tr=r.trim().replace(/['"]/g,'');
-          cache[word]=tr;
-          if(tip&&tip.style.display==='block'&&document.getElementById('wht-word').textContent===word)
-            document.getElementById('wht-tr').textContent=tr;
+          cache[word]=tr; curTr=tr;
+          if(tip&&tip.style.display==='block'&&document.getElementById('wht-word')&&document.getElementById('wht-word').textContent===word){
+            if(trEl) trEl.textContent=tr;
+            if(hintEl&&inNews) hintEl.style.display='block';
+          }
+          try{var wk='ec_news_words_'+(typeof cu!=='undefined'&&cu?cu.uid:'');localStorage.setItem(wk,String(parseInt(localStorage.getItem(wk)||'0')+1));}catch(e2){}
         }).catch(function(){});
       },400);
     }
   });
-  document.addEventListener('mouseout',function(e){
-    if(!e.target||!e.target.classList||!e.target.classList.contains('hw')) return;
-    if(tip) tip.style.display='none';
-    if(pending) clearTimeout(pending);
-  });
-})();
 
-window.sTab=function(tab){
+  document.addEventListener('mouseout',function(e){
+    var el=e.target;
+    if(!el||!el.classList||!el.classList.contains('hw')) return;
+    if(pending) clearTimeout(pending);
+    // Check if mouse went to the tooltip
+    setTimeout(function(){
+      if(tip&&tip.style.display!=='none'&&!tip.matches(':hover')){
+        tip.style.display='none';
+      }
+    },300);
+  });
+  // Keep tooltip open when hovering over it
+  document.addEventListener('mouseover',function(e){
+    if(tip&&tip.contains(e.target)){
+      // Mouse is on tooltip - keep it visible
+    }
+  });
+})();window.sTab=function(tab){
   if(tab==='flash'){tab='games';}
   try{
   document.querySelectorAll('#s-student .tc').forEach(function(t){
@@ -5418,8 +5911,9 @@ window.sTab=function(tab){
   const navMap={
     dash:'snav-dash', ai:'snav-ai', news:'snav-news', prog:'snav-prog',
     quizlet:'snav-games', games:'snav-games', tools:'snav-tools', teacher:'snav-teacher', prof:'snav-prof',
-    games:'snav-tools', career:'snav-tools', community:'snav-tools',
-    notes:'snav-tools', report:'snav-tools', calendar:'snav-teacher', hw:'snav-teacher'
+    career:'snav-tools', community:'snav-tools',
+    notes:'snav-tools', report:'snav-tools', calendar:'snav-teacher', hw:'snav-teacher',
+    schedule:'snav-teacher', feedback:'snav-teacher'
   };
   const navId=navMap[tab]; if(navId){const nb=document.getElementById(navId);if(nb)nb.classList.add('active');}
   // Tools back button
@@ -5438,7 +5932,11 @@ window.sTab=function(tab){
   if(tab==='quizlet') initQuizlet();
   if(tab==='prof')    loadAIMinutes().then(function(){renderProf();});
   if(tab==='teacher') initTeacherTab();
-  try{updateRightPanel(tab);}catch(e){}
+  try{
+    var _rp=document.getElementById('student-right-panel');
+    if(_rp) _rp.style.display=(tab==='tools')?'none':'';
+    if(tab!=='tools') updateRightPanel(tab);
+  }catch(e){}
   }catch(e){console.error('sTab:',e);}
 };
 
@@ -5545,7 +6043,7 @@ const GRAMMAR_QUESTIONS = [
   {q:"He spoke with such ___ that everyone was convinced.",o:["conviction","convincing","convinced","convince"],a:0,lvl:'C1'},
   {q:"The results were ___ to the initial hypothesis.",o:["contrary","contrast","opposing","conflicting"],a:0,lvl:'C1'},
   {q:"What does 'hit the sack' mean?",o:["Work hard","Go to bed","Make money","Start a fight"],a:1,lvl:'A2'},
-  {q:"Choose the correct sentence:",o:["I didn't went there","I didn't go there","I not go there","I don't went there"],a:1,lvl:'A2'},
+  {q:"Choose the correct sentence:",o:["I did not went there","I did not go there","I not go there","I do not went there"],a:1,lvl:'A2'},
   {q:"She ___ working here since 2019.",o:["is","was","has been","had been"],a:2,lvl:'B1'},
   {q:"'Ubiquitous' means:",o:["Rare","Found everywhere","Very old","Extremely fast"],a:1,lvl:'C1'},
   {q:"___ your help, we couldn't have succeeded.",o:["Without","Unless","Except","Besides"],a:0,lvl:'B2'},
@@ -6700,9 +7198,16 @@ window.selectAvatar = async (avatarId) => {
 // Override updateBadgeDisplay to include avatar
 const _origUpdateBadge = typeof updateBadgeDisplay === 'function' ? updateBadgeDisplay : ()=>{};
 function updateBadgeDisplay() {
-  const mins = Math.floor(chatTotalSecs/60);
-  const pts = voiceScore;
-  let badge = getCurrentBadge(mins, pts);
+  const msgs2 = Math.max(msgCount||0, cp&&cp.totalMessages||0);
+  const pts = voiceScore||0;
+  const words2 = Math.max(cp&&cp.totalWords||0, parseInt(document.getElementById('sp-w')?.textContent||'0')||0);
+  // Badge requires msgs + pts + words ALL satisfied
+  let badge = BADGES[0];
+  for(let bi=0;bi<BADGES.length;bi++){
+    const b=BADGES[bi];
+    if(msgs2>=(b.msgs||0) && pts>=(b.pts||0) && words2>=(b.words||0)) badge=b;
+    else break;
+  }
   // Check for teacher badge override
   if(cp && cp._badgeOverride) {
     const overrideBadge = BADGES.find(function(b){ return b.name === cp._badgeOverride; });
@@ -7150,29 +7655,84 @@ window.stopDetectiveMusic = function() {
   _musicStarted = false;
 };
 
+// Event delegation for news save buttons
+document.addEventListener('click', function(e){
+  var btn = e.target;
+  if(!btn||!btn.classList||!btn.classList.contains('news-save-btn')) return;
+  var title = decodeURIComponent(btn.getAttribute('data-title')||'');
+  var url = decodeURIComponent(btn.getAttribute('data-url')||'');
+  saveNewsCard(btn, title, url);
+});
+
+window.saveNewsCard = function(btn, title, url) {
+  try {
+    var key = 'ec_saved_news_' + (typeof cu!=='undefined'&&cu?cu.uid:'');
+    var saved = JSON.parse(localStorage.getItem(key)||'[]');
+    // Check if already saved
+    if(saved.some(function(n){return n.url===url;})) {
+      btn.textContent = '✓ Kaydedildi';
+      btn.style.color = 'var(--green)';
+      return;
+    }
+    saved.push({title:title, url:url, date:new Date().toISOString().slice(0,10)});
+    saved = saved.slice(-20); // keep last 20
+    localStorage.setItem(key, JSON.stringify(saved));
+    btn.textContent = '✓ Kaydedildi';
+    btn.style.color = 'var(--green)';
+    btn.style.borderColor = 'var(--green)';
+  } catch(e) {
+    btn.textContent = '❌ Hata';
+  }
+};
+
 window.translateNewsCard = async function(btn) {
   var card = btn.closest('.card');
   if(!card) return;
-  var summaryDiv = card.querySelector('[data-original]');
   var resultDiv = card.querySelector('.news-tr-result');
-  if(!summaryDiv || !resultDiv) return;
-  if(resultDiv.style.display !== 'none') {
+  if(!resultDiv) return;
+  // Toggle if already translated
+  if(resultDiv.style.display !== 'none' && resultDiv.textContent.trim()) {
     resultDiv.style.display = 'none';
-    btn.textContent = '🇹🇷 Tüm Haberi Çevir';
+    btn.textContent = '🇹🇷 Türkçeye Çevir';
     return;
   }
-  btn.textContent = 'Çeviriliyor...';
+  // Get text to translate — look for the body paragraph (line-height:1.8)
+  var textEl = card.querySelector('[data-original]');
+  var original = '';
+  if(textEl) {
+    original = decodeURIComponent(textEl.dataset.original || textEl.innerText || textEl.textContent);
+  } else {
+    // Find the news body div by its style (line-height 1.8)
+    var divs = card.querySelectorAll('div');
+    for(var i=0; i<divs.length; i++) {
+      var d = divs[i];
+      if(d.style.lineHeight === '1.8' || (d.innerHTML && d.innerHTML.includes('class="hw"'))) {
+        original = d.innerText || d.textContent;
+        break;
+      }
+    }
+    // Fallback: headline + any paragraph text
+    if(!original.trim()) {
+      var allText = [];
+      card.querySelectorAll('div').forEach(function(d) {
+        var t = (d.innerText||d.textContent).trim();
+        if(t.length > 30 && !t.includes('Habere Git') && !t.includes('Türkçeye')) allText.push(t);
+      });
+      original = allText.join(' ').substring(0, 800);
+    }
+  }
+  if(!original.trim()) { alert('Çevrilecek metin bulunamadı.'); return; }
+  btn.textContent = '⏳ Çevriliyor...';
   btn.disabled = true;
-  var original = decodeURIComponent(summaryDiv.dataset.original || summaryDiv.textContent);
   try {
-    var tr = await callAI([{role:'user',content:'Translate this English news to Turkish, give only the Turkish translation: '+original}], '', 300);
+    var tr = await callAI([{role:'user',content:'Translate this English news article to Turkish naturally. Give ONLY the Turkish translation:\n\n'+original.substring(0,800)}], '', 400);
     resultDiv.textContent = tr.trim();
     resultDiv.style.display = 'block';
     btn.textContent = '🙈 Gizle';
   } catch(e) {
-    resultDiv.textContent = 'Çeviri başarısız oldu.';
+    resultDiv.textContent = 'Çeviri başarısız: ' + e.message;
     resultDiv.style.display = 'block';
-    btn.textContent = '🇹🇷 Tüm Haberi Çevir';
+    btn.textContent = '🇹🇷 Türkçeye Çevir';
   }
   btn.disabled = false;
 };
@@ -7360,7 +7920,7 @@ window.startQGame = function(gameType) {
   if(!qCurrentSet || !qCurrentSet.words || qCurrentSet.words.length < 2) {
     alert('Bu oyun için en az 2 kelime gerekli!'); return;
   }
-  // Flashcard and WordChain don't have a timed option - launch directly
+  // Flashcard and WordChain do not have a timed option - launch directly
   var noModeGames = ['flashcard','wordchain'];
   if(noModeGames.indexOf(gameType) !== -1) {
     launchQGame(gameType, false); return;
@@ -7768,7 +8328,7 @@ var counselorLang = 'tr';
 var counselorHistory = [];
 var counselorOpen = false;
 
-var COUNSELOR_SYSTEM_TR = 'Sen "Counselor" adında bir site rehberisin. Bu platform Nartkan Temir tarafından geliştirilmiştir. Görevin öğrencilere bu İngilizce öğrenme platformunu tanıtmak ve yardımcı olmak. Kısa ve net cevaplar ver (2-4 cümle). Türkçe konuş.\n\nSitenin özellikleri:\n- 📰 Haberler: Farklı kategorilerde İngilizce haberler, kelimelere tıklayınca Türkçe anlam\n- 🤖 The English Coach: AI destekli sohbet, rol yapma senaryoları, ses pratiği\n- 🧰 Araçlar: Kariyer İngilizcesi, Topluluk, Takvim, Raporum, İçerikler, Notlar\n- 🎮 Oyunlar: Quizlet (kendi kelime setlerin), İdiom Dedektifi, Dedektif Modu\n- 📚 Quizlet: Kelime seti oluştur, Hafıza Kartları / Kelime Yarışması / Boşluk Doldur / Zincir Kelime oyunları\n- 👤 Profil: Rozet sistemi, avatar seçimi, seviye takibi\n- Seviye tespit sınavı: Placement Test ile başlangıç seviyeni öğren\n\nÖNEMLİ: Öğrencinin AI asistan sohbeti, oyunlar veya dedektif oyunu sırasındaki sorularına yardım etme. Sadece siteyi anlat ve yönlendir.';
+var COUNSELOR_SYSTEM_TR = 'Sen "Counselor" adında bir site rehberisin. Bu platform Nartkan Temir tarafından geliştirilmiştir. Görevin öğrencilere bu İngilizce öğrenme platformunu tanıtmak ve yardımcı olmak. Kısa ve net cevaplar ver (2-4 cümle). Türkçe konuş.\n\nSitenin özellikleri:\n- 📰 Haberler: Farklı kategorilerde İngilizce haberler, kelimelere tıklayınca Türkçe anlam\n- 🤖 The English Coach: AI destekli sohbet, rol yapma senaryoları, ses pratiği\n- 🧰 Araçlar: Kariyer İngilizcesi, Topluluk, Takvim, Raporum, Notlar\n- 🎮 Oyunlar: Quizlet (kendi kelime setlerin), İdiom Dedektifi, Dedektif Modu\n- 📚 Quizlet: Kelime seti oluştur, Hafıza Kartları / Kelime Yarışması / Boşluk Doldur / Zincir Kelime oyunları\n- 👤 Profil: Rozet sistemi, avatar seçimi, seviye takibi\n- Seviye tespit sınavı: Placement Test ile başlangıç seviyeni öğren\n\nÖNEMLİ: Öğrencinin AI asistan sohbeti, oyunlar veya dedektif oyunu sırasındaki sorularına yardım etme. Sadece siteyi anlat ve yönlendir.';
 
 var COUNSELOR_SYSTEM_EN = 'You are "Counselor", a site guide for an English learning platform built by Nartkan Temir. Help students navigate the site. Give short, clear answers (2-4 sentences). Speak in English.\n\nSite features:\n- 📰 News: English news in categories, hover over words for Turkish meaning\n- 🤖 The English Coach: AI chat, role-play scenarios, voice practice\n- 🧰 Tools: Career English, Community, Calendar, My Report, Contents, Notes\n- 🎮 Games: Quizlet (your own word sets), Idiom Detective, Detective Mode\n- 📚 Quizlet: Create word sets, play Flashcards / Word Rush / Fill in the Blank / Word Chain\n- 👤 Profile: Badge system, avatar selection, level tracking\n- Placement test: Find your starting level\n\nIMPORTANT: Do NOT help with AI chat conversations, games, or detective game tasks. Only guide the site.';
 
